@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Netflix Fit - Aplicativo de Treinos</title>
+
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --netflix-red: #E50914;
+      --netflix-red-hover: #f40612;
+      --netflix-black: #141414;
+      --netflix-dark: #181818;
+      --netflix-card-bg: #1f1f1f;
+      --netflix-border: #333333;
+      --text-white: #FFFFFF;
+      --text-muted: #AAAAAA;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+      background-color: var(--netflix-black);
+      color: var(--text-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* HEADER DA APLICAÇÃO */
+    header {
+      background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(20,20,20,0.8) 100%);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2.2rem;
+      color: var(--netflix-red);
+      letter-spacing: 2px;
+    }
+
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--netflix-border);
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .user-profile-badge:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #555;
+    }
+
+    .avatar-small {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+      font-size: 1rem;
+      overflow: hidden;
+      background: var(--netflix-red);
+    }
+
+    .avatar-small img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* NAVEGAÇÃO DE ABAS */
+    nav.tabs-nav {
+      background-color: var(--netflix-dark);
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--netflix-border);
+      overflow-x: auto;
+    }
+
+    .tab-button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-button:hover {
+      color: var(--text-white);
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-button.active {
+      color: var(--text-white);
+      background-color: var(--netflix-red);
+      box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+    }
+
+    /* CONTEÚDO PRINCIPAL */
+    main.main-container {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 25px 20px;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2rem;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-white);
+    }
+
+    /* CARDS DE TREINO (CATÁLOGO) */
+    .workout-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .workout-card {
+      background-color: var(--netflix-card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--netflix-border);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .workout-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+      border-color: var(--netflix-red);
+    }
+
+    .workout-card-img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-bottom: 1px solid var(--netflix-border);
+    }
+
+    .workout-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(229, 9, 20, 0.9);
+      color: #fff;
+      font-family: 'Bebas Neue', cursive;
+      font-size: 0.95rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+
+    .workout-card-body {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .workout-card-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: var(--text-white);
+    }
+
+    .workout-info {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 15px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .workout-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-netflix {
+      background-color: var(--netflix-red);
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-netflix:hover {
+      background-color: var(--netflix-red-hover);
+    }
+
+    .btn-netflix:active {
+      transform: scale(0.97);
+    }
+
+    .btn-play {
+      flex: 1;
+      background-color: #fff;
+      color: #000;
+    }
+
+    .btn-play:hover {
+      background-color: #e6e6e6;
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid var(--netflix-border);
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-icon {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: 1px solid var(--netflix-border);
+      border-radius: 6px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-icon:hover {
+      background: rgba(229, 9, 20, 0.3);
+      border-color: var(--netflix-red);
+    }
+
+    /* TELA DE TREINO ATIVO E CRONÔMETRO */
+    .active-workout-header {
+      background: var(--netflix-card-bg);
+      border: 1px solid var(--netflix-border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .main-timer {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 3rem;
+      color: var(--netflix-red);
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .exercise-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .exercise-item {
+      background: var(--netflix-card-bg);
+      border: 1px solid var(--netflix-border);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+
+    .exercise-item.completed {
+      border-color: #2e7d32;
+      background: rgba(46, 125, 50, 0.1);
+      opacity: 0.7;
+    }
+
+    .exercise-item.completed .exercise-name {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .exercise-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .checkbox-custom {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 2px solid var(--netflix-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .exercise-item.completed .checkbox-custom {
+      background-color: #2e7d32;
+      border-color: #2e7d32;
+      color: #fff;
+    }
+
+    .exercise-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .exercise-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .exercise-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.78rem;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 3px 8px;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    /* BANNER DE DESCANSO */
+    .rest-banner {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #111;
+      border: 2px solid var(--netflix-red);
+      border-radius: 12px;
+      padding: 15px 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      gap: 15px;
+      z-index: 200;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .rest-timer-val {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2rem;
+      color: var(--netflix-red);
+    }
+
+    /* FORMULÁRIO DE NOVO/EDITAR TREINO */
+    .workout-form {
+      background: var(--netflix-card-bg);
+      border: 1px solid var(--netflix-border);
+      border-radius: 10px;
+      padding: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      width: 100%;
+      background: #121212;
+      border: 1px solid var(--netflix-border);
+      border-radius: 6px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--netflix-red);
+    }
+
+    .dynamic-exercise-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 40px;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .dynamic-exercise-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      .dynamic-exercise-row .full-width {
+        grid-column: 1 / -1;
+      }
+    }
+
+    .btn-danger {
+      background-color: rgba(229, 9, 20, 0.2);
+      color: var(--netflix-red);
+      border: 1px solid var(--netflix-red);
+      border-radius: 6px;
+      height: 42px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-danger:hover {
+      background-color: var(--netflix-red);
+      color: #fff;
+    }
+
+    /* HISTÓRICO E EVOLUÇÃO */
+    .history-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: var(--netflix-card-bg);
+      border: 1px solid var(--netflix-border);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: rgba(229, 9, 20, 0.15);
+      color: var(--netflix-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .stat-val {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.8rem;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .stat-lbl {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .history-card {
+      background: var(--netflix-card-bg);
+      border: 1px solid var(--netflix-border);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .evolution-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .evolution-tag.up {
+      background: rgba(46, 125, 50, 0.2);
+      color: #4caf50;
+    }
+
+    .evolution-tag.same {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ccc;
+    }
+
+    /* SELEÇÃO DE PERFIL ESTILO NETFLIX */
+    .profile-select-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--netflix-black);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .profile-select-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 3rem;
+      letter-spacing: 2px;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .profiles-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+      max-width: 900px;
+    }
+
+    .profile-card-wrapper {
+      position: relative;
+    }
+
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+    }
+
+    .profile-card:hover {
+      transform: scale(1.06);
+      color: #fff;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      font-weight: 800;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+      border: 3px solid transparent;
+      transition: border-color 0.2s;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-card:hover .profile-avatar {
+      border-color: #ffffff;
+    }
+
+    .profile-card-edit-overlay {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .profile-card-edit-overlay:hover {
+      background: var(--netflix-red);
+      transform: scale(1.1);
+    }
+
+    .add-profile-avatar {
+      border: 2px dashed #555;
+      background: transparent;
+      color: #555;
+    }
+
+    .profile-card:hover .add-profile-avatar {
+      border-color: #fff;
+      color: #fff;
+    }
+
+    /* MODAIS */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: var(--netflix-card-bg);
+      border: 1px solid var(--netflix-border);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      padding: 30px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.7);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: #444;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #222;
+      border: 1px solid var(--netflix-red);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease;
+      z-index: 3000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TELA DE SELEÇÃO DE PERFIL (NETFLIX STYLE) -->
+  <div id="profileSelectScreen" class="profile-select-overlay" style="display: none;">
+    <div class="profile-select-container">
+      <h1 class="profile-select-title">Quem está treinando?</h1>
+      <div class="profiles-grid" id="profilesGrid">
+        <!-- Perfis renderizados dinamicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER DA APLICAÇÃO -->
+  <header>
+    <div class="brand">
+      <span class="brand-title">NETFLIX FIT</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="app.editProfile(app.activeProfileId)" title="Editar Perfil Atual">
+        <i class="fa-solid fa-user-pen"></i> Editar Perfil
+      </button>
+      <div class="user-profile-badge" onclick="app.openProfileSelector()" title="Clique para trocar de Atleta">
+        <div class="avatar-small" id="userAvatarHeader">A</div>
+        <span id="userNameHeader" style="font-weight: 600; font-size: 0.95rem;">Atleta</span>
+        <i class="fa-solid fa-caret-down" style="color: var(--text-muted); font-size: 0.8rem;"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVEGAÇÃO ENTRE ABAS -->
+  <nav class="tabs-nav">
+    <button class="tab-button active" onclick="app.switchTab('tabHome')">
+      <i class="fa-solid fa-house"></i> Catálogo
+    </button>
+    <button class="tab-button" onclick="app.switchTab('tabActiveWorkout')">
+      <i class="fa-solid fa-play"></i> Treino Ativo
+    </button>
+    <button class="tab-button" onclick="app.switchTab('tabCreateWorkout')">
+      <i class="fa-solid fa-plus-circle"></i> Novo Treino
+    </button>
+    <button class="tab-button" onclick="app.switchTab('tabHistory')">
+      <i class="fa-solid fa-chart-line"></i> Histórico & Evolução
+    </button>
+  </nav>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="main-container">
+
+    <!-- ABA 1: CATÁLOGO DE TREINOS -->
+    <section id="tabHome" class="tab-content active">
+      <div class="section-title">
+        <i class="fa-solid fa-fire" style="color: var(--netflix-red);"></i> Seus Treinos Salvos
+      </div>
+      <div class="workout-grid" id="workoutGrid">
+        <!-- Cards de Treino renderizados dinamicamente -->
+      </div>
+    </section>
+
+    <!-- ABA 2: TREINO ATIVO E EXECUÇÃO -->
+    <section id="tabActiveWorkout" class="tab-content">
+      <div id="noActiveWorkout" class="empty-state">
+        <i class="fa-solid fa-dumbbell"></i>
+        <h3>Nenhum treino em andamento</h3>
+        <p>Acesse o catálogo e escolha um treino para começar sua sessão com cronômetro automático.</p>
+        <button class="btn-netflix" style="margin-top: 15px;" onclick="app.switchTab('tabHome')">IR PARA O CATÁLOGO</button>
+      </div>
+
+      <div id="activeWorkoutContainer" style="display: none;">
+        <div class="active-workout-header">
+          <div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Treino em Andamento</div>
+            <h2 id="activeWorkoutTitle" style="font-size: 1.6rem; color: var(--text-white);">Treino A</h2>
+            <div id="activeWorkoutProgress" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">0 de 0 concluídos</div>
+          </div>
+          <div style="text-align: right; display: flex; align-items: center; gap: 20px;">
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">TEMPO TOTAL</div>
+              <div class="main-timer" id="workoutMainTimer">00:00:00</div>
+            </div>
+            <button class="btn-secondary" onclick="app.requestCancelSession()"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+          </div>
+        </div>
+
+        <div class="exercise-list" id="activeExerciseList">
+          <!-- Exercícios e caixas de verificação dinâmicos -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: CRIAR / EDITAR PERFIL DE TREINO -->
+    <section id="tabCreateWorkout" class="tab-content">
+      <div class="workout-form">
+        <h2 class="section-title" id="formTitle">Criar Novo Perfil de Treino</h2>
+        <form id="workoutForm" onsubmit="app.saveWorkout(event)">
+          <input type="hidden" id="workoutId">
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+              <label for="workoutName">Nome do Treino (Ex: Treino A - Peito)</label>
+              <input type="text" id="workoutName" class="form-control" placeholder="Ex: Treino A - Peito e Tríceps" required>
+            </div>
+            <div class="form-group">
+              <label for="workoutImage">URL da Imagem da Capa (Opcional)</label>
+              <input type="url" id="workoutImage" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+            </div>
+          </div>
+
+          <div style="margin-top: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1.1rem;">Movimentos e Exercícios</h3>
+            <button type="button" class="btn-secondary" onclick="app.addExerciseRow()"><i class="fa-solid fa-plus"></i> Adicionar Movimento</button>
+          </div>
+
+          <div id="exerciseInputsContainer">
+            <!-- Linhas de Exercícios inseridas via JS -->
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 25px;">
+            <button type="submit" class="btn-netflix" style="flex: 1;"><i class="fa-solid fa-floppy-disk"></i> SALVAR TREINO</button>
+            <button type="button" class="btn-secondary" onclick="app.resetForm(); app.switchTab('tabHome');">CANCELAR</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ABA 4: HISTÓRICO DE SESSÕES FINALIZADAS E EVOLUÇÃO -->
+    <section id="tabHistory" class="tab-content">
+      <div class="section-header" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 20px;">
+        <div>
+          <h2 class="section-title" style="margin-bottom: 0;">Histórico e Evolução de Cargas</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Acompanhe o tempo investido e a progressão do peso praticado em cada exercício.</p>
+        </div>
+        <div>
+          <select id="historyFilter" class="form-control" style="width: auto; min-width: 200px;" onchange="app.renderHistory()">
+            <option value="ALL">Todos os Treinos</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Métricas Principais -->
+      <div class="history-stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
+          <div>
+            <div class="stat-val" id="statTotalWorkouts">0</div>
+            <div class="stat-lbl">Treinos Concluídos</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-stopwatch"></i></div>
+          <div>
+            <div class="stat-val" id="statTotalTime">00h 00m</div>
+            <div class="stat-lbl">Tempo de Treino Total</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-dumbbell"></i></div>
+          <div>
+            <div class="stat-val" id="statExercisesDone">0</div>
+            <div class="stat-lbl">Movimentos Executados</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="history-list" id="historyList">
+        <!-- Histórico inserido dinamicamente com snapshot e evolução -->
+      </div>
+    </section>
+  </main>
+
+  <!-- RODAPÉ DA APLICAÇÃO -->
+  <footer style="text-align: center; padding: 20px 15px; margin-top: 40px; border-top: 1px solid var(--netflix-border); color: var(--text-muted); font-size: 0.85rem; background: var(--netflix-dark);">
+    <p>&copy; CRIADO E FEITO POR DAVID E. SOUZA - TODOS OS DIREITOS RESERVADOS (2026)</p>
+  </footer>
+
+  <!-- BANNER FLUTUANTE DE CRONÔMETRO DE DESCANSO -->
+  <div id="restBanner" class="rest-banner">
+    <div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Descanso Recomendado</div>
+      <div style="font-size: 0.9rem; color: #fff;">Respire fundos antes da próxima série!</div>
+    </div>
+    <div class="rest-timer-val" id="restTimerDisplay">00s</div>
+  </div>
+
+  <!-- MODAL PARABÉNS PELO TREINO FINALIZADO -->
+  <div class="modal-overlay" id="finishModal">
+    <div class="modal-content" style="text-align: center;">
+      <i class="fa-solid fa-circle-check" style="font-size: 4rem; color: #4caf50; margin-bottom: 15px;"></i>
+      <h2 style="font-family: 'Bebas Neue', cursive; font-size: 2.5rem; color: var(--text-white);">TREINO FINALIZADO!</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">Parabéns! Todas as séries e movimentos foram marcados.</p>
+      
+      <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+        <div style="font-size: 0.8rem; color: var(--text-muted);">TEMPO TOTAL DE EXECUÇÃO</div>
+        <div style="font-family: 'Bebas Neue', cursive; font-size: 2.5rem; color: var(--netflix-red);" id="finalDurationText">00:00:00</div>
+      </div>
+
+      <button class="btn-netflix" style="width: 100%; padding: 12px;" onclick="app.closeFinishModal()">OK, VOLTAR AO INÍCIO</button>
+    </div>
+  </div>
+
+  <!-- MODAL NOVO / EDITAR PERFIL DE ATLETA -->
+  <div class="modal-overlay" id="addProfileModal">
+    <div class="modal-content" style="text-align: left;">
+      <h3 style="font-size: 1.5rem; margin-bottom: 15px; color: var(--text-white);" id="profileModalTitle">Criar Perfil de Atleta</h3>
+      <input type="hidden" id="editProfileId">
+      
+      <div class="form-group">
+        <label for="newProfileName">Nome do Atleta</label>
+        <input type="text" id="newProfileName" class="form-control" placeholder="Ex: Rodrigo">
+      </div>
+
+      <div class="form-group">
+        <label for="newProfilePhoto">Foto de Perfil (Link / URL da Imagem - Opcional)</label>
+        <input type="url" id="newProfilePhoto" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+        <small style="color: var(--text-muted); font-size: 0.75rem;">Deixe em branco para utilizar o avatar colorido com a inicial do seu nome.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Cor do Perfil</label>
+        <div style="display: flex; gap: 10px; margin-top: 8px;" id="colorPickerContainer">
+          <div class="color-opt" data-color="#E50914" style="background:#E50914; width:35px; height:35px; border-radius:6px; cursor:pointer; border:2px solid #fff;"></div>
+          <div class="color-opt" data-color="#3498db" style="background:#3498db; width:35px; height:35px; border-radius:6px; cursor:pointer; border:2px solid transparent;"></div>
+          <div class="color-opt" data-color="#2ecc71" style="background:#2ecc71; width:35px; height:35px; border-radius:6px; cursor:pointer; border:2px solid transparent;"></div>
+          <div class="color-opt" data-color="#9b59b6" style="background:#9b59b6; width:35px; height:35px; border-radius:6px; cursor:pointer; border:2px solid transparent;"></div>
+          <div class="color-opt" data-color="#f39c12" style="background:#f39c12; width:35px; height:35px; border-radius:6px; cursor:pointer; border:2px solid transparent;"></div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 25px;">
+        <button class="btn-netflix" style="flex:1;" onclick="app.saveProfile()">SALVAR ATLETA</button>
+        <button class="btn-secondary" onclick="app.closeAddProfileModal()">CANCELAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMAÇÃO GERAL -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-content" style="text-align: center;">
+      <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; color: var(--netflix-red); margin-bottom: 15px;"></i>
+      <h3 style="font-size: 1.3rem; margin-bottom: 10px;" id="confirmTitle">Confirmar Ação</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;" id="confirmMessage">Tem certeza?</p>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-netflix" style="flex: 1;" id="confirmYesBtn">SIM</button>
+        <button class="btn-secondary" style="flex: 1;" onclick="app.closeConfirmModal()">CANCELAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICAÇÃO TOAST -->
+  <div class="toast" id="toastNotification">
+    <span id="toastMessage">Mensagem de aviso</span>
+  </div>
+
+  <script>
+    class NetflixFitApp {
+      constructor() {
+        this.selectedColor = '#E50914';
+        this.activeProfileId = localStorage.getItem('netflix_active_profile_id') || null;
+        
+        // Carrega Perfis do LocalStorage ou Inicializa com Padrões
+        this.profiles = JSON.parse(localStorage.getItem('netflix_fit_profiles_v2')) || this.getDefaultProfiles();
+        
+        this.timerInterval = null;
+        this.restInterval = null;
+
+        this.init();
+      }
+
+      init() {
+        this.setupColorPicker();
+
+        // Se o perfil salvo não existir mais, limpa
+        if (this.activeProfileId && !this.getProfile(this.activeProfileId)) {
+          this.activeProfileId = null;
+        }
+
+        if (!this.activeProfileId) {
+          this.openProfileSelector();
+        } else {
+          this.loadProfile(this.activeProfileId);
+        }
+      }
+
+      getDefaultProfiles() {
+        return [
+          {
+            id: 'prof_default_1',
+            name: 'Atleta Principal',
+            color: '#E50914',
+            photoUrl: '',
+            workouts: [
+              {
+                id: 'w_a',
+                title: 'Treino A - Peito e Tríceps',
+                image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=800&auto=format&fit=crop',
+                exercises: [
+                  { name: 'Supino Reto com Barra', reps: '4x10', weight: '30kg', rest: 60 },
+                  { name: 'Supino Inclinado c/ Halteres', reps: '3x12', weight: '22kg', rest: 45 },
+                  { name: 'Crossover na Polia', reps: '3x15', weight: '15kg', rest: 45 },
+                  { name: 'Tríceps Corda no Pulley', reps: '4x12', weight: '25kg', rest: 45 }
+                ]
+              },
+              {
+                id: 'w_b',
+                title: 'Treino B - Costas e Bíceps',
+                image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop',
+                exercises: [
+                  { name: 'Puxada Frontal Aberta', reps: '4x10', weight: '45kg', rest: 60 },
+                  { name: 'Remada Curvada com Barra', reps: '3x10', weight: '20kg', rest: 60 },
+                  { name: 'Remada Baixa Triângulo', reps: '3x12', weight: '40kg', rest: 45 },
+                  { name: 'Rosca Direta com Barra W', reps: '4x10', weight: '12kg', rest: 45 }
+                ]
+              },
+              {
+                id: 'w_c',
+                title: 'Treino C - Pernas e Ombros',
+                image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=800&auto=format&fit=crop',
+                exercises: [
+                  { name: 'Agachamento Livre', reps: '4x10', weight: '40kg', rest: 90 },
+                  { name: 'Leg Press 45°', reps: '4x12', weight: '120kg', rest: 60 },
+                  { name: 'Cadeira Extensora', reps: '3x15', weight: '35kg', rest: 45 },
+                  { name: 'Desenvolvimento c/ Halteres', reps: '4x10', weight: '16kg', rest: 60 },
+                  { name: 'Elevação Lateral', reps: '4x12', weight: '10kg', rest: 45 }
+                ]
+              },
+              {
+                id: 'w_d',
+                title: 'Treino D - Core e Aeróbico',
+                image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=800&auto=format&fit=crop',
+                exercises: [
+                  { name: 'Abdominal Supra na Prancha', reps: '4x20', weight: 'Corporal', rest: 30 },
+                  { name: 'Abdominal Infra (Elevação de Pernas)', reps: '4x15', weight: 'Corporal', rest: 30 },
+                  { name: 'Prancha Isométrica', reps: '3x60s', weight: 'Corporal', rest: 45 },
+                  { name: 'Corrida na Esteira / Bike', reps: '1x20min', weight: 'Moderado', rest: 60 }
+                ]
+              }
+            ],
+            history: [],
+            activeSession: null
+          }
+        ];
+      }
+
+      saveAllProfiles() {
+        localStorage.setItem('netflix_fit_profiles_v2', JSON.stringify(this.profiles));
+      }
+
+      getProfile(id) {
+        return this.profiles.find(p => p.id === id);
+      }
+
+      getCurrentProfile() {
+        return this.getProfile(this.activeProfileId);
+      }
+
+      openProfileSelector() {
+        const selectScreen = document.getElementById('profileSelectScreen');
+        if (selectScreen) {
+          selectScreen.style.display = 'flex';
+        }
+        this.renderProfilesGrid();
+      }
+
+      renderProfilesGrid() {
+        const grid = document.getElementById('profilesGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        this.profiles.forEach(p => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'profile-card-wrapper';
+
+          const card = document.createElement('div');
+          card.className = 'profile-card';
+          card.onclick = () => this.selectProfile(p.id);
+
+          const initial = p.name ? p.name.charAt(0).toUpperCase() : 'A';
+
+          const avatarContent = p.photoUrl 
+            ? `<img src="${p.photoUrl}" alt="${p.name}" onerror="this.outerHTML='${initial}'">`
+            : initial;
+
+          card.innerHTML = `
+            <div class="profile-avatar" style="background: ${p.color || '#E50914'};">${avatarContent}</div>
+            <div class="profile-name" style="font-weight:600; text-align:center;">${p.name}</div>
+          `;
+
+          // Botão de editar perfil direto do card
+          const editBtn = document.createElement('div');
+          editBtn.className = 'profile-card-edit-overlay';
+          editBtn.title = 'Editar este Perfil';
+          editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+          editBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.editProfile(p.id);
+          };
+
+          wrapper.appendChild(card);
+          wrapper.appendChild(editBtn);
+          grid.appendChild(wrapper);
+        });
+
+        // Botão de Adicionar Novo Perfil
+        const addCard = document.createElement('div');
+        addCard.className = 'profile-card';
+        addCard.onclick = () => this.showAddProfileModal();
+        addCard.innerHTML = `
+          <div class="profile-avatar add-profile-avatar"><i class="fa-solid fa-plus"></i></div>
+          <div class="profile-name" style="font-weight:600;">Novo Atleta</div>
+        `;
+        grid.appendChild(addCard);
+      }
+
+      selectProfile(profileId) {
+        this.activeProfileId = profileId;
+        localStorage.setItem('netflix_active_profile_id', profileId);
+        
+        const selectScreen = document.getElementById('profileSelectScreen');
+        if (selectScreen) {
+          selectScreen.style.display = 'none';
+        }
+
+        this.loadProfile(profileId);
+        const p = this.getCurrentProfile();
+        if (p) this.showToast(`Bem-vindo(a), ${p.name}!`);
+      }
+
+      loadProfile(profileId) {
+        const profile = this.getProfile(profileId);
+        if (!profile) return;
+
+        // Atualizar Header
+        const nameHeader = document.getElementById('userNameHeader');
+        if (nameHeader) nameHeader.textContent = profile.name;
+
+        const avatarHeader = document.getElementById('userAvatarHeader');
+        if (avatarHeader) {
+          const initial = profile.name ? profile.name.charAt(0).toUpperCase() : 'A';
+          if (profile.photoUrl) {
+            avatarHeader.innerHTML = `<img src="${profile.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;" onerror="this.outerHTML='${initial}'">`;
+          } else {
+            avatarHeader.textContent = initial;
+          }
+          avatarHeader.style.background = profile.color || '#E50914';
+        }
+
+        this.renderWorkoutGrid();
+        this.renderHistory();
+
+        // Se houver sessão ativa gravada do atleta, retoma o cronômetro
+        if (profile.activeSession) {
+          this.startMainTimer();
+          this.renderActiveWorkout();
+        } else {
+          this.renderActiveWorkout();
+        }
+      }
+
+      renderWorkoutGrid() {
+        const profile = this.getCurrentProfile();
+        const grid = document.getElementById('workoutGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        if (!profile || !profile.workouts || profile.workouts.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <i class="fa-solid fa-dumbbell"></i>
+              <h3>Nenhum treino no perfil</h3>
+              <p>Vá até a aba "Novo Treino" para cadastrar treinos para este atleta.</p>
+            </div>`;
+          return;
+        }
+
+        profile.workouts.forEach(w => {
+          const card = document.createElement('div');
+          card.className = 'workout-card';
+          card.innerHTML = `
+            <div class="workout-badge">${w.title.split('-')[0] || 'TREINO'}</div>
+            <img src="${w.image || ''}" class="workout-card-img" alt="${w.title}" onerror="this.src='https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=800&auto=format&fit=crop'">
+            <div class="workout-card-body">
+              <div>
+                <div class="workout-card-title">${w.title}</div>
+                <div class="workout-info">
+                  <span><i class="fa-solid fa-list-check"></i> ${w.exercises ? w.exercises.length : 0} movimentos</span>
+                </div>
+              </div>
+              <div class="workout-actions">
+                <button class="btn-netflix btn-play" onclick="app.startWorkoutSession('${w.id}')">
+                  <i class="fa-solid fa-play"></i> INICIAR
+                </button>
+                <button class="btn-icon" onclick="app.editWorkout('${w.id}')" title="Editar Treino">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="btn-icon" onclick="app.requestDeleteWorkout('${w.id}')" title="Excluir Treino">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      startWorkoutSession(workoutId) {
+        const profile = this.getCurrentProfile();
+        if (!profile) return;
+        const workout = profile.workouts.find(w => w.id === workoutId);
+        if (!workout) return;
+
+        if (profile.activeSession) {
+          this.showConfirmModal(
+            'Substituir Treino em Andamento?',
+            'Você já possui um treino sendo contado. Deseja reiniciar com este novo perfil de treino?',
+            () => {
+              this.initNewSession(workout);
+            }
+          );
+        } else {
+          this.initNewSession(workout);
+        }
+      }
+
+      initNewSession(workout) {
+        const profile = this.getCurrentProfile();
+        if (!profile) return;
+
+        profile.activeSession = {
+          workoutId: workout.id,
+          title: workout.title,
+          elapsedSeconds: 0,
+          completedIndices: [],
+          exercises: JSON.parse(JSON.stringify(workout.exercises))
+        };
+
+        this.saveAllProfiles();
+        this.startMainTimer();
+        this.renderActiveWorkout();
+        this.switchTab('tabActiveWorkout');
+        this.showToast('Treino Iniciado! O cronômetro está rodando.');
+      }
+
+      startMainTimer() {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+
+        this.timerInterval = setInterval(() => {
+          const profile = this.getCurrentProfile();
+          if (!profile || !profile.activeSession) return;
+
+          profile.activeSession.elapsedSeconds++;
+          this.saveAllProfiles();
+          this.updateMainTimerUI();
+        }, 1000);
+      }
+
+      updateMainTimerUI() {
+        const profile = this.getCurrentProfile();
+        if (!profile || !profile.activeSession) return;
+
+        const total = profile.activeSession.elapsedSeconds;
+        const hrs = String(Math.floor(total / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
+        const secs = String(total % 60).padStart(2, '0');
+        
+        const el = document.getElementById('workoutMainTimer');
+        if (el) el.textContent = `${hrs}:${mins}:${secs}`;
+      }
+
+      renderActiveWorkout() {
+        const profile = this.getCurrentProfile();
+        const noWorkout = document.getElementById('noActiveWorkout');
+        const container = document.getElementById('activeWorkoutContainer');
+
+        if (!noWorkout || !container) return;
+
+        if (!profile || !profile.activeSession) {
+          noWorkout.style.display = 'block';
+          container.style.display = 'none';
+          return;
+        }
+
+        noWorkout.style.display = 'none';
+        container.style.display = 'block';
+
+        const titleEl = document.getElementById('activeWorkoutTitle');
+        if (titleEl) titleEl.textContent = profile.activeSession.title;
+        
+        const totalEx = profile.activeSession.exercises.length;
+        const completedEx = profile.activeSession.completedIndices.length;
+        
+        const progEl = document.getElementById('activeWorkoutProgress');
+        if (progEl) progEl.textContent = `${completedEx} de ${totalEx} exercícios concluídos`;
+
+        this.updateMainTimerUI();
+
+        const list = document.getElementById('activeExerciseList');
+        if (!list) return;
+        list.innerHTML = '';
+
+        profile.activeSession.exercises.forEach((ex, idx) => {
+          const isDone = profile.activeSession.completedIndices.includes(idx);
+          const item = document.createElement('div');
+          item.className = `exercise-item ${isDone ? 'completed' : ''}`;
+
+          item.innerHTML = `
+            <div class="exercise-left" onclick="app.toggleExerciseCheck(${idx})">
+              <div class="checkbox-custom">
+                <i class="fa-solid fa-check" style="${isDone ? '' : 'display:none;'}"></i>
+              </div>
+              <div class="exercise-details">
+                <div class="exercise-name">${ex.name}</div>
+                <div class="exercise-tags">
+                  <span class="tag"><i class="fa-solid fa-repeat"></i> ${ex.reps}</span>
+                  <span class="tag"><i class="fa-solid fa-weight-hanging"></i> ${ex.weight}</span>
+                  <span class="tag"><i class="fa-solid fa-stopwatch"></i> Descanso: ${ex.rest}s</span>
+                </div>
+              </div>
+            </div>
+          `;
+          list.appendChild(item);
+        });
+      }
+
+      toggleExerciseCheck(index) {
+        const profile = this.getCurrentProfile();
+        if (!profile || !profile.activeSession) return;
+
+        const pos = profile.activeSession.completedIndices.indexOf(index);
+        const isChecking = (pos === -1);
+
+        if (isChecking) {
+          profile.activeSession.completedIndices.push(index);
+          const exercise = profile.activeSession.exercises[index];
+          this.triggerRestTimer(exercise.rest || 45);
+        } else {
+          profile.activeSession.completedIndices.splice(pos, 1);
+        }
+
+        this.saveAllProfiles();
+        this.renderActiveWorkout();
+
+        // REGRA MANDATÓRIA: FINALIZA QUANDO TODOS OS CHECKS FOREM MARCADOS
+        if (profile.activeSession.completedIndices.length === profile.activeSession.exercises.length) {
+          this.finishWorkoutSession();
+        }
+      }
+
+      triggerRestTimer(seconds) {
+        const banner = document.getElementById('restBanner');
+        const display = document.getElementById('restTimerDisplay');
+
+        if (!banner || !display) return;
+
+        if (this.restInterval) clearInterval(this.restInterval);
+
+        let left = seconds;
+        banner.style.display = 'flex';
+        display.textContent = `${left}s`;
+
+        this.restInterval = setInterval(() => {
+          left--;
+          display.textContent = `${left}s`;
+          if (left <= 0) {
+            clearInterval(this.restInterval);
+            banner.style.display = 'none';
+          }
+        }, 1000);
+      }
+
+      finishWorkoutSession() {
+        clearInterval(this.timerInterval);
+        clearInterval(this.restInterval);
+
+        const banner = document.getElementById('restBanner');
+        if (banner) banner.style.display = 'none';
+
+        const finalTime = document.getElementById('workoutMainTimer') ? document.getElementById('workoutMainTimer').textContent : '00:00:00';
+        const durationText = document.getElementById('finalDurationText');
+        if (durationText) durationText.textContent = finalTime;
+
+        const profile = this.getCurrentProfile();
+        if (!profile) return;
+
+        // Grava no Histórico com Snapshot de Cargas para Comparação de Evolução
+        const historyRecord = {
+          id: 'hist_' + Date.now(),
+          workoutId: profile.activeSession.workoutId,
+          title: profile.activeSession.title,
+          duration: finalTime,
+          durationSecs: profile.activeSession.elapsedSeconds,
+          date: new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
+          exercisesSnapshot: JSON.parse(JSON.stringify(profile.activeSession.exercises))
+        };
+
+        if (!profile.history) profile.history = [];
+        profile.history.unshift(historyRecord);
+        profile.activeSession = null; // Limpa sessão do atleta
+
+        this.saveAllProfiles();
+        this.renderHistory();
+
+        // Abre modal de comemoração
+        const finishModal = document.getElementById('finishModal');
+        if (finishModal) finishModal.style.display = 'flex';
+        this.renderActiveWorkout();
+      }
+
+      requestCancelSession() {
+        this.showConfirmModal(
+          'Cancelar Treino',
+          'Deseja realmente encerrar a contagem deste treino sem salvar no histórico?',
+          () => {
+            clearInterval(this.timerInterval);
+            clearInterval(this.restInterval);
+            const profile = this.getCurrentProfile();
+            if (profile) {
+              profile.activeSession = null;
+              this.saveAllProfiles();
+            }
+            this.renderActiveWorkout();
+            this.showToast('Treino cancelado.');
+          }
+        );
+      }
+
+      closeFinishModal() {
+        const modal = document.getElementById('finishModal');
+        if (modal) modal.style.display = 'none';
+        this.switchTab('tabHome');
+      }
+
+      addExerciseRow(data = {}) {
+        const container = document.getElementById('exerciseInputsContainer');
+        if (!container) return;
+
+        const row = document.createElement('div');
+        row.className = 'dynamic-exercise-row';
+
+        row.innerHTML = `
+          <input type="text" class="form-control full-width ex-name" placeholder="Nome do Movimento" value="${data.name || ''}" required>
+          <input type="text" class="form-control ex-reps" placeholder="Séries x Reps" value="${data.reps || ''}" required>
+          <input type="text" class="form-control ex-weight" placeholder="Carga (kg)" value="${data.weight || ''}" required>
+          <input type="number" class="form-control ex-rest" placeholder="Descanso (s)" value="${data.rest || 45}" required>
+          <button type="button" class="btn-danger" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+        `;
+        container.appendChild(row);
+      }
+
+      resetForm() {
+        const form = document.getElementById('workoutForm');
+        if (form) form.reset();
+
+        const idInput = document.getElementById('workoutId');
+        if (idInput) idInput.value = '';
+
+        const title = document.getElementById('formTitle');
+        if (title) title.textContent = 'Criar Novo Perfil de Treino';
+
+        const container = document.getElementById('exerciseInputsContainer');
+        if (container) {
+          container.innerHTML = '';
+          this.addExerciseRow();
+        }
+      }
+
+      saveWorkout(event) {
+        event.preventDefault();
+
+        const profile = this.getCurrentProfile();
+        if (!profile) return;
+
+        const id = document.getElementById('workoutId').value || ('w_' + Date.now());
+        const title = document.getElementById('workoutName').value.trim();
+        const image = document.getElementById('workoutImage').value.trim();
+
+        const rows = document.querySelectorAll('.dynamic-exercise-row');
+        const exercises = [];
+
+        rows.forEach(r => {
+          const name = r.querySelector('.ex-name').value.trim();
+          if (name) {
+            exercises.push({
+              name,
+              reps: r.querySelector('.ex-reps').value.trim() || '3x10',
+              weight: r.querySelector('.ex-weight').value.trim() || '0kg',
+              rest: parseInt(r.querySelector('.ex-rest').value) || 45
+            });
+          }
+        });
+
+        if (exercises.length === 0) {
+          this.showToast('Adicione pelo menos um movimento ao treino.');
+          return;
+        }
+
+        const existingIndex = profile.workouts.findIndex(w => w.id === id);
+        const workoutData = { id, title, image, exercises };
+
+        if (existingIndex >= 0) {
+          profile.workouts[existingIndex] = workoutData;
+        } else {
+          profile.workouts.push(workoutData);
+        }
+
+        this.saveAllProfiles();
+        this.renderWorkoutGrid();
+        this.resetForm();
+        this.switchTab('tabHome');
+        this.showToast('Perfil de treino salvo com sucesso!');
+      }
+
+      editWorkout(id) {
+        const profile = this.getCurrentProfile();
+        if (!profile) return;
+        const w = profile.workouts.find(item => item.id === id);
+        if (!w) return;
+
+        document.getElementById('workoutId').value = w.id;
+        document.getElementById('workoutName').value = w.title;
+        document.getElementById('workoutImage').value = w.image || '';
+        document.getElementById('formTitle').textContent = `Editar Treino (${w.title})`;
+
+        const container = document.getElementById('exerciseInputsContainer');
+        if (container) {
+          container.innerHTML = '';
+          if (w.exercises && w.exercises.length > 0) {
+            w.exercises.forEach(ex => this.addExerciseRow(ex));
+          } else {
+            this.addExerciseRow();
+          }
+        }
+
+        this.switchTab('tabCreateWorkout');
+      }
+
+      requestDeleteWorkout(id) {
+        this.showConfirmModal(
+          'Excluir Treino',
+          'Tem certeza que deseja excluir este perfil de treino do seu catálogo?',
+          () => {
+            const profile = this.getCurrentProfile();
+            if (profile) {
+              profile.workouts = profile.workouts.filter(w => w.id !== id);
+              this.saveAllProfiles();
+              this.renderWorkoutGrid();
+              this.showToast('Treino excluído.');
+            }
+          }
+        );
+      }
+
+      renderHistory() {
+        const profile = this.getCurrentProfile();
+        const list = document.getElementById('historyList');
+        const filterSelect = document.getElementById('historyFilter');
+        if (!list || !filterSelect) return;
+
+        list.innerHTML = '';
+
+        if (!profile) return;
+
+        // Atualizar Opções do Filtro
+        const currentFilterVal = filterSelect.value || 'ALL';
+        filterSelect.innerHTML = '<option value="ALL">Todos os Treinos</option>';
+        if (profile.workouts) {
+          profile.workouts.forEach(w => {
+            const opt = document.createElement('option');
+            opt.value = w.id;
+            opt.textContent = w.title;
+            filterSelect.appendChild(opt);
+          });
+        }
+        filterSelect.value = currentFilterVal;
+
+        const historyData = profile.history || [];
+
+        // Calcular Métricas
+        const totalWorkouts = historyData.length;
+        let totalSecs = 0;
+        let totalExercises = 0;
+
+        historyData.forEach(h => {
+          totalSecs += (h.durationSecs || 0);
+          if (h.exercisesSnapshot) {
+            totalExercises += h.exercisesSnapshot.length;
+          }
+        });
+
+        const hrs = Math.floor(totalSecs / 3600);
+        const mins = Math.floor((totalSecs % 3600) / 60);
+
+        const statW = document.getElementById('statTotalWorkouts');
+        const statT = document.getElementById('statTotalTime');
+        const statE = document.getElementById('statExercisesDone');
+
+        if (statW) statW.textContent = totalWorkouts;
+        if (statT) statT.textContent = `${hrs}h ${mins}m`;
+        if (statE) statE.textContent = totalExercises;
+
+        // Filtrar Lista de Histórico
+        const filteredHistory = (currentFilterVal === 'ALL')
+          ? historyData
+          : historyData.filter(h => h.workoutId === currentFilterVal);
+
+        if (filteredHistory.length === 0) {
+          list.innerHTML = `
+            <div class="empty-state">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <h3>Nenhum registro encontrado</h3>
+              <p>Os treinos concluídos pelo atleta ${profile.name} aparecerão aqui com comparativo de evolução.</p>
+            </div>`;
+          return;
+        }
+
+        filteredHistory.forEach((h, idx) => {
+          const card = document.createElement('div');
+          card.className = 'history-card';
+          card.style.display = 'flex';
+          card.style.flexDirection = 'column';
+          card.style.gap = '12px';
+
+          // Procura a sessão anterior do mesmo treino para comparar cargas
+          const prevSession = historyData.slice(idx + 1).find(prev => prev.workoutId === h.workoutId || prev.title === h.title);
+
+          let snapshotHTML = '';
+          if (h.exercisesSnapshot && h.exercisesSnapshot.length > 0) {
+            snapshotHTML = '<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-top: 10px;">';
+            
+            h.exercisesSnapshot.forEach(ex => {
+              let comparisonTag = '';
+              if (prevSession && prevSession.exercisesSnapshot) {
+                const prevEx = prevSession.exercisesSnapshot.find(pEx => pEx.name === ex.name);
+                if (prevEx) {
+                  const currentW = parseFloat(ex.weight) || 0;
+                  const prevW = parseFloat(prevEx.weight) || 0;
+                  if (currentW > prevW) {
+                    comparisonTag = `<span class="evolution-tag up"><i class="fa-solid fa-arrow-trend-up"></i> +${(currentW - prevW)}kg</span>`;
+                  } else if (currentW === prevW && currentW > 0) {
+                    comparisonTag = `<span class="evolution-tag same"><i class="fa-solid fa-equals"></i> Mantido</span>`;
+                  }
+                }
+              }
+
+              snapshotHTML += `
+                <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; font-size: 0.82rem;">
+                  <div style="font-weight: 600; color: #fff;">${ex.name}</div>
+                  <div style="color: var(--text-muted); display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                    <span>${ex.reps} | ${ex.weight}</span>
+                    ${comparisonTag}
+                  </div>
+                </div>
+              `;
+            });
+            snapshotHTML += '</div>';
+          }
+
+          card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-weight: 700; font-size: 1.15rem; color: #fff;">${h.title}</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-regular fa-calendar"></i> ${h.date}</div>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">DURAÇÃO</span>
+                <span style="font-family: 'Bebas Neue', cursive; font-size: 1.8rem; color: var(--netflix-red);">${h.duration}</span>
+              </div>
+            </div>
+            ${snapshotHTML}
+          `;
+          list.appendChild(card);
+        });
+      }
+
+      switchTab(tabId) {
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        const targetBtn = Array.from(document.querySelectorAll('.tab-button')).find(
+          btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)
+        );
+        if (targetBtn) targetBtn.classList.add('active');
+
+        const targetContent = document.getElementById(tabId);
+        if (targetContent) targetContent.classList.add('active');
+
+        if (tabId === 'tabCreateWorkout' && document.getElementById('workoutId') && !document.getElementById('workoutId').value) {
+          this.resetForm();
+        }
+      }
+
+      // MODAL E GERENCIAMENTO DE PERFIS
+      setupColorPicker() {
+        const opts = document.querySelectorAll('#colorPickerContainer .color-opt');
+        opts.forEach(opt => {
+          opt.onclick = () => {
+            opts.forEach(o => o.style.borderColor = 'transparent');
+            opt.style.borderColor = '#fff';
+            this.selectedColor = opt.getAttribute('data-color');
+          };
+        });
+      }
+
+      showAddProfileModal() {
+        document.getElementById('editProfileId').value = '';
+        document.getElementById('newProfileName').value = '';
+        document.getElementById('newProfilePhoto').value = '';
+        document.getElementById('profileModalTitle').textContent = 'Criar Perfil de Atleta';
+        document.getElementById('addProfileModal').style.display = 'flex';
+      }
+
+      editProfile(profileId) {
+        const p = this.getProfile(profileId);
+        if (!p) return;
+
+        document.getElementById('editProfileId').value = p.id;
+        document.getElementById('newProfileName').value = p.name;
+        document.getElementById('newProfilePhoto').value = p.photoUrl || '';
+        document.getElementById('profileModalTitle').textContent = `Editar Perfil (${p.name})`;
+        this.selectedColor = p.color || '#E50914';
+
+        const opts = document.querySelectorAll('#colorPickerContainer .color-opt');
+        opts.forEach(opt => {
+          if (opt.getAttribute('data-color') === this.selectedColor) {
+            opt.style.borderColor = '#fff';
+          } else {
+            opt.style.borderColor = 'transparent';
+          }
+        });
+
+        document.getElementById('addProfileModal').style.display = 'flex';
+      }
+
+      closeAddProfileModal() {
+        const modal = document.getElementById('addProfileModal');
+        if (modal) modal.style.display = 'none';
+      }
+
+      saveProfile() {
+        const nameInput = document.getElementById('newProfileName').value.trim();
+        const photoInput = document.getElementById('newProfilePhoto').value.trim();
+        const editId = document.getElementById('editProfileId').value;
+
+        if (!nameInput) {
+          this.showToast('Por favor, digite o nome do atleta.');
+          return;
+        }
+
+        if (editId) {
+          // Editar perfil existente
+          const p = this.getProfile(editId);
+          if (p) {
+            p.name = nameInput;
+            p.color = this.selectedColor;
+            p.photoUrl = photoInput;
+            this.showToast(`Perfil de ${nameInput} atualizado!`);
+          }
+        } else {
+          // Criar novo perfil
+          const defaultTemplate = this.getDefaultProfiles()[0].workouts;
+          const newProfile = {
+            id: 'prof_' + Date.now(),
+            name: nameInput,
+            color: this.selectedColor,
+            photoUrl: photoInput,
+            workouts: JSON.parse(JSON.stringify(defaultTemplate)),
+            history: [],
+            activeSession: null
+          };
+          this.profiles.push(newProfile);
+          this.showToast(`Perfil do atleta ${nameInput} criado!`);
+        }
+
+        this.saveAllProfiles();
+        this.closeAddProfileModal();
+
+        if (this.activeProfileId) {
+          this.loadProfile(this.activeProfileId);
+        }
+        this.renderProfilesGrid();
+      }
+
+      // MODAL DE CONFIRMAÇÃO
+      showConfirmModal(title, message, onYes) {
+        document.getElementById('confirmTitle').textContent = title;
+        document.getElementById('confirmMessage').textContent = message;
+        const yesBtn = document.getElementById('confirmYesBtn');
+        
+        yesBtn.onclick = () => {
+          this.closeConfirmModal();
+          onYes();
+        };
+
+        document.getElementById('confirmModal').style.display = 'flex';
+      }
+
+      closeConfirmModal() {
+        const modal = document.getElementById('confirmModal');
+        if (modal) modal.style.display = 'none';
+      }
+
+      // TOAST UI
+      showToast(msg) {
+        const toast = document.getElementById('toastNotification');
+        const msgEl = document.getElementById('toastMessage');
+        if (!toast || !msgEl) return;
+        
+        msgEl.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+    }
+
+    // Inicialização da aplicação
+    let app;
+    document.addEventListener('DOMContentLoaded', () => {
+      app = new NetflixFitApp();
+    });
+  </script>
+</body>
+</html>
