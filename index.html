@@ -258,7 +258,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(10, 10, 10, 0.94);
+            background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(10px);
             z-index: 50000;
             display: flex;
@@ -273,13 +273,12 @@
             border: 1px solid var(--stravion-border);
             border-radius: 20px;
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
             padding: 35px 28px;
             box-shadow: 0 15px 50px rgba(0,0,0,0.6);
             text-align: center;
         }
 
-        /* LOGO VERTICAL PERSONALIZADA */
         .auth-logo-vertical {
             display: flex;
             flex-direction: column;
@@ -796,11 +795,10 @@
         </div>
     </div>
 
-    <!-- TELA DE AUTENTICAÇÃO COM LOGO VERTICAL DA MARCA -->
+    <!-- TELA DE AUTENTICAÇÃO COM LOGO VERTICAL (USUÁRIO E SENHA) -->
     <div id="auth-overlay">
         <div class="auth-card">
             
-            <!-- ESTRUTURA VERTICAL DA LOGO OFICIAL -->
             <div class="auth-logo-vertical">
                 <svg class="auth-vertical-s" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -822,41 +820,41 @@
                 <div class="auth-title-slogan">TRAIN BEYOND LIMITS</div>
             </div>
 
-            <div class="auth-subtitle">Acesse sua conta ou cadastre-se para treinar</div>
+            <div class="auth-subtitle">Acesse com seu usuário e senha para treinar</div>
 
             <div class="auth-tabs">
                 <button class="auth-tab-btn active" id="btn-tab-login" onclick="switchAuthTab('login')">ENTRAR</button>
                 <button class="auth-tab-btn" id="btn-tab-register" onclick="switchAuthTab('register')">CADASTRAR</button>
             </div>
 
-            <!-- FORMULÁRIO DE LOGIN -->
+            <!-- FORMULÁRIO DE LOGIN POR USUÁRIO -->
             <form id="form-login" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label>E-mail do Atleta</label>
-                    <input type="email" id="login-email" class="form-control" placeholder="seu@email.com" required>
+                    <label>Nome de Usuário</label>
+                    <input type="text" id="login-username" class="form-control" placeholder="Digite seu usuário" required autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label>Senha</label>
-                    <input type="password" id="login-password" class="form-control" placeholder="Mínimo 6 dígitos" minlength="6" required>
+                    <input type="password" id="login-password" class="form-control" placeholder="Sua senha (mínimo 6 dígitos)" minlength="6" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn-primary">ENTRAR NA CONTA</button>
             </form>
 
-            <!-- FORMULÁRIO DE CADASTRO -->
+            <!-- FORMULÁRIO DE CADASTRO DE NOVO USUÁRIO -->
             <form id="form-register" style="display: none;" onsubmit="handleRegister(event)">
                 <div class="form-group">
                     <label>Nome do Atleta</label>
                     <input type="text" id="reg-name" class="form-control" placeholder="Ex: David Souza" required>
                 </div>
                 <div class="form-group">
-                    <label>E-mail para Autenticação</label>
-                    <input type="email" id="reg-email" class="form-control" placeholder="seu@email.com" required>
+                    <label>Nome de Usuário</label>
+                    <input type="text" id="reg-username" class="form-control" placeholder="Escolha um nome de usuário" required autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label>Senha (Mínimo 6 dígitos)</label>
-                    <input type="password" id="reg-password" class="form-control" placeholder="Crie sua senha segura" minlength="6" required>
+                    <input type="password" id="reg-password" class="form-control" placeholder="Crie sua senha" minlength="6" required autocomplete="new-password">
                 </div>
-                <button type="submit" class="btn-primary">CRIAR PERFIL DE ATLETA</button>
+                <button type="submit" class="btn-primary">CRIAR CONTA DE ATLETA</button>
             </form>
         </div>
     </div>
@@ -1047,34 +1045,24 @@
 
     <!-- FIREBASE COMPAT SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        // INICIALIZAÇÃO SEGURA DO FIREBASE
+        // CONFIGURAÇÃO DO FIREBASE REALTIME DATABASE
         const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForStravionFitness2026App",
-            authDomain: "stravion-fitness-default-rtdb.firebaseapp.com",
-            databaseURL: "https://stravion-fitness-default-rtdb.firebaseio.com",
-            projectId: "stravion-fitness-default-rtdb",
-            storageBucket: "stravion-fitness-default-rtdb.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abc123def456"
+            databaseURL: "https://stravion-fitness-default-rtdb.firebaseio.com"
         };
 
         let db = null;
-        let auth = null;
-
         try {
             if (typeof firebase !== 'undefined') {
                 if (!firebase.apps.length) {
                     firebase.initializeApp(firebaseConfig);
                 }
                 db = firebase.database();
-                auth = firebase.auth();
             }
         } catch (e) {
-            console.warn("Firebase fallback mode ativo:", e);
+            console.warn("Modo de banco local ativo:", e);
         }
 
         // TREINOS MODELO PADRÃO
@@ -1103,7 +1091,7 @@
             }
         ];
 
-        // ESTADO GLOBAL DO APLICATIVO
+        // ESTADO GLOBAL
         let currentUser = null;
         let activeWorkoutSession = null;
         let workoutTimerInterval = null;
@@ -1115,9 +1103,9 @@
         let localWorkouts = JSON.parse(localStorage.getItem('stravion_local_workouts') || 'null') || DEFAULT_WORKOUTS;
         let localHistory = JSON.parse(localStorage.getItem('stravion_local_history') || '[]');
 
-        // INICIALIZAÇÃO DA APLICAÇÃO
+        // INICIALIZAÇÃO
         window.addEventListener('DOMContentLoaded', () => {
-            // 1. Oculta Splash Screen de forma forçada e garantida
+            // Remove o Splash Screen imediatamente em 1s sem travamento
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if (splash) {
@@ -1125,9 +1113,9 @@
                     splash.style.visibility = 'hidden';
                     splash.style.pointerEvents = 'none';
                 }
-            }, 1200);
+            }, 1000);
 
-            // 2. Restaura usuário do localStorage
+            // Tenta restaurar sessão de login salva
             const savedUser = localStorage.getItem('stravion_user');
             if (savedUser) {
                 try {
@@ -1135,7 +1123,7 @@
                     hideAuthOverlay();
                     updateHeaderUser();
                     loadCloudData();
-                } catch(e) {
+                } catch (e) {
                     currentUser = null;
                     showAuthOverlay();
                 }
@@ -1143,26 +1131,7 @@
                 showAuthOverlay();
             }
 
-            // 3. Ouvinte do Firebase Auth caso disponível
-            if (auth) {
-                try {
-                    auth.onAuthStateChanged((user) => {
-                        if (user) {
-                            currentUser = {
-                                uid: user.uid,
-                                email: user.email,
-                                displayName: user.displayName || user.email.split('@')[0]
-                            };
-                            localStorage.setItem('stravion_user', JSON.stringify(currentUser));
-                            hideAuthOverlay();
-                            updateHeaderUser();
-                            loadCloudData();
-                        }
-                    });
-                } catch(e) {}
-            }
-
-            // Restaura tema salvo
+            // Restaura tema
             const savedTheme = localStorage.getItem('stravion_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             renderWorkoutCatalog();
@@ -1179,7 +1148,6 @@
             if (overlay) overlay.style.display = 'none';
         }
 
-        // TROCA DE TABS NA AUTENTICAÇÃO
         function switchAuthTab(tab) {
             document.getElementById('btn-tab-login').classList.toggle('active', tab === 'login');
             document.getElementById('btn-tab-register').classList.toggle('active', tab === 'register');
@@ -1187,70 +1155,68 @@
             document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
         }
 
-        // MANIPULAÇÃO DE LOGIN
+        // LOGIN POR USUÁRIO E SENHA (SEM NECESSIDADE DE EMAIL)
         async function handleLogin(e) {
             e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const pass = document.getElementById('login-password').value.trim();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value.trim();
 
-            if (!email || !pass) {
-                showToast("Preencha todos os campos!");
+            if (!usernameInput || !passwordInput) {
+                showToast("Preencha o usuário e a senha!");
                 return;
             }
 
-            if (pass.length < 6) {
+            if (passwordInput.length < 6) {
                 showToast("A senha deve ter no mínimo 6 dígitos!");
                 return;
             }
 
-            let loggedIn = false;
+            const usernameKey = usernameInput.toLowerCase();
+            let authenticatedUser = null;
 
-            if (auth) {
+            // Busca no Firebase Realtime DB
+            if (db) {
                 try {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                    loggedIn = true;
-                } catch (err) {
-                    if (db) {
-                        try {
-                            const snapshot = await db.ref('users').orderByChild('email').equalTo(email).once('value');
-                            const data = snapshot.val();
-                            if (data) {
-                                const userId = Object.keys(data)[0];
-                                const u = data[userId];
-                                if (u.password === pass) {
-                                    currentUser = { uid: userId, email: u.email, displayName: u.name };
-                                    loggedIn = true;
-                                } else {
-                                    showToast("Senha incorreta!");
-                                    return;
-                                }
-                            }
-                        } catch(e2) {}
+                    const snapshot = await db.ref('app_users/' + usernameKey).once('value');
+                    const userData = snapshot.val();
+                    if (userData) {
+                        if (userData.password === passwordInput) {
+                            authenticatedUser = {
+                                uid: usernameKey,
+                                username: userData.username,
+                                displayName: userData.name || userData.username
+                            };
+                        } else {
+                            showToast("Senha incorreta!");
+                            return;
+                        }
                     }
-                }
+                } catch (err) {}
             }
 
-            if (!loggedIn) {
+            // Fallback para LocalStorage se não encontrou na nuvem
+            if (!authenticatedUser) {
                 const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-                if (storedUsers[email]) {
-                    if (storedUsers[email].password === pass) {
-                        currentUser = { uid: storedUsers[email].uid, email, displayName: storedUsers[email].name };
-                        loggedIn = true;
+                if (storedUsers[usernameKey]) {
+                    if (storedUsers[usernameKey].password === passwordInput) {
+                        authenticatedUser = {
+                            uid: usernameKey,
+                            username: storedUsers[usernameKey].username,
+                            displayName: storedUsers[usernameKey].name || storedUsers[usernameKey].username
+                        };
                     } else {
                         showToast("Senha incorreta!");
                         return;
                     }
                 } else {
-                    const defaultName = email.split('@')[0];
-                    const formattedName = defaultName.charAt(0).toUpperCase() + defaultName.slice(1);
-                    currentUser = { uid: 'usr_' + Date.now(), email, displayName: formattedName };
-                    storedUsers[email] = { uid: currentUser.uid, name: formattedName, email, password: pass };
-                    localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
-                    loggedIn = true;
+                    // Usuário novo não cadastrado ainda
+                    showToast("Usuário não encontrado. Clique em CADASTRAR para criar sua conta!");
+                    return;
                 }
             }
 
-            if (loggedIn && currentUser) {
+            if (authenticatedUser) {
+                currentUser = authenticatedUser;
                 localStorage.setItem('stravion_user', JSON.stringify(currentUser));
                 hideAuthOverlay();
                 updateHeaderUser();
@@ -1259,14 +1225,14 @@
             }
         }
 
-        // REGISTRO DE NOVO USUÁRIO
+        // CADASTRO DE NOVO USUÁRIO POR USUÁRIO E SENHA
         async function handleRegister(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
+            const usernameInput = document.getElementById('reg-username').value.trim();
             const pass = document.getElementById('reg-password').value.trim();
 
-            if (!name || !email || !pass) {
+            if (!name || !usernameInput || !pass) {
                 showToast("Preencha todos os campos!");
                 return;
             }
@@ -1276,57 +1242,58 @@
                 return;
             }
 
-            let registered = false;
+            const usernameKey = usernameInput.toLowerCase();
+            const newUserRecord = {
+                uid: usernameKey,
+                name: name,
+                username: usernameInput,
+                password: pass,
+                createdAt: Date.now()
+            };
 
-            if (auth) {
+            // Verifica duplicidade no LocalStorage
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            if (storedUsers[usernameKey]) {
+                showToast("Este nome de usuário já existe! Escolha outro.");
+                return;
+            }
+
+            // Salva no Realtime DB do Firebase
+            if (db) {
                 try {
-                    const cred = await auth.createUserWithEmailAndPassword(email, pass);
-                    await cred.user.updateProfile({ displayName: name });
-                    if (db) {
-                        await db.ref('users/' + cred.user.uid).set({ name, email, password: pass, createdAt: Date.now() });
+                    const snap = await db.ref('app_users/' + usernameKey).once('value');
+                    if (snap.exists()) {
+                        showToast("Este nome de usuário já existe na nuvem!");
+                        return;
                     }
-                    currentUser = { uid: cred.user.uid, email, displayName: name };
-                    registered = true;
-                } catch (err) {
-                    if (db) {
-                        try {
-                            const newUserRef = db.ref('users').push();
-                            await newUserRef.set({ name, email, password: pass, createdAt: Date.now() });
-                            currentUser = { uid: newUserRef.key, email, displayName: name };
-                            registered = true;
-                        } catch(e2) {}
-                    }
-                }
+                    await db.ref('app_users/' + usernameKey).set(newUserRecord);
+                } catch (e) {}
             }
 
-            if (!registered) {
-                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-                const uid = 'usr_' + Date.now();
-                storedUsers[email] = { uid, name, email, password: pass };
-                localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
-                currentUser = { uid, email, displayName: name };
-                registered = true;
-            }
+            // Salva Localmente
+            storedUsers[usernameKey] = newUserRecord;
+            localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
 
-            if (registered && currentUser) {
-                localStorage.setItem('stravion_user', JSON.stringify(currentUser));
-                hideAuthOverlay();
-                updateHeaderUser();
-                loadCloudData();
-                showToast("Perfil de atleta criado com sucesso!");
-            }
+            currentUser = {
+                uid: usernameKey,
+                username: usernameInput,
+                displayName: name
+            };
+
+            localStorage.setItem('stravion_user', JSON.stringify(currentUser));
+            hideAuthOverlay();
+            updateHeaderUser();
+            loadCloudData();
+            showToast("Perfil de atleta criado com sucesso!");
         }
 
         // LOGOUT
         function handleLogout() {
-            if (auth) {
-                try { auth.signOut(); } catch(e){}
-            }
             localStorage.removeItem('stravion_user');
             location.reload();
         }
 
-        // ATUALIZA INTERFACE DO USUÁRIO LOGADO
+        // ATUALIZA CABEÇALHO DO USUÁRIO
         function updateHeaderUser() {
             if (!currentUser) return;
             const btn = document.getElementById('user-profile-btn');
@@ -1334,7 +1301,7 @@
             document.getElementById('profile-name').value = currentUser.displayName || '';
         }
 
-        // CARREGA DADOS DO BANCO EM TEMPO REAL COM FALLBACK LOCAL
+        // CARREGA DADOS DO BANCO EM TEMPO REAL
         function loadCloudData() {
             if (db) {
                 try {
@@ -1361,7 +1328,7 @@
                         }
                         renderHistory();
                     });
-                } catch(e) {
+                } catch (e) {
                     renderWorkoutCatalog();
                     renderHistory();
                 }
@@ -1399,7 +1366,7 @@
             `).join('');
         }
 
-        // TELA/TAB SWITCH
+        // SWITCH DE TABS
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-catalog').style.display = 'none';
@@ -1444,7 +1411,7 @@
             showToast("Treino iniciado com sucesso!");
         }
 
-        // CRONÔMETRO DE TREINO
+        // CRONÔMETRO
         function startWorkoutClock() {
             clearInterval(workoutTimerInterval);
             workoutSeconds = 0;
@@ -1510,7 +1477,6 @@
             if (el) el.classList.toggle('open');
         }
 
-        // MARCAR SÉRIE E DISPARAR DESCANSO
         function toggleSetCheck(exIdx, setIdx, restTime) {
             if (!activeWorkoutSession) return;
             const isChecked = activeWorkoutSession.exercises[exIdx].completedSets[setIdx] = !activeWorkoutSession.exercises[exIdx].completedSets[setIdx];
@@ -1523,7 +1489,7 @@
             }
         }
 
-        // TEMPORIZADOR DE DESCANSO
+        // DESCANSO
         function triggerRestTimer(seconds) {
             clearInterval(restTimerInterval);
             restSecondsLeft = seconds;
@@ -1557,7 +1523,6 @@
             document.getElementById('rest-bar').classList.remove('active');
         }
 
-        // BEEP SONORO VIA WEB AUDIO API
         function playBeepSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1570,7 +1535,7 @@
             } catch (e) {}
         }
 
-        // FINALIZAR TREINO E SALVAR HISTÓRICO
+        // FINALIZAR TREINO
         function finishActiveWorkout() {
             if (!activeWorkoutSession) return;
 
@@ -1600,7 +1565,6 @@
             switchTab('history');
         }
 
-        // RENDERIZAR HISTÓRICO
         function renderHistory() {
             const container = document.getElementById('history-logs-container');
             if (!localHistory || localHistory.length === 0) {
@@ -1624,7 +1588,7 @@
             }).join('');
         }
 
-        // VÍDEO EMBED
+        // EMBED DE VÍDEOS DE EXERCÍCIOS
         function openVideoModal(exerciseName, url) {
             document.getElementById('modal-video-title').innerText = exerciseName;
             const box = document.getElementById('video-player-box');
@@ -1648,7 +1612,6 @@
             openModal('modal-video');
         }
 
-        // COMPRESSÃO E UPLOAD DA CAPA
         function handleCoverUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -1670,7 +1633,6 @@
             reader.readAsDataURL(file);
         }
 
-        // CRIAR/EDITAR TREINO
         function openWorkoutModal(workoutId = null) {
             const inputsList = document.getElementById('exercise-inputs-list');
             inputsList.innerHTML = '';
@@ -1759,7 +1721,6 @@
             showToast("Treino salvo com sucesso!");
         }
 
-        // TEMA E CORES
         function toggleTheme() {
             const current = document.documentElement.getAttribute('data-theme') || 'dark';
             const next = current === 'dark' ? 'light' : 'dark';
@@ -1780,8 +1741,8 @@
             const newName = document.getElementById('profile-name').value;
             if (currentUser) {
                 currentUser.displayName = newName;
-                if (db) {
-                    try { db.ref('users/' + currentUser.uid).update({ name: newName }); } catch(e){}
+                if (db && currentUser.uid) {
+                    try { db.ref('app_users/' + currentUser.uid).update({ name: newName }); } catch(e){}
                 }
                 localStorage.setItem('stravion_user', JSON.stringify(currentUser));
                 updateHeaderUser();
@@ -1790,7 +1751,6 @@
             showToast("Perfil atualizado!");
         }
 
-        // MODAIS GENÉRICOS
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }
@@ -1802,7 +1762,6 @@
             }
         }
 
-        // TOAST NOTIFICAÇÃO
         function showToast(msg) {
             const toast = document.getElementById('toast-notification');
             toast.innerText = msg;
