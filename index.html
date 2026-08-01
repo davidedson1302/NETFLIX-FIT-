@@ -79,18 +79,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-
-        #splash-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
         }
 
         .splash-logo-container {
             text-align: center;
-            animation: pulseSplash 2s infinite ease-in-out;
+            animation: pulseSplash 1.5s infinite ease-in-out;
         }
 
         .splash-s-logo {
@@ -264,7 +258,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(10, 10, 10, 0.92);
+            background: rgba(10, 10, 10, 0.94);
             backdrop-filter: blur(10px);
             z-index: 50000;
             display: flex;
@@ -1057,17 +1051,57 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        // CONFIGURAÇÃO DO FIREBASE COM BANCO EM TEMPO REAL
+        // INICIALIZAÇÃO SEGURA DO FIREBASE
         const firebaseConfig = {
-            databaseURL: "https://stravion-fitness-default-rtdb.firebaseio.com"
+            apiKey: "AIzaSyDummyKeyForStravionFitness2026App",
+            authDomain: "stravion-fitness-default-rtdb.firebaseapp.com",
+            databaseURL: "https://stravion-fitness-default-rtdb.firebaseio.com",
+            projectId: "stravion-fitness-default-rtdb",
+            storageBucket: "stravion-fitness-default-rtdb.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abc123def456"
         };
 
-        // Inicializa o Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+        let db = null;
+        let auth = null;
+
+        try {
+            if (typeof firebase !== 'undefined') {
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                db = firebase.database();
+                auth = firebase.auth();
+            }
+        } catch (e) {
+            console.warn("Firebase fallback mode ativo:", e);
         }
-        const db = firebase.database();
-        const auth = firebase.auth();
+
+        // TREINOS MODELO PADRÃO
+        const DEFAULT_WORKOUTS = [
+            {
+                id: 'w_demo_1',
+                title: 'TREINO A - PEITO E TRÍCEPS',
+                coverUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80',
+                exercises: [
+                    { name: 'Supino Reto com Barra', sets: '4', reps: '10-12', weight: '60', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
+                    { name: 'Supino Inclinado com Halteres', sets: '3', reps: '12', weight: '22', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=0G2_XV7slIg' },
+                    { name: 'Crossover na Polia', sets: '3', reps: '15', weight: '15', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=taI4XduLpTk' },
+                    { name: 'Tríceps Corda na Polia', sets: '4', reps: '12', weight: '20', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' }
+                ]
+            },
+            {
+                id: 'w_demo_2',
+                title: 'TREINO B - COSTAS E BÍCEPS',
+                coverUrl: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&q=80',
+                exercises: [
+                    { name: 'Puxada Frontal no Pulley', sets: '4', reps: '10-12', weight: '50', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+                    { name: 'Remada Curvada com Barra', sets: '4', reps: '10', weight: '45', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=VKFeB7ClX30' },
+                    { name: 'Rosca Direta com Barra W', sets: '3', reps: '12', weight: '25', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' },
+                    { name: 'Rosca Martelo com Halteres', sets: '3', reps: '12', weight: '14', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=TwD-YGVP4Bk' }
+                ]
+            }
+        ];
 
         // ESTADO GLOBAL DO APLICATIVO
         let currentUser = null;
@@ -1078,46 +1112,72 @@
         let restSecondsLeft = 0;
         let currentCoverBase64 = '';
 
-        let localWorkouts = [];
-        let localHistory = [];
+        let localWorkouts = JSON.parse(localStorage.getItem('stravion_local_workouts') || 'null') || DEFAULT_WORKOUTS;
+        let localHistory = JSON.parse(localStorage.getItem('stravion_local_history') || '[]');
 
         // INICIALIZAÇÃO DA APLICAÇÃO
         window.addEventListener('DOMContentLoaded', () => {
-            // Oculta Splash Screen após animação
+            // 1. Oculta Splash Screen de forma forçada e garantida
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
-                splash.classList.add('hidden');
-            }, 1800);
+                if (splash) {
+                    splash.style.opacity = '0';
+                    splash.style.visibility = 'hidden';
+                    splash.style.pointerEvents = 'none';
+                }
+            }, 1200);
 
-            // Escuta mudanças de Autenticação
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    currentUser = {
-                        uid: user.uid,
-                        email: user.email,
-                        displayName: user.displayName || user.email.split('@')[0]
-                    };
-                    document.getElementById('auth-overlay').style.display = 'none';
+            // 2. Restaura usuário do localStorage
+            const savedUser = localStorage.getItem('stravion_user');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    hideAuthOverlay();
                     updateHeaderUser();
                     loadCloudData();
-                } else {
-                    const savedUser = localStorage.getItem('stravion_user');
-                    if (savedUser) {
-                        currentUser = JSON.parse(savedUser);
-                        document.getElementById('auth-overlay').style.display = 'none';
-                        updateHeaderUser();
-                        loadCloudData();
-                    } else {
-                        currentUser = null;
-                        document.getElementById('auth-overlay').style.display = 'flex';
-                    }
+                } catch(e) {
+                    currentUser = null;
+                    showAuthOverlay();
                 }
-            });
+            } else {
+                showAuthOverlay();
+            }
+
+            // 3. Ouvinte do Firebase Auth caso disponível
+            if (auth) {
+                try {
+                    auth.onAuthStateChanged((user) => {
+                        if (user) {
+                            currentUser = {
+                                uid: user.uid,
+                                email: user.email,
+                                displayName: user.displayName || user.email.split('@')[0]
+                            };
+                            localStorage.setItem('stravion_user', JSON.stringify(currentUser));
+                            hideAuthOverlay();
+                            updateHeaderUser();
+                            loadCloudData();
+                        }
+                    });
+                } catch(e) {}
+            }
 
             // Restaura tema salvo
             const savedTheme = localStorage.getItem('stravion_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
+            renderWorkoutCatalog();
+            renderHistory();
         });
+
+        function showAuthOverlay() {
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) overlay.style.display = 'flex';
+        }
+
+        function hideAuthOverlay() {
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) overlay.style.display = 'none';
+        }
 
         // TROCA DE TABS NA AUTENTICAÇÃO
         function switchAuthTab(tab) {
@@ -1130,77 +1190,138 @@
         // MANIPULAÇÃO DE LOGIN
         async function handleLogin(e) {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-password').value;
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value.trim();
 
-            try {
-                await auth.signInWithEmailAndPassword(email, pass);
-                showToast("Login realizado com sucesso!");
-            } catch (err) {
-                db.ref('users').orderByChild('email').equalTo(email).once('value', snapshot => {
-                    const data = snapshot.val();
-                    if (data) {
-                        const userId = Object.keys(data)[0];
-                        const u = data[userId];
-                        if (u.password === pass) {
-                            currentUser = { uid: userId, email: u.email, displayName: u.name };
-                            localStorage.setItem('stravion_user', JSON.stringify(currentUser));
-                            document.getElementById('auth-overlay').style.display = 'none';
-                            updateHeaderUser();
-                            loadCloudData();
-                            showToast(`Bem-vindo de volta, ${u.name}!`);
-                        } else {
-                            showToast("Senha incorreta!");
-                        }
-                    } else {
-                        // Modo teste direto caso não haja banco configurado
-                        currentUser = { uid: 'demo_' + Date.now(), email, displayName: email.split('@')[0] };
-                        localStorage.setItem('stravion_user', JSON.stringify(currentUser));
-                        document.getElementById('auth-overlay').style.display = 'none';
-                        updateHeaderUser();
-                        loadCloudData();
-                        showToast(`Bem-vindo, ${currentUser.displayName}!`);
+            if (!email || !pass) {
+                showToast("Preencha todos os campos!");
+                return;
+            }
+
+            if (pass.length < 6) {
+                showToast("A senha deve ter no mínimo 6 dígitos!");
+                return;
+            }
+
+            let loggedIn = false;
+
+            if (auth) {
+                try {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                    loggedIn = true;
+                } catch (err) {
+                    if (db) {
+                        try {
+                            const snapshot = await db.ref('users').orderByChild('email').equalTo(email).once('value');
+                            const data = snapshot.val();
+                            if (data) {
+                                const userId = Object.keys(data)[0];
+                                const u = data[userId];
+                                if (u.password === pass) {
+                                    currentUser = { uid: userId, email: u.email, displayName: u.name };
+                                    loggedIn = true;
+                                } else {
+                                    showToast("Senha incorreta!");
+                                    return;
+                                }
+                            }
+                        } catch(e2) {}
                     }
-                });
+                }
+            }
+
+            if (!loggedIn) {
+                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+                if (storedUsers[email]) {
+                    if (storedUsers[email].password === pass) {
+                        currentUser = { uid: storedUsers[email].uid, email, displayName: storedUsers[email].name };
+                        loggedIn = true;
+                    } else {
+                        showToast("Senha incorreta!");
+                        return;
+                    }
+                } else {
+                    const defaultName = email.split('@')[0];
+                    const formattedName = defaultName.charAt(0).toUpperCase() + defaultName.slice(1);
+                    currentUser = { uid: 'usr_' + Date.now(), email, displayName: formattedName };
+                    storedUsers[email] = { uid: currentUser.uid, name: formattedName, email, password: pass };
+                    localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
+                    loggedIn = true;
+                }
+            }
+
+            if (loggedIn && currentUser) {
+                localStorage.setItem('stravion_user', JSON.stringify(currentUser));
+                hideAuthOverlay();
+                updateHeaderUser();
+                loadCloudData();
+                showToast(`Bem-vindo, ${currentUser.displayName}!`);
             }
         }
 
         // REGISTRO DE NOVO USUÁRIO
         async function handleRegister(e) {
             e.preventDefault();
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const pass = document.getElementById('reg-password').value;
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-password').value.trim();
+
+            if (!name || !email || !pass) {
+                showToast("Preencha todos os campos!");
+                return;
+            }
 
             if (pass.length < 6) {
                 showToast("A senha deve ter pelo menos 6 dígitos!");
                 return;
             }
 
-            try {
-                const cred = await auth.createUserWithEmailAndPassword(email, pass);
-                await cred.user.updateProfile({ displayName: name });
-                
-                const userData = { name, email, password: pass, createdAt: Date.now() };
-                await db.ref('users/' + cred.user.uid).set(userData);
-                showToast("Perfil de atleta criado com sucesso!");
-            } catch (err) {
-                const newUserRef = db.ref('users').push();
-                const userData = { name, email, password: pass, createdAt: Date.now() };
-                await newUserRef.set(userData);
+            let registered = false;
 
-                currentUser = { uid: newUserRef.key || 'user_' + Date.now(), email, displayName: name };
+            if (auth) {
+                try {
+                    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+                    await cred.user.updateProfile({ displayName: name });
+                    if (db) {
+                        await db.ref('users/' + cred.user.uid).set({ name, email, password: pass, createdAt: Date.now() });
+                    }
+                    currentUser = { uid: cred.user.uid, email, displayName: name };
+                    registered = true;
+                } catch (err) {
+                    if (db) {
+                        try {
+                            const newUserRef = db.ref('users').push();
+                            await newUserRef.set({ name, email, password: pass, createdAt: Date.now() });
+                            currentUser = { uid: newUserRef.key, email, displayName: name };
+                            registered = true;
+                        } catch(e2) {}
+                    }
+                }
+            }
+
+            if (!registered) {
+                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+                const uid = 'usr_' + Date.now();
+                storedUsers[email] = { uid, name, email, password: pass };
+                localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
+                currentUser = { uid, email, displayName: name };
+                registered = true;
+            }
+
+            if (registered && currentUser) {
                 localStorage.setItem('stravion_user', JSON.stringify(currentUser));
-                document.getElementById('auth-overlay').style.display = 'none';
+                hideAuthOverlay();
                 updateHeaderUser();
                 loadCloudData();
-                showToast("Perfil registrado com sucesso!");
+                showToast("Perfil de atleta criado com sucesso!");
             }
         }
 
         // LOGOUT
         function handleLogout() {
-            auth.signOut().catch(() => {});
+            if (auth) {
+                try { auth.signOut(); } catch(e){}
+            }
             localStorage.removeItem('stravion_user');
             location.reload();
         }
@@ -1213,31 +1334,38 @@
             document.getElementById('profile-name').value = currentUser.displayName || '';
         }
 
-        // CARREGA DADOS DO BANCO EM TEMPO REAL
+        // CARREGA DADOS DO BANCO EM TEMPO REAL COM FALLBACK LOCAL
         function loadCloudData() {
-            try {
-                db.ref('workouts').on('value', snapshot => {
-                    const data = snapshot.val();
-                    localWorkouts = [];
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            localWorkouts.push({ id: key, ...data[key] });
-                        });
-                    }
-                    renderWorkoutCatalog();
-                });
+            if (db) {
+                try {
+                    db.ref('workouts').on('value', snapshot => {
+                        const data = snapshot.val();
+                        if (data) {
+                            localWorkouts = [];
+                            Object.keys(data).forEach(key => {
+                                localWorkouts.push({ id: key, ...data[key] });
+                            });
+                            localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
+                        }
+                        renderWorkoutCatalog();
+                    });
 
-                db.ref('history').on('value', snapshot => {
-                    const data = snapshot.val();
-                    localHistory = [];
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            localHistory.push({ id: key, ...data[key] });
-                        });
-                    }
+                    db.ref('history').on('value', snapshot => {
+                        const data = snapshot.val();
+                        if (data) {
+                            localHistory = [];
+                            Object.keys(data).forEach(key => {
+                                localHistory.push({ id: key, ...data[key] });
+                            });
+                            localStorage.setItem('stravion_local_history', JSON.stringify(localHistory));
+                        }
+                        renderHistory();
+                    });
+                } catch(e) {
+                    renderWorkoutCatalog();
                     renderHistory();
-                });
-            } catch(e) {
+                }
+            } else {
                 renderWorkoutCatalog();
                 renderHistory();
             }
@@ -1246,14 +1374,8 @@
         // RENDERIZA O CATÁLOGO DE TREINOS
         function renderWorkoutCatalog() {
             const grid = document.getElementById('workout-list-grid');
-            if (localWorkouts.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">
-                        <i class="fa-solid fa-dumbbell" style="font-size:3rem; margin-bottom:15px; opacity:0.3;"></i>
-                        <p>Nenhum treino cadastrado ainda. Clique em "Novo Treino" para criar!</p>
-                    </div>
-                `;
-                return;
+            if (!localWorkouts || localWorkouts.length === 0) {
+                localWorkouts = DEFAULT_WORKOUTS;
             }
 
             grid.innerHTML = localWorkouts.map(w => `
@@ -1460,7 +1582,11 @@
                 exercises: activeWorkoutSession.exercises
             };
 
-            db.ref('history').push(record);
+            if (db) {
+                try { db.ref('history').push(record); } catch(e){}
+            }
+            localHistory.push(record);
+            localStorage.setItem('stravion_local_history', JSON.stringify(localHistory));
 
             clearInterval(workoutTimerInterval);
             activeWorkoutSession = null;
@@ -1468,6 +1594,7 @@
             document.getElementById('active-workout-title').innerText = "Treino Concluído!";
             document.getElementById('active-workout-subtitle').innerText = "Parabéns por superar seus limites!";
             renderActiveAccordion();
+            renderHistory();
 
             showToast("Treino salvo no histórico!");
             switchTab('history');
@@ -1476,7 +1603,7 @@
         // RENDERIZAR HISTÓRICO
         function renderHistory() {
             const container = document.getElementById('history-logs-container');
-            if (localHistory.length === 0) {
+            if (!localHistory || localHistory.length === 0) {
                 container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Nenhum histórico registrado ainda.</div>`;
                 return;
             }
@@ -1613,11 +1740,21 @@
             };
 
             if (id) {
-                db.ref('workouts/' + id).update(data);
+                const idx = localWorkouts.findIndex(x => x.id === id);
+                if (idx !== -1) localWorkouts[idx] = { id, ...data };
+                if (db) {
+                    try { db.ref('workouts/' + id).update(data); } catch(e){}
+                }
             } else {
-                db.ref('workouts').push(data);
+                const newId = 'w_' + Date.now();
+                localWorkouts.push({ id: newId, ...data });
+                if (db) {
+                    try { db.ref('workouts').push(data); } catch(e){}
+                }
             }
 
+            localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
+            renderWorkoutCatalog();
             closeModal('modal-workout');
             showToast("Treino salvo com sucesso!");
         }
@@ -1643,7 +1780,10 @@
             const newName = document.getElementById('profile-name').value;
             if (currentUser) {
                 currentUser.displayName = newName;
-                db.ref('users/' + currentUser.uid).update({ name: newName });
+                if (db) {
+                    try { db.ref('users/' + currentUser.uid).update({ name: newName }); } catch(e){}
+                }
+                localStorage.setItem('stravion_user', JSON.stringify(currentUser));
                 updateHeaderUser();
             }
             closeModal('modal-profile');
@@ -1662,7 +1802,7 @@
             }
         }
 
-        // TOAST NOTIFICATION
+        // TOAST NOTIFICAÇÃO
         function showToast(msg) {
             const toast = document.getElementById('toast-notification');
             toast.innerText = msg;
