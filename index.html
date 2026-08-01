@@ -778,11 +778,28 @@
         .set-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 8px;
             padding: 8px 10px;
             background: var(--input-bg);
-            border-radius: 6px;
+            border-radius: 8px;
             margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        .set-input-sm {
+            width: 60px;
+            padding: 4px 6px;
+            background: var(--stravion-dark);
+            border: 1px solid var(--stravion-border);
+            border-radius: 6px;
+            color: var(--text-white);
+            font-size: 0.8rem;
+            text-align: center;
+            outline: none;
+        }
+
+        .set-input-sm:focus {
+            border-color: var(--stravion-accent);
         }
 
         .set-checkbox {
@@ -2152,11 +2169,19 @@
             };
 
             activeWorkoutSession.exercises.forEach(ex => {
-                ex.completedSets = new Array(parseInt(ex.sets || 3)).fill(false);
+                const numSets = parseInt(ex.sets || 3);
+                ex.setDetails = [];
+                for (let i = 0; i < numSets; i++) {
+                    ex.setDetails.push({
+                        reps: ex.reps || '12',
+                        weight: ex.weight || 0,
+                        completed: false
+                    });
+                }
             });
 
             document.getElementById('active-workout-title').innerText = workout.title;
-            document.getElementById('active-workout-subtitle').innerText = "Treino em andamento... Marque as séries concluídas!";
+            document.getElementById('active-workout-subtitle').innerText = "Treino em andamento... Edite cargas, reps e marque as séries concluídas!";
             document.getElementById('btn-finish-workout').style.display = 'inline-flex';
 
             startWorkoutClock();
@@ -2185,8 +2210,17 @@
             }
 
             container.innerHTML = activeWorkoutSession.exercises.map((ex, exIdx) => {
-                const totalSets = parseInt(ex.sets || 3);
-                const completedCount = ex.completedSets.filter(Boolean).length;
+                if (!ex.setDetails) {
+                    const numSets = parseInt(ex.sets || 3);
+                    ex.setDetails = Array.from({ length: numSets }, () => ({
+                        reps: ex.reps || '12',
+                        weight: ex.weight || 0,
+                        completed: false
+                    }));
+                }
+
+                const totalSets = ex.setDetails.length;
+                const completedCount = ex.setDetails.filter(s => s.completed).length;
 
                 return `
                     <div class="exercise-accordion">
@@ -2196,7 +2230,7 @@
                                 <div>
                                     <div class="exercise-name">${ex.name}</div>
                                     <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                                        Carga: ${ex.weight || '0'}kg | Descanso: ${ex.rest || 60}s
+                                        ${totalSets} Séries | Descanso: ${ex.rest || 60}s
                                     </div>
                                 </div>
                             </div>
@@ -2206,18 +2240,42 @@
                                         <i class="fa-solid fa-circle-play"></i> Vídeo
                                     </button>
                                 ` : ''}
-                                <span class="exercise-badge">${completedCount}/${totalSets} Séries</span>
+                                <span class="exercise-badge">${completedCount}/${totalSets} Concluídas</span>
                             </div>
                         </div>
                         <div class="accordion-content" id="accordion-content-${exIdx}">
-                            ${Array.from({ length: totalSets }).map((_, setIdx) => `
+                            ${ex.setDetails.map((s, setIdx) => `
                                 <div class="set-row">
-                                    <span style="font-size:0.8rem; font-weight:600;">Série ${setIdx + 1}</span>
-                                    <input type="checkbox" class="set-checkbox" 
-                                        ${ex.completedSets[setIdx] ? 'checked' : ''} 
-                                        onchange="toggleSetCheck(${exIdx}, ${setIdx}, parseInt('${ex.rest || 60}'))">
+                                    <span style="font-size:0.8rem; font-weight:700; min-width:52px;">Série ${setIdx + 1}</span>
+                                    
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <span style="font-size:0.7rem; color:var(--text-muted);">KG:</span>
+                                        <input type="number" class="set-input-sm" value="${s.weight}" 
+                                            onchange="updateSetDetail(${exIdx}, ${setIdx}, 'weight', this.value)">
+                                    </div>
+
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <span style="font-size:0.7rem; color:var(--text-muted);">Reps:</span>
+                                        <input type="text" class="set-input-sm" value="${s.reps}" 
+                                            onchange="updateSetDetail(${exIdx}, ${setIdx}, 'reps', this.value)">
+                                    </div>
+
+                                    <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+                                        <input type="checkbox" class="set-checkbox" 
+                                            ${s.completed ? 'checked' : ''} 
+                                            onchange="toggleSetCheck(${exIdx}, ${setIdx}, parseInt('${ex.rest || 60}'))">
+                                        <button type="button" onclick="removeSetFromActive(${exIdx}, ${setIdx})" style="background:none; border:none; color:var(--stravion-red); cursor:pointer; font-size:0.85rem;" title="Remover Série">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             `).join('')}
+
+                            <div style="margin-top:10px; display:flex; gap:8px;">
+                                <button type="button" class="btn-action" onclick="addSetToActive(${exIdx})" style="font-size:0.75rem; padding:6px 12px;">
+                                    <i class="fa-solid fa-plus"></i> Adicionar Série
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -2229,16 +2287,47 @@
             if (el) el.classList.toggle('open');
         }
 
+        function updateSetDetail(exIdx, setIdx, field, val) {
+            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
+            activeWorkoutSession.exercises[exIdx].setDetails[setIdx][field] = val;
+        }
+
         function toggleSetCheck(exIdx, setIdx, restTime) {
-            if (!activeWorkoutSession) return;
-            const isChecked = activeWorkoutSession.exercises[exIdx].completedSets[setIdx] = !activeWorkoutSession.exercises[exIdx].completedSets[setIdx];
+            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
+            const setObj = activeWorkoutSession.exercises[exIdx].setDetails[setIdx];
+            setObj.completed = !setObj.completed;
             
             renderActiveAccordion();
             toggleAccordion(exIdx);
 
-            if (isChecked) {
+            if (setObj.completed) {
                 triggerRestTimer(restTime);
             }
+        }
+
+        function addSetToActive(exIdx) {
+            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
+            const ex = activeWorkoutSession.exercises[exIdx];
+            const lastSet = ex.setDetails[ex.setDetails.length - 1] || { reps: ex.reps || '12', weight: ex.weight || 0 };
+            ex.setDetails.push({
+                reps: lastSet.reps,
+                weight: lastSet.weight,
+                completed: false
+            });
+            renderActiveAccordion();
+            toggleAccordion(exIdx);
+        }
+
+        function removeSetFromActive(exIdx, setIdx) {
+            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
+            const ex = activeWorkoutSession.exercises[exIdx];
+            if (ex.setDetails.length <= 1) {
+                showToast("Mínimo de 1 série necessária!");
+                return;
+            }
+            ex.setDetails.splice(setIdx, 1);
+            renderActiveAccordion();
+            toggleAccordion(exIdx);
         }
 
         function triggerRestTimer(seconds) {
