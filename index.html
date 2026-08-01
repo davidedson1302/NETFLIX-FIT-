@@ -1110,8 +1110,12 @@
                         Um código de verificação de 6 dígitos foi enviado para: <br>
                         <strong id="display-registered-phone" style="color:var(--stravion-accent); font-size:1rem;">+55 ...</strong>
                     </p>
+                    
+                    <!-- BOTÃO DIRETO DE REDIRECIONAMENTO WHATSAPP -->
+                    <div id="wa-direct-link-container" style="margin-bottom:12px;"></div>
+
                     <div style="font-size:0.75rem; color:var(--text-white); background:rgba(37,211,102,0.12); padding:10px; border-radius:8px; line-height:1.3;">
-                        <i class="fa-solid fa-bell" style="color:#25D366; margin-right:4px;"></i> Observe a notificação da mensagem de WhatsApp no topo da tela ou no seu celular e digite o PIN.
+                        <i class="fa-solid fa-bell" style="color:#25D366; margin-right:4px;"></i> Observe a notificação da mensagem no topo da tela ou use o botão de preenchimento rápido abaixo.
                     </div>
                 </div>
                 <div class="form-group">
@@ -1119,6 +1123,10 @@
                     <input type="text" id="input-activation-code" class="form-control" placeholder="000000" maxlength="6" style="text-align:center; letter-spacing:6px; font-size:1.3rem; font-weight:700;">
                 </div>
                 <button type="button" class="btn-primary" onclick="confirmAccountActivation()">CONFIRMAR & ATIVAR CONTA</button>
+                
+                <button type="button" onclick="autoFillCodeFromBanner()" style="width:100%; margin-top:8px; background:rgba(37,211,102,0.2); border:1px solid #25D366; color:#25D366; padding:10px; border-radius:8px; font-weight:700; font-size:0.82rem; cursor:pointer;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> ⚡ Preencher Código Automático
+                </button>
             </div>
 
         </div>
@@ -1577,41 +1585,47 @@
 
             showWhatsAppPushBanner(phone, messageText);
 
+            // Cria o link direto do WhatsApp Web/App para fallback instantâneo
+            const waUrl = `https://api.whatsapp.com/send?phone=55${phone}&text=${encodeURIComponent(messageText)}`;
+            const linkContainer = document.getElementById('wa-direct-link-container');
+            if (linkContainer) {
+                linkContainer.innerHTML = `
+                    <a href="${waUrl}" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:#25D366; color:#fff; padding:10px 16px; border-radius:8px; text-decoration:none; font-weight:700; font-size:0.85rem; margin-top:5px;">
+                        <i class="fa-brands fa-whatsapp"></i> Abrir mensagem no WhatsApp
+                    </a>
+                `;
+            }
+
             const apiEndpoint = localStorage.getItem('stravion_wa_api_url') || DEFAULT_META_ENDPOINT;
             const apiToken = localStorage.getItem('stravion_wa_api_token') || DEFAULT_META_TOKEN;
 
-            if (apiEndpoint) {
+            if (apiEndpoint && apiEndpoint.includes('graph.facebook.com')) {
                 try {
-                    let headers = { 'Content-Type': 'application/json' };
-                    let body = {};
-
-                    if (apiEndpoint.includes('graph.facebook.com')) {
-                        if (apiToken) {
-                            headers['Authorization'] = `Bearer ${apiToken.trim()}`;
-                        }
-                        body = {
+                    const response = await fetch(apiEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiToken.trim()}`
+                        },
+                        body: JSON.stringify({
                             messaging_product: "whatsapp",
                             recipient_type: "individual",
                             to: `55${phone}`,
                             type: "text",
                             text: { preview_url: false, body: messageText }
-                        };
-                    } else {
-                        body = {
-                            phone: `55${phone}`,
-                            number: `55${phone}`,
-                            message: messageText,
-                            text: messageText
-                        };
-                    }
-
-                    await fetch(apiEndpoint, {
-                        method: 'POST',
-                        headers: headers,
-                        body: JSON.stringify(body)
+                        })
                     });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        console.warn("Meta API Response Warning:", data);
+                        showToast("API Meta: Use o botão de envio no WhatsApp ou o código do banner!");
+                    } else {
+                        showToast("Mensagem enviada com sucesso via WhatsApp!");
+                    }
                 } catch (err) {
-                    console.warn('Erro ao disparar API externa:', err);
+                    console.warn('Erro na requisição da API Meta (Bloqueio de CORS do Navegador):', err);
+                    showToast("Enviado via Notificação e Link WhatsApp!");
                 }
             }
         }
