@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stravion Fitness - Train Beyond Limits</title>
+    <title>Stravion Fitness - Personal Trainer & Atletas</title>
     
     <!-- Meta tags PWA & Favicon -->
     <meta name="theme-color" content="#E50914">
@@ -66,7 +66,6 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* TELA DE ABERTURA (SPLASH SCREEN) */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -120,7 +119,6 @@
             50% { transform: scale(1.05); }
         }
 
-        /* HEADER */
         header {
             background-color: var(--stravion-dark);
             border-bottom: 1px solid var(--stravion-border);
@@ -204,7 +202,21 @@
             transform: scale(1.05);
         }
 
-        /* NAVEGAÇÃO / TABS */
+        .personal-badge {
+            background: linear-gradient(135deg, #E50914, #990000);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 12px rgba(229, 9, 20, 0.5);
+        }
+
         nav.nav-tabs {
             display: flex;
             background: var(--stravion-dark);
@@ -242,7 +254,6 @@
             border-bottom-color: var(--stravion-accent);
         }
 
-        /* CONTAINER PRINCIPAL */
         main.content-container {
             max-width: 1100px;
             margin: 0 auto;
@@ -251,7 +262,74 @@
             flex: 1;
         }
 
-        /* TELA DE AUTENTICAÇÃO (LOGIN / CADASTRO) */
+        /* BANNER DE NOTIFICAÇÃO SIMULADA DE WHATSAPP */
+        .wa-push-banner {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-180%);
+            width: 92%;
+            max-width: 440px;
+            background: #111b21;
+            border: 1px solid #25D366;
+            border-left: 5px solid #25D366;
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.8);
+            z-index: 100000;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .wa-push-banner.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .wa-icon-box {
+            width: 36px;
+            height: 36px;
+            background: #25D366;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .wa-push-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        .wa-push-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+
+        .wa-push-sender {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #25D366;
+        }
+
+        .wa-push-time {
+            font-size: 0.7rem;
+            color: #8696a0;
+        }
+
+        .wa-push-body {
+            font-size: 0.8rem;
+            color: #e9edef;
+            line-height: 1.35;
+        }
+
         #auth-overlay {
             position: fixed;
             top: 0;
@@ -273,7 +351,7 @@
             border: 1px solid var(--stravion-border);
             border-radius: 20px;
             width: 100%;
-            max-width: 420px;
+            max-width: 450px;
             padding: 35px 28px;
             box-shadow: 0 15px 50px rgba(0,0,0,0.6);
             text-align: center;
@@ -322,19 +400,35 @@
             color: var(--stravion-red);
         }
 
-        .auth-title-slogan {
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 3.5px;
-            color: var(--text-muted);
-            margin-top: 6px;
-            text-transform: uppercase;
+        .auth-type-selector {
+            display: flex;
+            gap: 8px;
+            background: var(--input-bg);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 18px;
         }
 
-        .auth-subtitle {
-            font-size: 0.82rem;
+        .auth-type-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
             color: var(--text-muted);
-            margin-bottom: 22px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .auth-type-btn.active {
+            background: var(--stravion-accent);
+            color: #FFFFFF;
         }
 
         .auth-tabs {
@@ -412,7 +506,6 @@
             transform: scale(0.98);
         }
 
-        /* CATÁLOGO E CARDS */
         .section-header {
             display: flex;
             align-items: center;
@@ -478,6 +571,7 @@
             margin-bottom: 15px;
             display: flex;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
         .workout-actions {
@@ -509,7 +603,53 @@
             color: #FFFFFF;
         }
 
-        /* TREINO ATIVO E ACCORDION */
+        .preset-covers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .preset-cover-item {
+            border: 2px solid var(--stravion-border);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            aspect-ratio: 16/10;
+            transition: all 0.2s;
+        }
+
+        .preset-cover-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preset-cover-item.selected {
+            border-color: var(--stravion-accent);
+            box-shadow: 0 0 10px rgba(229, 9, 20, 0.6);
+        }
+
+        .preset-cover-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.75);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #fff;
+            padding: 2px 4px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .active-workout-header {
             background: var(--stravion-card-bg);
             border: 1px solid var(--stravion-border);
@@ -610,7 +750,6 @@
             gap: 5px;
         }
 
-        /* MODAIS E PLAYER DE VÍDEO */
         .modal-backdrop {
             position: fixed;
             top: 0;
@@ -639,7 +778,7 @@
             border: 1px solid var(--stravion-border);
             border-radius: 16px;
             width: 100%;
-            max-width: 550px;
+            max-width: 580px;
             max-height: 90vh;
             overflow-y: auto;
             padding: 24px;
@@ -676,7 +815,58 @@
             border: none;
         }
 
-        /* RODAPÉ */
+        .student-card {
+            background: var(--stravion-card-bg);
+            border: 1px solid var(--stravion-border);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            transition: border-color 0.2s;
+        }
+
+        .student-card:hover {
+            border-color: var(--stravion-accent);
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--stravion-accent);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: #FFFFFF;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
         footer {
             background-color: var(--stravion-dark);
             border-top: 1px solid var(--stravion-border);
@@ -700,7 +890,6 @@
             font-weight: 600;
         }
 
-        /* TIMER DE DESCANSO SUSPENSO */
         .rest-bar {
             position: fixed;
             bottom: 20px;
@@ -715,7 +904,6 @@
             gap: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             z-index: 15000;
-
             visibility: hidden;
             opacity: 0;
             transition: all 0.3s ease;
@@ -744,7 +932,6 @@
             cursor: pointer;
         }
 
-        /* TOAST NOTIFICAÇÃO */
         #toast-notification {
             position: fixed;
             top: 20px;
@@ -772,7 +959,6 @@
 </head>
 <body>
 
-    <!-- TELA DE ABERTURA (SPLASH SCREEN) -->
     <div id="splash-screen">
         <div class="splash-logo-container">
             <svg class="splash-s-logo" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
@@ -795,7 +981,23 @@
         </div>
     </div>
 
-    <!-- TELA DE AUTENTICAÇÃO COM LOGO VERTICAL (USUÁRIO E SENHA) -->
+    <!-- BANNER PUSH DE MENSAGEM RECEBIDA DO WHATSAPP -->
+    <div class="wa-push-banner" id="wa-push-banner" onclick="autoFillCodeFromBanner()">
+        <div class="wa-icon-box">
+            <i class="fa-brands fa-whatsapp"></i>
+        </div>
+        <div class="wa-push-content">
+            <div class="wa-push-header">
+                <span class="wa-push-sender">Stravion Fitness (WhatsApp)</span>
+                <span class="wa-push-time">agora</span>
+            </div>
+            <div class="wa-push-body" id="wa-push-message-text">
+                Seu código de ativação do Stravion é 000000
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DE AUTENTICAÇÃO DUPLA: ATLETA x PERSONAL TRAINER -->
     <div id="auth-overlay">
         <div class="auth-card">
             
@@ -820,46 +1022,86 @@
                 <div class="auth-title-slogan">TRAIN BEYOND LIMITS</div>
             </div>
 
-            <div class="auth-subtitle">Acesse com seu usuário e senha para treinar</div>
+            <!-- SELETOR DE TIPO DE CONTA: ATLETA / PERSONAL TRAINER -->
+            <div class="auth-type-selector">
+                <button class="auth-type-btn active" id="btn-type-atleta" onclick="setAuthRole('atleta')">
+                    <i class="fa-solid fa-user-ninja"></i> Atleta / Aluno
+                </button>
+                <button class="auth-type-btn" id="btn-type-personal" onclick="setAuthRole('personal')">
+                    <i class="fa-solid fa-user-tie"></i> Personal Trainer
+                </button>
+            </div>
 
-            <div class="auth-tabs">
+            <div class="auth-subtitle" id="auth-subtitle-text">Acesse com seu usuário e senha para treinar</div>
+
+            <div class="auth-tabs" id="auth-tabs-bar">
                 <button class="auth-tab-btn active" id="btn-tab-login" onclick="switchAuthTab('login')">ENTRAR</button>
                 <button class="auth-tab-btn" id="btn-tab-register" onclick="switchAuthTab('register')">CADASTRAR</button>
             </div>
 
-            <!-- FORMULÁRIO DE LOGIN POR USUÁRIO -->
+            <!-- FORMULÁRIO DE LOGIN -->
             <form id="form-login" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label>Nome de Usuário</label>
+                    <label id="label-login-user">Nome de Usuário</label>
                     <input type="text" id="login-username" class="form-control" placeholder="Digite seu usuário" required autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label>Senha</label>
                     <input type="password" id="login-password" class="form-control" placeholder="Sua senha (mínimo 6 dígitos)" minlength="6" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn-primary">ENTRAR NA CONTA</button>
+                <button type="submit" class="btn-primary" id="btn-login-submit">ENTRAR NA CONTA</button>
+                <div style="margin-top: 14px; text-align: center;">
+                    <a href="#" onclick="openRecoveryModal(); return false;" style="color:var(--stravion-accent); font-size:0.8rem; font-weight:700; text-decoration:none;">
+                        <i class="fa-solid fa-key"></i> Esqueceu a senha / Recuperar Acesso?
+                    </a>
+                </div>
             </form>
 
-            <!-- FORMULÁRIO DE CADASTRO DE NOVO USUÁRIO -->
+            <!-- FORMULÁRIO DE CADASTRO -->
             <form id="form-register" style="display: none;" onsubmit="handleRegister(event)">
                 <div class="form-group">
-                    <label>Nome do Atleta</label>
+                    <label id="label-reg-name">Nome Completo</label>
                     <input type="text" id="reg-name" class="form-control" placeholder="Ex: David Souza" required>
                 </div>
                 <div class="form-group">
-                    <label>Nome de Usuário</label>
-                    <input type="text" id="reg-username" class="form-control" placeholder="Escolha um nome de usuário" required autocomplete="username">
+                    <label>Nome de Usuário para Login</label>
+                    <input type="text" id="reg-username" class="form-control" placeholder="Escolha seu usuário" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>Número do WhatsApp (com DDD)</label>
+                    <input type="tel" id="reg-whatsapp" class="form-control" placeholder="Ex: 11999998888" required>
                 </div>
                 <div class="form-group">
                     <label>Senha (Mínimo 6 dígitos)</label>
                     <input type="password" id="reg-password" class="form-control" placeholder="Crie sua senha" minlength="6" required autocomplete="new-password">
                 </div>
-                <button type="submit" class="btn-primary">CRIAR CONTA DE ATLETA</button>
+                <button type="submit" class="btn-primary">GERAR CÓDIGO DE ATIVAÇÃO</button>
             </form>
+
+            <!-- TELA DE VALIDAÇÃO DE CÓDIGO WHATSAPP AUTOMÁTICA -->
+            <div id="activation-step" style="display: none; margin-top: 15px;">
+                <div style="background:var(--input-bg); border-radius:12px; padding:18px; margin-bottom:15px; text-align:center; border: 1px solid #25D366;">
+                    <div style="color:#25D366; font-weight:800; font-size:1.1rem; margin-bottom:8px;">
+                        <i class="fa-brands fa-whatsapp"></i> Código enviado para seu WhatsApp!
+                    </div>
+                    <p style="font-size:0.85rem; color:var(--text-white); margin-bottom:10px; line-height:1.4;">
+                        Um código de verificação de 6 dígitos foi enviado para: <br>
+                        <strong id="display-registered-phone" style="color:var(--stravion-accent); font-size:1rem;">+55 ...</strong>
+                    </p>
+                    <div style="font-size:0.75rem; color:var(--text-white); background:rgba(37,211,102,0.12); padding:10px; border-radius:8px; line-height:1.3;">
+                        <i class="fa-solid fa-bell" style="color:#25D366; margin-right:4px;"></i> Observe a notificação da mensagem de WhatsApp no topo da tela ou no seu celular e digite o PIN.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="text-align:center;">Digite o Código de 6 Dígitos Recebido</label>
+                    <input type="text" id="input-activation-code" class="form-control" placeholder="000000" maxlength="6" style="text-align:center; letter-spacing:6px; font-size:1.3rem; font-weight:700;">
+                </div>
+                <button type="button" class="btn-primary" onclick="confirmAccountActivation()">CONFIRMAR & ATIVAR CONTA</button>
+            </div>
+
         </div>
     </div>
 
-    <!-- CABEÇALHO DA APLICAÇÃO -->
     <header>
         <div class="brand-logo-wrap" onclick="switchTab('catalog')">
             <svg class="stravion-icon-svg" viewBox="0 0 100 100">
@@ -874,6 +1116,7 @@
         </div>
 
         <div class="header-actions">
+            <span id="role-badge-container"></span>
             <button class="btn-theme-toggle" onclick="toggleTheme()" title="Alternar Tema (Claro/Escuro)">
                 <i class="fa-solid fa-circle-half-stroke"></i>
             </button>
@@ -886,30 +1129,34 @@
         </div>
     </header>
 
-    <!-- NAVEGAÇÃO / TABS -->
     <nav class="nav-tabs">
         <button class="tab-btn active" id="tab-catalog-btn" onclick="switchTab('catalog')">
-            <i class="fa-solid fa-layer-group"></i> Catálogo
+            <i class="fa-solid fa-layer-group"></i> Catálogo de Treinos
         </button>
         <button class="tab-btn" id="tab-active-btn" onclick="switchTab('active')">
             <i class="fa-solid fa-play"></i> Treino Ativo
         </button>
+        <button class="tab-btn" id="tab-students-btn" style="display: none;" onclick="switchTab('students')">
+            <i class="fa-solid fa-users"></i> Gestão de Alunos (Personal)
+        </button>
         <button class="tab-btn" id="tab-history-btn" onclick="switchTab('history')">
-            <i class="fa-solid fa-chart-line"></i> Histórico & Cargas
+            <i class="fa-solid fa-chart-line"></i> Histórico & Evolução
         </button>
     </nav>
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <main class="content-container">
 
-        <!-- ABA CATÁLOGO DE TREINOS -->
         <section id="tab-catalog">
             <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-dumbbell" style="color:var(--stravion-accent)"></i> Seus Treinos</div>
-                <button class="btn-action btn-start" onclick="openWorkoutModal()"><i class="fa-solid fa-plus"></i> Novo Treino</button>
+                <div class="section-title" id="catalog-section-heading">
+                    <i class="fa-solid fa-dumbbell" style="color:var(--stravion-accent)"></i> Seus Treinos
+                </div>
+                <button class="btn-action btn-start" onclick="openWorkoutModal()">
+                    <i class="fa-solid fa-plus"></i> <span id="btn-new-workout-label">Novo Treino</span>
+                </button>
             </div>
             <div class="workout-grid" id="workout-list-grid">
-                <!-- Cards de treinos renderizados dinamicamente -->
+                <!-- Cards renderizados dinamicamente -->
             </div>
         </section>
 
@@ -933,10 +1180,24 @@
             </div>
         </section>
 
-        <!-- ABA HISTÓRICO & EVOLUÇÃO -->
+        <section id="tab-students" style="display: none;">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-user-gear" style="color:var(--stravion-accent)"></i> Painel do Personal Trainer
+                </div>
+            </div>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">
+                Gerencie seus alunos, monte treinos personalizados com capas e vídeos, e comunique-se via WhatsApp com 1 clique.
+            </p>
+            <div id="students-list-container">
+                <!-- Lista de alunos cadastrados -->
+            </div>
+        </section>
+
+        <!-- ABA HISTÓRICO -->
         <section id="tab-history" style="display: none;">
             <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--stravion-accent)"></i> Histórico de Sessões</div>
+                <div class="section-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--stravion-accent)"></i> Histórico Geral</div>
             </div>
             <div id="history-logs-container">
                 <!-- Registros de treinos anteriores -->
@@ -945,20 +1206,17 @@
 
     </main>
 
-    <!-- MODAL DE VÍDEO DO EXERCÍCIO -->
     <div class="modal-backdrop" id="modal-video">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="modal-video-title" style="font-family:'Teko'; font-size:1.6rem;">Demonstração em Vídeo</h3>
                 <button class="btn-close-modal" onclick="closeModal('modal-video')"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="video-container" id="video-player-box">
-                <!-- Iframe ou vídeo incorporado dinamicamente -->
-            </div>
+            <div class="video-container" id="video-player-box"></div>
         </div>
     </div>
 
-    <!-- MODAL DE CRIAR/EDITAR TREINO -->
+    <!-- MODAL DE CRIAR E EDITAR TREINO -->
     <div class="modal-backdrop" id="modal-workout">
         <div class="modal-content">
             <div class="modal-header">
@@ -967,39 +1225,51 @@
             </div>
             <form id="form-workout" onsubmit="saveWorkout(event)">
                 <input type="hidden" id="workout-id">
+
+                <div class="form-group" id="student-assignment-group" style="display:none;">
+                    <label style="color:var(--stravion-accent); font-weight:700;"><i class="fa-solid fa-user-check"></i> Atribuir ao Aluno Específico</label>
+                    <select id="workout-student-select" class="form-control">
+                        <option value="all">Público / Visível para Todos</option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>Título do Treino</label>
                     <input type="text" id="workout-title-input" class="form-control" placeholder="Ex: Treino A - Peito e Tríceps" required>
                 </div>
+
                 <div class="form-group">
-                    <label>Capa do Treino (Enviar Foto)</label>
+                    <label>Escolher Capa da Galeria da Academia</label>
+                    <div class="preset-covers-grid" id="preset-covers-grid"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ou Enviar Foto Personalizada</label>
                     <input type="file" id="workout-cover-file" class="form-control" accept="image/*" onchange="handleCoverUpload(event)">
                 </div>
 
                 <div style="margin-top:20px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <label style="font-weight:700; font-size:0.85rem; color:var(--text-muted);">EXERCÍCIOS</label>
+                    <label style="font-weight:700; font-size:0.85rem; color:var(--text-muted);">EXERCÍCIOS DO TREINO</label>
                     <button type="button" class="btn-action" onclick="addExerciseRow()"><i class="fa-solid fa-plus"></i> Add Exercício</button>
                 </div>
 
-                <div id="exercise-inputs-list">
-                    <!-- Linhas dinâmicas para exercícios com URL de vídeo -->
-                </div>
+                <div id="exercise-inputs-list"></div>
 
                 <button type="submit" class="btn-primary" style="margin-top:20px;">SALVAR TREINO</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL EDIÇÃO DE PERFIL -->
+    <!-- MODAL PERFIL & CONFIGURAÇÃO DE WHATSAPP -->
     <div class="modal-backdrop" id="modal-profile">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="font-family:'Teko'; font-size:1.8rem;">Perfil & Personalização</h3>
+                <h3 style="font-family:'Teko'; font-size:1.8rem;">Perfil & Configurações</h3>
                 <button class="btn-close-modal" onclick="closeModal('modal-profile')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="form-profile" onsubmit="saveProfile(event)">
                 <div class="form-group">
-                    <label>Nome do Atleta</label>
+                    <label>Seu Nome</label>
                     <input type="text" id="profile-name" class="form-control" required>
                 </div>
                 <div class="form-group">
@@ -1013,12 +1283,38 @@
                         <option value="#ec4899">Rosa Pink</option>
                     </select>
                 </div>
-                <button type="submit" class="btn-primary">SALVAR PERFIL</button>
+                <div class="form-group" style="border-top: 1px solid var(--stravion-border); padding-top:15px; margin-top:15px;">
+                    <label style="color:#25D366;"><i class="fa-brands fa-whatsapp"></i> Servidor API de Envio de WhatsApp (Opcional)</label>
+                    <input type="text" id="wa-api-url" class="form-control" placeholder="Ex: https://sua-api-whatsapp.com/send-message">
+                    <small style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:4px;">
+                        Para enviar mensagens para números reais em produção (ex: Z-API / Evolution API / Meta). Deixe em branco para usar a simulação na tela.
+                    </small>
+                </div>
+                <button type="submit" class="btn-primary">SALVAR CONFIGURAÇÕES</button>
             </form>
         </div>
     </div>
 
-    <!-- BARRA DE DESCANSO SUSPENSA -->
+    <!-- MODAL RECUPERAÇÃO DE ACESSO VIA WHATSAPP -->
+    <div class="modal-backdrop" id="modal-recovery">
+        <div class="modal-content" style="max-width:420px;">
+            <div class="modal-header">
+                <h3 style="font-family:'Teko'; font-size:1.8rem; color:var(--stravion-accent);">Recuperar Acesso</h3>
+                <button class="btn-close-modal" onclick="closeModal('modal-recovery')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:15px; text-align:left;">
+                Digite seu nome de usuário. Suas credenciais de acesso serão enviadas diretamente para o seu WhatsApp cadastrado.
+            </p>
+            <form onsubmit="handleRecovery(event)">
+                <div class="form-group">
+                    <label>Seu Nome de Usuário Cadastrado</label>
+                    <input type="text" id="rec-username" class="form-control" placeholder="Digite seu nome de usuário" required autocomplete="username">
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top:10px;">ENVIAR SENHA PARA O WHATSAPP</button>
+            </form>
+        </div>
+    </div>
+
     <div class="rest-bar" id="rest-bar">
         <div class="rest-time-text" id="rest-time-display">00s</div>
         <button class="btn-rest-action" onclick="adjustRestTimer(15)">+15s</button>
@@ -1026,10 +1322,8 @@
         <button class="btn-rest-action" onclick="skipRestTimer()">Pular</button>
     </div>
 
-    <!-- TOAST NOTIFICAÇÃO -->
     <div id="toast-notification">Notificação</div>
 
-    <!-- RODAPÉ -->
     <footer>
         <div class="footer-logo-wrap">
             <svg class="stravion-icon-svg" viewBox="0 0 100 100" style="width:28px; height:28px;">
@@ -1043,12 +1337,10 @@
         </div>
     </footer>
 
-    <!-- FIREBASE COMPAT SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        // CONFIGURAÇÃO DO FIREBASE REALTIME DATABASE
         const firebaseConfig = {
             databaseURL: "https://stravion-fitness-default-rtdb.firebaseio.com"
         };
@@ -1065,34 +1357,112 @@
             console.warn("Modo de banco local ativo:", e);
         }
 
-        // TREINOS MODELO PADRÃO
+        const PRESET_COVERS = [
+            { id: 'c1', label: 'Peito / Supino', url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80' },
+            { id: 'c2', label: 'Costas / Dorsal', url: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&q=80' },
+            { id: 'c3', label: 'Pernas / Leg Press', url: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&w=600&q=80' },
+            { id: 'c4', label: 'Ombros / Halteres', url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80' },
+            { id: 'c5', label: 'Bíceps / Tríceps', url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80' },
+            { id: 'c6', label: 'Abdômen / Core', url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80' },
+            { id: 'c7', label: 'Cardio / Esteira', url: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=600&q=80' },
+            { id: 'c8', label: 'Treino Feminino', url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80' }
+        ];
+
+        const PRESET_EXERCISES = [
+            { name: '1. Supino Reto com Barra', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
+            { name: '2. Supino Inclinado com Halteres', videoUrl: 'https://www.youtube.com/watch?v=0G2_XV7slIg' },
+            { name: '3. Supino Declinado com Barra', videoUrl: 'https://www.youtube.com/watch?v=LfyQBUKR8SE' },
+            { name: '4. Crossover na Polia Alta', videoUrl: 'https://www.youtube.com/watch?v=taI4XduLpTk' },
+            { name: '5. Crossover na Polia Baixa', videoUrl: 'https://www.youtube.com/watch?v=X5n_D8EaV7E' },
+            { name: '6. Peck Deck / Voador', videoUrl: 'https://www.youtube.com/watch?v=eGjt4lk6g34' },
+            { name: '7. Crucifixo Reto com Halteres', videoUrl: 'https://www.youtube.com/watch?v=QENKPHhQVi4' },
+            { name: '8. Flexão de Braço no Solo', videoUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4' },
+
+            { name: '9. Puxada Frontal no Pulley', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+            { name: '10. Remada Curvada com Barra', videoUrl: 'https://www.youtube.com/watch?v=VKFeB7ClX30' },
+            { name: '11. Remada Baixa no Triângulo', videoUrl: 'https://www.youtube.com/watch?v=GZbfZ033fBo' },
+            { name: '12. Remada Unilateral com Halter (Serrote)', videoUrl: 'https://www.youtube.com/watch?v=roCP6wCXPqo' },
+            { name: '13. Pulldown na Polia com Corda', videoUrl: 'https://www.youtube.com/watch?v=1Tq3QdYUuHs' },
+            { name: '14. Barra Fixa (Pull-Up)', videoUrl: 'https://www.youtube.com/watch?v=eGo4IYlbE5g' },
+            { name: '15. Puxada Articulada Aberta', videoUrl: 'https://www.youtube.com/watch?v=A2SIn_L2fGA' },
+            { name: '16. Levantamento Terra (Deadlift)', videoUrl: 'https://www.youtube.com/watch?v=op9kVnSso6Q' },
+
+            { name: '17. Agachamento Livre com Barra', videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
+            { name: '18. Leg Press 45°', videoUrl: 'https://www.youtube.com/watch?v=IZxyjWCYEVw' },
+            { name: '19. Cadeira Extensora', videoUrl: 'https://www.youtube.com/watch?v=YyvSfVjQeL0' },
+            { name: '20. Agachamento Hack Machine', videoUrl: 'https://www.youtube.com/watch?v=0tn5K9NlCfo' },
+            { name: '21. Passada / Avanço com Halteres', videoUrl: 'https://www.youtube.com/watch?v=D7KaRcUTQeE' },
+            { name: '22. Agachamento Sissy (Sissy Squat)', videoUrl: 'https://www.youtube.com/watch?v=1xT6aN4Q74I' },
+
+            { name: '23. Mesa Flexora', videoUrl: 'https://www.youtube.com/watch?v=1Tq3QdYUuHs' },
+            { name: '24. Cadeira Flexora', videoUrl: 'https://www.youtube.com/watch?v=F488k65AElA' },
+            { name: '25. Stiff com Halteres ou Barra', videoUrl: 'https://www.youtube.com/watch?v=1uDiW5--rAE' },
+            { name: '26. Elevação Pélvica com Barra', videoUrl: 'https://www.youtube.com/watch?v=SEdqd1n0cvg' },
+            { name: '27. Cadeira Abdutora', videoUrl: 'https://www.youtube.com/watch?v=G_8L_Pk2o0A' },
+            { name: '28. Cadeira Adutora', videoUrl: 'https://www.youtube.com/watch?v=qR0P1Kk2vEE' },
+            { name: '29. Glúteo na Polia Baixa (Caneleira)', videoUrl: 'https://www.youtube.com/watch?v=xI0L_1c3A28' },
+
+            { name: '30. Elevação Lateral com Halteres', videoUrl: 'https://www.youtube.com/watch?v=3VcKaXpzqRo' },
+            { name: '31. Desenvolvimento com Halteres', videoUrl: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
+            { name: '32. Elevação Frontal com Halteres', videoUrl: 'https://www.youtube.com/watch?v=-t7fuZ0KhDA' },
+            { name: '33. Elevação Lateral na Polia', videoUrl: 'https://www.youtube.com/watch?v=pS1pC3vL9Yc' },
+            { name: '34. Desenvolvimento Arnold Press', videoUrl: 'https://www.youtube.com/watch?v=6Z15_WdXmVw' },
+            { name: '35. Crucifixo Invertido no Voador', videoUrl: 'https://www.youtube.com/watch?v=J32O5XGf30s' },
+            { name: '36. Encolhimento de Ombros com Halteres', videoUrl: 'https://www.youtube.com/watch?v=zJcIq3A3kU0' },
+
+            { name: '37. Rosca Direta com Barra W', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' },
+            { name: '38. Rosca Alternada com Halteres', videoUrl: 'https://www.youtube.com/watch?v=sAq_ocpRh_I' },
+            { name: '39. Rosca Martelo com Halteres', videoUrl: 'https://www.youtube.com/watch?v=TwD-YGVP4Bk' },
+            { name: '40. Rosca Scott com Barra W', videoUrl: 'https://www.youtube.com/watch?v=fIWP-FRFNU0' },
+            { name: '41. Rosca Concentrada com Halter', videoUrl: 'https://www.youtube.com/watch?v=0AUGkch3tzc' },
+            { name: '42. Rosca 21 com Barra', videoUrl: 'https://www.youtube.com/watch?v=aG3m9P4eW1c' },
+
+            { name: '43. Tríceps Corda na Polia', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' },
+            { name: '44. Tríceps Testa com Barra W', videoUrl: 'https://www.youtube.com/watch?v=nRiJVZDpdL0' },
+            { name: '45. Tríceps Francês com Halter', videoUrl: 'https://www.youtube.com/watch?v=_gsUck-7M74' },
+            { name: '46. Tríceps Coice na Polia Baixa', videoUrl: 'https://www.youtube.com/watch?v=ZO81bExgI28' },
+            { name: '47. Tríceps Mergulho nas Paralelas', videoUrl: 'https://www.youtube.com/watch?v=2z8JmcrW-As' },
+            { name: '48. Tríceps Pulley Barra Reta', videoUrl: 'https://www.youtube.com/watch?v=2-LAMcpzODU' },
+
+            { name: '49. Abdominal Supra no Solo', videoUrl: 'https://www.youtube.com/watch?v=RUNrn4b802M' },
+            { name: '50. Abdominal Infra na Barra Fixa', videoUrl: 'https://www.youtube.com/watch?v=hdng3Nm1x_E' },
+            { name: '51. Prancha Ventral Isométrica', videoUrl: 'https://www.youtube.com/watch?v=pSHjTRCQxIw' },
+            { name: '52. Abdominal Infra no Banco Inclinado', videoUrl: 'https://www.youtube.com/watch?v=2u4xM8_O9_Y' },
+            { name: '53. Abdominal Oblíquo na Polia (Woodchopper)', videoUrl: 'https://www.youtube.com/watch?v=p4vW7B4j_aQ' },
+
+            { name: '54. Gêmeos em Pé na Máquina', videoUrl: 'https://www.youtube.com/watch?v=N3awlEyY980' },
+            { name: '55. Gêmeos Sentado (Cavalinho)', videoUrl: 'https://www.youtube.com/watch?v=Jb13xLd1yR0' }
+        ];
+
         const DEFAULT_WORKOUTS = [
             {
                 id: 'w_demo_1',
                 title: 'TREINO A - PEITO E TRÍCEPS',
-                coverUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80',
+                coverUrl: PRESET_COVERS[0].url,
                 exercises: [
-                    { name: 'Supino Reto com Barra', sets: '4', reps: '10-12', weight: '60', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
-                    { name: 'Supino Inclinado com Halteres', sets: '3', reps: '12', weight: '22', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=0G2_XV7slIg' },
-                    { name: 'Crossover na Polia', sets: '3', reps: '15', weight: '15', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=taI4XduLpTk' },
-                    { name: 'Tríceps Corda na Polia', sets: '4', reps: '12', weight: '20', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' }
+                    { name: '1. Supino Reto com Barra', sets: '4', reps: '10-12', weight: '60', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
+                    { name: '2. Supino Inclinado com Halteres', sets: '3', reps: '12', weight: '22', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=0G2_XV7slIg' },
+                    { name: '4. Crossover na Polia Alta', sets: '3', reps: '15', weight: '15', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=taI4XduLpTk' },
+                    { name: '43. Tríceps Corda na Polia', sets: '4', reps: '12', weight: '20', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' }
                 ]
             },
             {
                 id: 'w_demo_2',
                 title: 'TREINO B - COSTAS E BÍCEPS',
-                coverUrl: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&q=80',
+                coverUrl: PRESET_COVERS[1].url,
                 exercises: [
-                    { name: 'Puxada Frontal no Pulley', sets: '4', reps: '10-12', weight: '50', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
-                    { name: 'Remada Curvada com Barra', sets: '4', reps: '10', weight: '45', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=VKFeB7ClX30' },
-                    { name: 'Rosca Direta com Barra W', sets: '3', reps: '12', weight: '25', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' },
-                    { name: 'Rosca Martelo com Halteres', sets: '3', reps: '12', weight: '14', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=TwD-YGVP4Bk' }
+                    { name: '9. Puxada Frontal no Pulley', sets: '4', reps: '10-12', weight: '50', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+                    { name: '10. Remada Curvada com Barra', sets: '4', reps: '10', weight: '45', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=VKFeB7ClX30' },
+                    { name: '37. Rosca Direta com Barra W', sets: '3', reps: '12', weight: '25', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' }
                 ]
             }
         ];
 
-        // ESTADO GLOBAL
         let currentUser = null;
+        let authRole = 'atleta';
+        let pendingRegistration = null;
+        let generatedActivationCode = '';
+
         let activeWorkoutSession = null;
         let workoutTimerInterval = null;
         let workoutSeconds = 0;
@@ -1103,9 +1473,7 @@
         let localWorkouts = JSON.parse(localStorage.getItem('stravion_local_workouts') || 'null') || DEFAULT_WORKOUTS;
         let localHistory = JSON.parse(localStorage.getItem('stravion_local_history') || '[]');
 
-        // INICIALIZAÇÃO
         window.addEventListener('DOMContentLoaded', () => {
-            // Remove o Splash Screen imediatamente em 1s sem travamento
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if (splash) {
@@ -1115,11 +1483,11 @@
                 }
             }, 1000);
 
-            // Tenta restaurar sessão de login salva
             const savedUser = localStorage.getItem('stravion_user');
             if (savedUser) {
                 try {
                     currentUser = JSON.parse(savedUser);
+                    authRole = currentUser.role || 'atleta';
                     hideAuthOverlay();
                     updateHeaderUser();
                     loadCloudData();
@@ -1131,9 +1499,14 @@
                 showAuthOverlay();
             }
 
-            // Restaura tema
             const savedTheme = localStorage.getItem('stravion_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const savedWaApi = localStorage.getItem('stravion_wa_api_url') || '';
+            const waInput = document.getElementById('wa-api-url');
+            if (waInput) waInput.value = savedWaApi;
+
+            renderPresetCoversGrid();
             renderWorkoutCatalog();
             renderHistory();
         });
@@ -1148,14 +1521,33 @@
             if (overlay) overlay.style.display = 'none';
         }
 
+        function setAuthRole(role) {
+            authRole = role;
+            document.getElementById('btn-type-atleta').classList.toggle('active', role === 'atleta');
+            document.getElementById('btn-type-personal').classList.toggle('active', role === 'personal');
+            
+            const subtitle = document.getElementById('auth-subtitle-text');
+            const labelRegName = document.getElementById('label-reg-name');
+
+            if (role === 'personal') {
+                subtitle.innerText = "Área Exclusiva do Personal Trainer";
+                document.getElementById('label-login-user').innerText = "Usuário do Personal";
+                labelRegName.innerText = "Nome Completo do Personal Trainer";
+            } else {
+                subtitle.innerText = "Acesse com seu usuário e senha para treinar";
+                document.getElementById('label-login-user').innerText = "Nome de Usuário";
+                labelRegName.innerText = "Nome do Atleta";
+            }
+        }
+
         function switchAuthTab(tab) {
             document.getElementById('btn-tab-login').classList.toggle('active', tab === 'login');
             document.getElementById('btn-tab-register').classList.toggle('active', tab === 'register');
             document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
             document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('activation-step').style.display = 'none';
         }
 
-        // LOGIN POR USUÁRIO E SENHA (SEM NECESSIDADE DE EMAIL)
         async function handleLogin(e) {
             e.preventDefault();
             const usernameInput = document.getElementById('login-username').value.trim();
@@ -1166,52 +1558,35 @@
                 return;
             }
 
-            if (passwordInput.length < 6) {
-                showToast("A senha deve ter no mínimo 6 dígitos!");
-                return;
-            }
-
             const usernameKey = usernameInput.toLowerCase();
             let authenticatedUser = null;
 
-            // Busca no Firebase Realtime DB
             if (db) {
                 try {
                     const snapshot = await db.ref('app_users/' + usernameKey).once('value');
                     const userData = snapshot.val();
-                    if (userData) {
-                        if (userData.password === passwordInput) {
-                            authenticatedUser = {
-                                uid: usernameKey,
-                                username: userData.username,
-                                displayName: userData.name || userData.username
-                            };
-                        } else {
-                            showToast("Senha incorreta!");
-                            return;
-                        }
+                    if (userData && userData.password === passwordInput) {
+                        authenticatedUser = {
+                            uid: usernameKey,
+                            username: userData.username,
+                            displayName: userData.name || userData.username,
+                            whatsapp: userData.whatsapp || '',
+                            role: userData.role || 'atleta'
+                        };
                     }
                 } catch (err) {}
             }
 
-            // Fallback para LocalStorage se não encontrou na nuvem
             if (!authenticatedUser) {
                 const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-                if (storedUsers[usernameKey]) {
-                    if (storedUsers[usernameKey].password === passwordInput) {
-                        authenticatedUser = {
-                            uid: usernameKey,
-                            username: storedUsers[usernameKey].username,
-                            displayName: storedUsers[usernameKey].name || storedUsers[usernameKey].username
-                        };
-                    } else {
-                        showToast("Senha incorreta!");
-                        return;
-                    }
-                } else {
-                    // Usuário novo não cadastrado ainda
-                    showToast("Usuário não encontrado. Clique em CADASTRAR para criar sua conta!");
-                    return;
+                if (storedUsers[usernameKey] && storedUsers[usernameKey].password === passwordInput) {
+                    authenticatedUser = {
+                        uid: usernameKey,
+                        username: storedUsers[usernameKey].username,
+                        displayName: storedUsers[usernameKey].name,
+                        whatsapp: storedUsers[usernameKey].whatsapp || '',
+                        role: storedUsers[usernameKey].role || 'atleta'
+                    };
                 }
             }
 
@@ -1222,86 +1597,241 @@
                 updateHeaderUser();
                 loadCloudData();
                 showToast(`Bem-vindo, ${currentUser.displayName}!`);
+            } else {
+                showToast("Usuário ou senha incorretos!");
             }
         }
 
-        // CADASTRO DE NOVO USUÁRIO POR USUÁRIO E SENHA
+        function sendWhatsAppAutomaticMsg(phone, messageText) {
+            console.log(`[WhatsApp API Dispatched] Para +55${phone}: "${messageText}"`);
+
+            // 1. Notificação Visual e Sonora na Tela (Banner de WhatsApp Recebido)
+            showWhatsAppPushBanner(phone, messageText);
+
+            // 2. Disparo para API Real de WhatsApp em Produção (se configurada)
+            const apiEndpoint = localStorage.getItem('stravion_wa_api_url') || window.WHATSAPP_API_ENDPOINT;
+            if (apiEndpoint) {
+                fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: `55${phone}`, message: messageText })
+                }).catch(err => console.warn('Erro ao disparar API externa de WhatsApp:', err));
+            }
+        }
+
+        function showWhatsAppPushBanner(phone, messageText) {
+            const banner = document.getElementById('wa-push-banner');
+            const msgEl = document.getElementById('wa-push-message-text');
+            if (banner && msgEl) {
+                msgEl.innerText = messageText;
+                banner.classList.add('show');
+                playWhatsAppChimeSound();
+
+                setTimeout(() => {
+                    banner.classList.remove('show');
+                }, 8000);
+            }
+        }
+
+        function autoFillCodeFromBanner() {
+            if (generatedActivationCode) {
+                const codeInput = document.getElementById('input-activation-code');
+                if (codeInput) {
+                    codeInput.value = generatedActivationCode;
+                    showToast("Código preenchido automaticamente!");
+                }
+            }
+            document.getElementById('wa-push-banner').classList.remove('show');
+        }
+
+        function playWhatsAppChimeSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc1.type = 'sine';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(587.33, now); // D5
+                osc2.frequency.setValueAtTime(880, now + 0.08); // A5
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc1.start(now);
+                osc1.stop(now + 0.08);
+                osc2.start(now + 0.08);
+                osc2.stop(now + 0.35);
+            } catch (e) {}
+        }
+
         async function handleRegister(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
             const usernameInput = document.getElementById('reg-username').value.trim();
+            const whatsapp = document.getElementById('reg-whatsapp').value.replace(/\D/g, '');
             const pass = document.getElementById('reg-password').value.trim();
 
-            if (!name || !usernameInput || !pass) {
-                showToast("Preencha todos os campos!");
+            if (!name || !usernameInput || !whatsapp || !pass) {
+                showToast("Preencha todos os campos do formulário!");
                 return;
             }
 
-            if (pass.length < 6) {
-                showToast("A senha deve ter pelo menos 6 dígitos!");
+            if (whatsapp.length < 10) {
+                showToast("Insira um número de WhatsApp válido com DDD!");
                 return;
             }
 
             const usernameKey = usernameInput.toLowerCase();
-            const newUserRecord = {
-                uid: usernameKey,
-                name: name,
-                username: usernameInput,
-                password: pass,
-                createdAt: Date.now()
-            };
-
-            // Verifica duplicidade no LocalStorage
             const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
             if (storedUsers[usernameKey]) {
-                showToast("Este nome de usuário já existe! Escolha outro.");
+                showToast("Este nome de usuário já está em uso!");
                 return;
             }
 
-            // Salva no Realtime DB do Firebase
+            generatedActivationCode = String(Math.floor(100000 + Math.random() * 900000));
+            pendingRegistration = {
+                uid: usernameKey,
+                name: name,
+                username: usernameInput,
+                whatsapp: whatsapp,
+                password: pass,
+                role: authRole,
+                createdAt: Date.now()
+            };
+
+            const waMsg = `Olá ${name}! Seu código de ativação no Stravion Fitness é: ${generatedActivationCode}`;
+            sendWhatsAppAutomaticMsg(whatsapp, waMsg);
+
+            document.getElementById('display-registered-phone').innerText = `+55 ${whatsapp}`;
+            document.getElementById('form-register').style.display = 'none';
+            document.getElementById('activation-step').style.display = 'block';
+
+            showToast("Código enviado para o seu WhatsApp!");
+        }
+
+        function openRecoveryModal() {
+            openModal('modal-recovery');
+        }
+
+        async function handleRecovery(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('rec-username').value.trim();
+            if (!usernameInput) {
+                showToast("Digite o nome de usuário!");
+                return;
+            }
+
+            const usernameKey = usernameInput.toLowerCase();
+            let targetUser = null;
+
             if (db) {
                 try {
                     const snap = await db.ref('app_users/' + usernameKey).once('value');
-                    if (snap.exists()) {
-                        showToast("Este nome de usuário já existe na nuvem!");
-                        return;
-                    }
-                    await db.ref('app_users/' + usernameKey).set(newUserRecord);
-                } catch (e) {}
+                    targetUser = snap.val();
+                } catch(err) {}
             }
 
-            // Salva Localmente
-            storedUsers[usernameKey] = newUserRecord;
+            if (!targetUser) {
+                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+                targetUser = storedUsers[usernameKey];
+            }
+
+            if (!targetUser) {
+                showToast("Usuário não encontrado no sistema!");
+                return;
+            }
+
+            if (!targetUser.whatsapp) {
+                showToast("Este usuário não possui um WhatsApp cadastrado!");
+                return;
+            }
+
+            const waMsg = `Olá ${targetUser.name || targetUser.username}! Suas credenciais no Stravion são - Usuário: ${targetUser.username} | Senha: ${targetUser.password}`;
+            sendWhatsAppAutomaticMsg(targetUser.whatsapp, waMsg);
+
+            closeModal('modal-recovery');
+            showToast(`Senha enviada para o WhatsApp de @${targetUser.username}!`);
+        }
+
+        async function confirmAccountActivation() {
+            const inputCode = document.getElementById('input-activation-code').value.trim();
+            if (inputCode !== generatedActivationCode) {
+                showToast("Código incorreto! Tente novamente.");
+                return;
+            }
+
+            if (!pendingRegistration) return;
+
+            const usernameKey = pendingRegistration.uid;
+            
+            if (db) {
+                try {
+                    await db.ref('app_users/' + usernameKey).set(pendingRegistration);
+                } catch(e) {}
+            }
+
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            storedUsers[usernameKey] = pendingRegistration;
             localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
 
             currentUser = {
                 uid: usernameKey,
-                username: usernameInput,
-                displayName: name
+                username: pendingRegistration.username,
+                displayName: pendingRegistration.name,
+                whatsapp: pendingRegistration.whatsapp,
+                role: pendingRegistration.role
             };
 
             localStorage.setItem('stravion_user', JSON.stringify(currentUser));
             hideAuthOverlay();
             updateHeaderUser();
             loadCloudData();
-            showToast("Perfil de atleta criado com sucesso!");
+            showToast("Conta ativada com sucesso!");
         }
 
-        // LOGOUT
         function handleLogout() {
             localStorage.removeItem('stravion_user');
             location.reload();
         }
 
-        // ATUALIZA CABEÇALHO DO USUÁRIO
         function updateHeaderUser() {
             if (!currentUser) return;
             const btn = document.getElementById('user-profile-btn');
             btn.innerHTML = `<i class="fa-solid fa-user-check"></i>`;
             document.getElementById('profile-name').value = currentUser.displayName || '';
+
+            const badgeContainer = document.getElementById('role-badge-container');
+            const studentsTabBtn = document.getElementById('tab-students-btn');
+            const activeTabBtn = document.getElementById('tab-active-btn');
+            const newWorkoutLabel = document.getElementById('btn-new-workout-label');
+            const catalogHeading = document.getElementById('catalog-section-heading');
+
+            if (currentUser.role === 'personal') {
+                badgeContainer.innerHTML = `<span class="personal-badge"><i class="fa-solid fa-crown"></i> Personal Trainer</span>`;
+                studentsTabBtn.style.display = 'inline-flex';
+                activeTabBtn.style.display = 'none';
+                document.getElementById('student-assignment-group').style.display = 'block';
+                if (newWorkoutLabel) newWorkoutLabel.innerText = "Montar Treino para Aluno";
+                if (catalogHeading) catalogHeading.innerHTML = `<i class="fa-solid fa-dumbbell" style="color:var(--stravion-accent)"></i> Treinos dos Alunos`;
+                switchTab('students');
+            } else {
+                badgeContainer.innerHTML = ``;
+                studentsTabBtn.style.display = 'none';
+                activeTabBtn.style.display = 'inline-flex';
+                document.getElementById('student-assignment-group').style.display = 'none';
+                if (newWorkoutLabel) newWorkoutLabel.innerText = "Novo Treino";
+                if (catalogHeading) catalogHeading.innerHTML = `<i class="fa-solid fa-dumbbell" style="color:var(--stravion-accent)"></i> Seus Treinos`;
+                switchTab('catalog');
+            }
         }
 
-        // CARREGA DADOS DO BANCO EM TEMPO REAL
         function loadCloudData() {
             if (db) {
                 try {
@@ -1315,6 +1845,11 @@
                             localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
                         }
                         renderWorkoutCatalog();
+                    });
+
+                    db.ref('app_users').on('value', snapshot => {
+                        const data = snapshot.val();
+                        renderStudentsList(data);
                     });
 
                     db.ref('history').on('value', snapshot => {
@@ -1333,32 +1868,98 @@
                     renderHistory();
                 }
             } else {
+                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+                renderStudentsList(storedUsers);
                 renderWorkoutCatalog();
                 renderHistory();
             }
         }
 
-        // RENDERIZA O CATÁLOGO DE TREINOS
+        function renderStudentsList(usersObject) {
+            const container = document.getElementById('students-list-container');
+            const selectAssign = document.getElementById('workout-student-select');
+
+            if (!container) return;
+
+            selectAssign.innerHTML = `<option value="all">Público / Visível para Todos os Alunos</option>`;
+
+            if (!usersObject || Object.keys(usersObject).length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Nenhum aluno registrado ainda.</div>`;
+                return;
+            }
+
+            let html = '';
+            Object.keys(usersObject).forEach(key => {
+                const u = usersObject[key];
+                if (u.role === 'personal') return;
+
+                selectAssign.innerHTML += `<option value="${u.uid}">${u.name} (@${u.username})</option>`;
+
+                const phoneFormatted = u.whatsapp ? `+55 ${u.whatsapp}` : 'Não informado';
+                const waLink = u.whatsapp ? `https://wa.me/55${u.whatsapp}?text=Ol%C3%A1%20${encodeURIComponent(u.name)},%20sou%20seu%20Personal%20no%20Stravion%20Fitness!` : '#';
+
+                html += `
+                    <div class="student-card">
+                        <div class="student-info">
+                            <div class="student-avatar">${(u.name || 'A').charAt(0).toUpperCase()}</div>
+                            <div>
+                                <strong style="font-size:1.05rem;">${u.name}</strong>
+                                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                                    Usuário: @${u.username} | WhatsApp: ${phoneFormatted}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            ${u.whatsapp ? `
+                                <a href="${waLink}" target="_blank" class="btn-whatsapp">
+                                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                                </a>
+                            ` : ''}
+                            <button class="btn-action btn-start" onclick="createWorkoutForStudent('${u.uid}', '${u.name}')">
+                                <i class="fa-solid fa-plus"></i> Montar Treino
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || `<div style="text-align:center; padding:30px; color:var(--text-muted);">Nenhum aluno cadastrado no momento.</div>`;
+        }
+
+        function createWorkoutForStudent(studentUid, studentName) {
+            openWorkoutModal();
+            document.getElementById('workout-student-select').value = studentUid;
+            showToast(`Montando treino exclusivo para: ${studentName}`);
+        }
+
         function renderWorkoutCatalog() {
             const grid = document.getElementById('workout-list-grid');
             if (!localWorkouts || localWorkouts.length === 0) {
                 localWorkouts = DEFAULT_WORKOUTS;
             }
 
-            grid.innerHTML = localWorkouts.map(w => `
+            let filteredWorkouts = localWorkouts;
+            if (currentUser && currentUser.role !== 'personal') {
+                filteredWorkouts = localWorkouts.filter(w => !w.assignedTo || w.assignedTo === 'all' || w.assignedTo === currentUser.uid);
+            }
+
+            grid.innerHTML = filteredWorkouts.map(w => `
                 <div class="workout-card">
-                    <img src="${w.coverUrl || 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80'}" class="workout-cover" alt="Capa">
+                    <img src="${w.coverUrl || PRESET_COVERS[0].url}" class="workout-cover" alt="Capa">
                     <div class="workout-body">
                         <div class="workout-title">${w.title}</div>
                         <div class="workout-meta">
                             <span><i class="fa-solid fa-list-check"></i> ${(w.exercises || []).length} Exercícios</span>
+                            ${w.assignedTo && w.assignedTo !== 'all' ? `<span style="color:var(--stravion-accent); font-weight:700;"><i class="fa-solid fa-user-tag"></i> Treino Exclusivo</span>` : ''}
                         </div>
                         <div class="workout-actions">
-                            <button class="btn-action btn-start" onclick="startWorkout('${w.id}')">
-                                <i class="fa-solid fa-play"></i> INICIAR
-                            </button>
+                            ${currentUser && currentUser.role !== 'personal' ? `
+                                <button class="btn-action btn-start" onclick="startWorkout('${w.id}')">
+                                    <i class="fa-solid fa-play"></i> INICIAR
+                                </button>
+                            ` : ''}
                             <button class="btn-action" onclick="openWorkoutModal('${w.id}')">
-                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-pen"></i> Editar
                             </button>
                         </div>
                     </div>
@@ -1366,11 +1967,11 @@
             `).join('');
         }
 
-        // SWITCH DE TABS
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-catalog').style.display = 'none';
             document.getElementById('tab-active').style.display = 'none';
+            document.getElementById('tab-students').style.display = 'none';
             document.getElementById('tab-history').style.display = 'none';
 
             if (tab === 'catalog') {
@@ -1379,13 +1980,15 @@
             } else if (tab === 'active') {
                 document.getElementById('tab-active-btn').classList.add('active');
                 document.getElementById('tab-active').style.display = 'block';
+            } else if (tab === 'students') {
+                document.getElementById('tab-students-btn').classList.add('active');
+                document.getElementById('tab-students').style.display = 'block';
             } else if (tab === 'history') {
                 document.getElementById('tab-history-btn').classList.add('active');
                 document.getElementById('tab-history').style.display = 'block';
             }
         }
 
-        // INICIAR TREINO ATIVO
         function startWorkout(workoutId) {
             const workout = localWorkouts.find(w => w.id === workoutId);
             if (!workout) return;
@@ -1411,7 +2014,6 @@
             showToast("Treino iniciado com sucesso!");
         }
 
-        // CRONÔMETRO
         function startWorkoutClock() {
             clearInterval(workoutTimerInterval);
             workoutSeconds = 0;
@@ -1424,7 +2026,6 @@
             }, 1000);
         }
 
-        // ACCORDION SÉRIE POR SÉRIE
         function renderActiveAccordion() {
             const container = document.getElementById('active-exercise-accordion-container');
             if (!activeWorkoutSession) {
@@ -1489,7 +2090,6 @@
             }
         }
 
-        // DESCANSO
         function triggerRestTimer(seconds) {
             clearInterval(restTimerInterval);
             restSecondsLeft = seconds;
@@ -1535,7 +2135,6 @@
             } catch (e) {}
         }
 
-        // FINALIZAR TREINO
         function finishActiveWorkout() {
             if (!activeWorkoutSession) return;
 
@@ -1588,7 +2187,6 @@
             }).join('');
         }
 
-        // EMBED DE VÍDEOS DE EXERCÍCIOS
         function openVideoModal(exerciseName, url) {
             document.getElementById('modal-video-title').innerText = exerciseName;
             const box = document.getElementById('video-player-box');
@@ -1612,6 +2210,26 @@
             openModal('modal-video');
         }
 
+        function renderPresetCoversGrid() {
+            const grid = document.getElementById('preset-covers-grid');
+            if (!grid) return;
+
+            grid.innerHTML = PRESET_COVERS.map((c, idx) => `
+                <div class="preset-cover-item ${idx === 0 ? 'selected' : ''}" onclick="selectPresetCover('${c.url}', this)">
+                    <img src="${c.url}" alt="${c.label}">
+                    <div class="preset-cover-label">${c.label}</div>
+                </div>
+            `).join('');
+
+            currentCoverBase64 = PRESET_COVERS[0].url;
+        }
+
+        function selectPresetCover(url, element) {
+            document.querySelectorAll('.preset-cover-item').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            currentCoverBase64 = url;
+        }
+
         function handleCoverUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -1627,6 +2245,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     currentCoverBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    document.querySelectorAll('.preset-cover-item').forEach(el => el.classList.remove('selected'));
                 };
                 img.src = event.target.result;
             };
@@ -1636,14 +2255,15 @@
         function openWorkoutModal(workoutId = null) {
             const inputsList = document.getElementById('exercise-inputs-list');
             inputsList.innerHTML = '';
-            currentCoverBase64 = '';
+            renderPresetCoversGrid();
 
             if (workoutId) {
                 const w = localWorkouts.find(x => x.id === workoutId);
                 document.getElementById('modal-workout-heading').innerText = "Editar Treino";
                 document.getElementById('workout-id').value = w.id;
                 document.getElementById('workout-title-input').value = w.title;
-                currentCoverBase64 = w.coverUrl || '';
+                document.getElementById('workout-student-select').value = w.assignedTo || 'all';
+                currentCoverBase64 = w.coverUrl || PRESET_COVERS[0].url;
                 (w.exercises || []).forEach(ex => addExerciseRow(ex.name, ex.sets, ex.reps, ex.weight, ex.rest, ex.videoUrl));
             } else {
                 document.getElementById('modal-workout-heading').innerText = "Cadastrar Treino";
@@ -1658,29 +2278,73 @@
         function addExerciseRow(name = '', sets = 4, reps = 12, weight = 10, rest = 60, videoUrl = '') {
             const div = document.createElement('div');
             div.className = 'exercise-input-row';
-            div.style.cssText = 'background:var(--input-bg); border-radius:8px; padding:10px; margin-bottom:10px; position:relative;';
+            div.style.cssText = 'background:var(--input-bg); border-radius:10px; padding:12px; margin-bottom:12px; position:relative; border:1px solid var(--stravion-border);';
+            
+            const presetOptions = PRESET_EXERCISES.map(p => `
+                <option value="${p.videoUrl}" data-name="${p.name}" ${p.videoUrl === videoUrl ? 'selected' : ''}>
+                    ${p.name}
+                </option>
+            `).join('');
+
             div.innerHTML = `
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-                    <input type="text" placeholder="Nome do Exercício" class="form-control ex-name" value="${name}" required>
-                    <input type="text" placeholder="URL do Vídeo (YouTube)" class="form-control ex-video" value="${videoUrl}">
+                <div style="margin-bottom:10px;">
+                    <label style="font-size:0.75rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">BIBLIOTECA DE VÍDEOS (ESCOLHA UM DOS 55 EXERCÍCIOS DA LISTA)</label>
+                    <select class="form-control ex-preset-select" onchange="autoFillExercisePreset(this)">
+                        <option value="">Selecione um exercício pré-cadastrado...</option>
+                        ${presetOptions}
+                    </select>
                 </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+                    <div>
+                        <label style="font-size:0.72rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">NOME DO EXERCÍCIO</label>
+                        <input type="text" placeholder="Ex: Supino Reto" class="form-control ex-name" value="${name}" required>
+                    </div>
+                    <div>
+                        <label style="font-size:0.72rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">LINK DO VÍDEO (YOUTUBE)</label>
+                        <input type="text" placeholder="https://..." class="form-control ex-video" value="${videoUrl}">
+                    </div>
+                </div>
+
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:6px;">
-                    <input type="number" placeholder="Séries" class="form-control ex-sets" value="${sets}" title="Séries">
-                    <input type="text" placeholder="Reps" class="form-control ex-reps" value="${reps}" title="Repetições">
-                    <input type="number" placeholder="Kg" class="form-control ex-weight" value="${weight}" title="Carga (Kg)">
-                    <input type="number" placeholder="Desc(s)" class="form-control ex-rest" value="${rest}" title="Descanso em Segundos">
+                    <div>
+                        <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">SÉRIES</label>
+                        <input type="number" placeholder="Ex: 4" class="form-control ex-sets" value="${sets}" title="Quantidade de Séries">
+                    </div>
+                    <div>
+                        <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">REPETIÇÕES</label>
+                        <input type="text" placeholder="Ex: 10-12" class="form-control ex-reps" value="${reps}" title="Número de Repetições">
+                    </div>
+                    <div>
+                        <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">CARGA (KG)</label>
+                        <input type="number" placeholder="Ex: 60" class="form-control ex-weight" value="${weight}" title="Carga em Quilos">
+                    </div>
+                    <div>
+                        <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">DESCANSO(S)</label>
+                        <input type="number" placeholder="Ex: 60" class="form-control ex-rest" value="${rest}" title="Tempo de Descanso em Segundos">
+                    </div>
                 </div>
-                <button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:5px; right:5px; background:none; border:none; color:var(--stravion-red); cursor:pointer;">
+
+                <button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:none; border:none; color:var(--stravion-red); cursor:pointer; font-size:1.1rem;">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             `;
             document.getElementById('exercise-inputs-list').appendChild(div);
         }
 
+        function autoFillExercisePreset(selectEl) {
+            const selectedOpt = selectEl.options[selectEl.selectedIndex];
+            if (!selectedOpt.value) return;
+            const parent = selectEl.parentElement.parentElement;
+            parent.querySelector('.ex-name').value = selectedOpt.getAttribute('data-name') || '';
+            parent.querySelector('.ex-video').value = selectedOpt.value;
+        }
+
         function saveWorkout(e) {
             e.preventDefault();
             const id = document.getElementById('workout-id').value;
             const title = document.getElementById('workout-title-input').value;
+            const assignedTo = document.getElementById('workout-student-select').value || 'all';
 
             const rows = document.querySelectorAll('.exercise-input-row');
             const exercises = [];
@@ -1698,7 +2362,8 @@
             const data = { 
                 title, 
                 exercises,
-                coverUrl: currentCoverBase64 || 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80'
+                assignedTo,
+                coverUrl: currentCoverBase64 || PRESET_COVERS[0].url
             };
 
             if (id) {
@@ -1739,6 +2404,8 @@
         function saveProfile(e) {
             e.preventDefault();
             const newName = document.getElementById('profile-name').value;
+            const waUrl = document.getElementById('wa-api-url').value.trim();
+
             if (currentUser) {
                 currentUser.displayName = newName;
                 if (db && currentUser.uid) {
@@ -1747,6 +2414,13 @@
                 localStorage.setItem('stravion_user', JSON.stringify(currentUser));
                 updateHeaderUser();
             }
+
+            if (waUrl) {
+                localStorage.setItem('stravion_wa_api_url', waUrl);
+            } else {
+                localStorage.removeItem('stravion_wa_api_url');
+            }
+
             closeModal('modal-profile');
             showToast("Perfil atualizado!");
         }
@@ -1771,4 +2445,3 @@
     </script>
 </body>
 </html>
-
