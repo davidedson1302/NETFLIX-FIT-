@@ -1284,10 +1284,17 @@
                     </select>
                 </div>
                 <div class="form-group" style="border-top: 1px solid var(--stravion-border); padding-top:15px; margin-top:15px;">
-                    <label style="color:#25D366;"><i class="fa-brands fa-whatsapp"></i> Servidor API de Envio de WhatsApp (Opcional)</label>
-                    <input type="text" id="wa-api-url" class="form-control" placeholder="Ex: https://sua-api-whatsapp.com/send-message">
+                    <label style="color:#25D366;"><i class="fa-brands fa-whatsapp"></i> URL do Servidor API do WhatsApp (Meta / Gateway)</label>
+                    <input type="text" id="wa-api-url" class="form-control" placeholder="Ex: https://graph.facebook.com/v20.0/1286052921258443/messages">
                     <small style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:4px;">
-                        Para enviar mensagens para números reais em produção (ex: Z-API / Evolution API / Meta). Deixe em branco para usar a simulação na tela.
+                        Cole a URL da Meta Cloud API (com seu Phone Number ID) ou de outro Gateway.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label style="color:#25D366;"><i class="fa-solid fa-key"></i> Token de Acesso Meta (Bearer Token)</label>
+                    <input type="text" id="wa-api-token" class="form-control" placeholder="Ex: EAAZATIZByn5Z...">
+                    <small style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:4px;">
+                        Cole o Token gerado no Meta Developers para autenticação do envio.
                     </small>
                 </div>
                 <button type="submit" class="btn-primary">SALVAR CONFIGURAÇÕES</button>
@@ -1341,9 +1348,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        const firebaseConfig = {
-            databaseURL: "https://stravion-fitness-default-rtdb.firebaseio.com"
-        };
+        const DEFAULT_META_ENDPOINT = "https://graph.facebook.com/v20.0/1286052921258443/messages";
+        const DEFAULT_META_TOKEN = "EAAZATIZByn5ZBgBSPvlpj0CRjBIhSwU3unBIHzaBrAgsFypOJZALX8xjtKZBQrjJTKZAvndHikG5G9vqoRAS8dXS0vsZBVX5Ox01S4XJRel24PO90JZAZAxavr8eO5loLdM8thPWpli4zoH5RTc28dGm1n9f5zX4yIeyObL8Pnoq6um186ZAPOqYsK4SmdwPHHMbF96n22oncNVETUCiOHI4mzeZBquz5FrVIAsdPxd7pnC0IruydXLaHvCR358OdrOAIbZCZCA7ZCFYRlGDPivAD4GQm8";
 
         let db = null;
         try {
@@ -1357,265 +1363,49 @@
             console.warn("Modo de banco local ativo:", e);
         }
 
-        const PRESET_COVERS = [
-            { id: 'c1', label: 'Peito / Supino', url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80' },
-            { id: 'c2', label: 'Costas / Dorsal', url: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&q=80' },
-            { id: 'c3', label: 'Pernas / Leg Press', url: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&w=600&q=80' },
-            { id: 'c4', label: 'Ombros / Halteres', url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80' },
-            { id: 'c5', label: 'Bíceps / Tríceps', url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80' },
-            { id: 'c6', label: 'Abdômen / Core', url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80' },
-            { id: 'c7', label: 'Cardio / Esteira', url: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=600&q=80' },
-            { id: 'c8', label: 'Treino Feminino', url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80' }
-        ];
-
-        const PRESET_EXERCISES = [
-            { name: '1. Supino Reto com Barra', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
-            { name: '2. Supino Inclinado com Halteres', videoUrl: 'https://www.youtube.com/watch?v=0G2_XV7slIg' },
-            { name: '3. Supino Declinado com Barra', videoUrl: 'https://www.youtube.com/watch?v=LfyQBUKR8SE' },
-            { name: '4. Crossover na Polia Alta', videoUrl: 'https://www.youtube.com/watch?v=taI4XduLpTk' },
-            { name: '5. Crossover na Polia Baixa', videoUrl: 'https://www.youtube.com/watch?v=X5n_D8EaV7E' },
-            { name: '6. Peck Deck / Voador', videoUrl: 'https://www.youtube.com/watch?v=eGjt4lk6g34' },
-            { name: '7. Crucifixo Reto com Halteres', videoUrl: 'https://www.youtube.com/watch?v=QENKPHhQVi4' },
-            { name: '8. Flexão de Braço no Solo', videoUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4' },
-
-            { name: '9. Puxada Frontal no Pulley', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
-            { name: '10. Remada Curvada com Barra', videoUrl: 'https://www.youtube.com/watch?v=VKFeB7ClX30' },
-            { name: '11. Remada Baixa no Triângulo', videoUrl: 'https://www.youtube.com/watch?v=GZbfZ033fBo' },
-            { name: '12. Remada Unilateral com Halter (Serrote)', videoUrl: 'https://www.youtube.com/watch?v=roCP6wCXPqo' },
-            { name: '13. Pulldown na Polia com Corda', videoUrl: 'https://www.youtube.com/watch?v=1Tq3QdYUuHs' },
-            { name: '14. Barra Fixa (Pull-Up)', videoUrl: 'https://www.youtube.com/watch?v=eGo4IYlbE5g' },
-            { name: '15. Puxada Articulada Aberta', videoUrl: 'https://www.youtube.com/watch?v=A2SIn_L2fGA' },
-            { name: '16. Levantamento Terra (Deadlift)', videoUrl: 'https://www.youtube.com/watch?v=op9kVnSso6Q' },
-
-            { name: '17. Agachamento Livre com Barra', videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
-            { name: '18. Leg Press 45°', videoUrl: 'https://www.youtube.com/watch?v=IZxyjWCYEVw' },
-            { name: '19. Cadeira Extensora', videoUrl: 'https://www.youtube.com/watch?v=YyvSfVjQeL0' },
-            { name: '20. Agachamento Hack Machine', videoUrl: 'https://www.youtube.com/watch?v=0tn5K9NlCfo' },
-            { name: '21. Passada / Avanço com Halteres', videoUrl: 'https://www.youtube.com/watch?v=D7KaRcUTQeE' },
-            { name: '22. Agachamento Sissy (Sissy Squat)', videoUrl: 'https://www.youtube.com/watch?v=1xT6aN4Q74I' },
-
-            { name: '23. Mesa Flexora', videoUrl: 'https://www.youtube.com/watch?v=1Tq3QdYUuHs' },
-            { name: '24. Cadeira Flexora', videoUrl: 'https://www.youtube.com/watch?v=F488k65AElA' },
-            { name: '25. Stiff com Halteres ou Barra', videoUrl: 'https://www.youtube.com/watch?v=1uDiW5--rAE' },
-            { name: '26. Elevação Pélvica com Barra', videoUrl: 'https://www.youtube.com/watch?v=SEdqd1n0cvg' },
-            { name: '27. Cadeira Abdutora', videoUrl: 'https://www.youtube.com/watch?v=G_8L_Pk2o0A' },
-            { name: '28. Cadeira Adutora', videoUrl: 'https://www.youtube.com/watch?v=qR0P1Kk2vEE' },
-            { name: '29. Glúteo na Polia Baixa (Caneleira)', videoUrl: 'https://www.youtube.com/watch?v=xI0L_1c3A28' },
-
-            { name: '30. Elevação Lateral com Halteres', videoUrl: 'https://www.youtube.com/watch?v=3VcKaXpzqRo' },
-            { name: '31. Desenvolvimento com Halteres', videoUrl: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
-            { name: '32. Elevação Frontal com Halteres', videoUrl: 'https://www.youtube.com/watch?v=-t7fuZ0KhDA' },
-            { name: '33. Elevação Lateral na Polia', videoUrl: 'https://www.youtube.com/watch?v=pS1pC3vL9Yc' },
-            { name: '34. Desenvolvimento Arnold Press', videoUrl: 'https://www.youtube.com/watch?v=6Z15_WdXmVw' },
-            { name: '35. Crucifixo Invertido no Voador', videoUrl: 'https://www.youtube.com/watch?v=J32O5XGf30s' },
-            { name: '36. Encolhimento de Ombros com Halteres', videoUrl: 'https://www.youtube.com/watch?v=zJcIq3A3kU0' },
-
-            { name: '37. Rosca Direta com Barra W', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' },
-            { name: '38. Rosca Alternada com Halteres', videoUrl: 'https://www.youtube.com/watch?v=sAq_ocpRh_I' },
-            { name: '39. Rosca Martelo com Halteres', videoUrl: 'https://www.youtube.com/watch?v=TwD-YGVP4Bk' },
-            { name: '40. Rosca Scott com Barra W', videoUrl: 'https://www.youtube.com/watch?v=fIWP-FRFNU0' },
-            { name: '41. Rosca Concentrada com Halter', videoUrl: 'https://www.youtube.com/watch?v=0AUGkch3tzc' },
-            { name: '42. Rosca 21 com Barra', videoUrl: 'https://www.youtube.com/watch?v=aG3m9P4eW1c' },
-
-            { name: '43. Tríceps Corda na Polia', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' },
-            { name: '44. Tríceps Testa com Barra W', videoUrl: 'https://www.youtube.com/watch?v=nRiJVZDpdL0' },
-            { name: '45. Tríceps Francês com Halter', videoUrl: 'https://www.youtube.com/watch?v=_gsUck-7M74' },
-            { name: '46. Tríceps Coice na Polia Baixa', videoUrl: 'https://www.youtube.com/watch?v=ZO81bExgI28' },
-            { name: '47. Tríceps Mergulho nas Paralelas', videoUrl: 'https://www.youtube.com/watch?v=2z8JmcrW-As' },
-            { name: '48. Tríceps Pulley Barra Reta', videoUrl: 'https://www.youtube.com/watch?v=2-LAMcpzODU' },
-
-            { name: '49. Abdominal Supra no Solo', videoUrl: 'https://www.youtube.com/watch?v=RUNrn4b802M' },
-            { name: '50. Abdominal Infra na Barra Fixa', videoUrl: 'https://www.youtube.com/watch?v=hdng3Nm1x_E' },
-            { name: '51. Prancha Ventral Isométrica', videoUrl: 'https://www.youtube.com/watch?v=pSHjTRCQxIw' },
-            { name: '52. Abdominal Infra no Banco Inclinado', videoUrl: 'https://www.youtube.com/watch?v=2u4xM8_O9_Y' },
-            { name: '53. Abdominal Oblíquo na Polia (Woodchopper)', videoUrl: 'https://www.youtube.com/watch?v=p4vW7B4j_aQ' },
-
-            { name: '54. Gêmeos em Pé na Máquina', videoUrl: 'https://www.youtube.com/watch?v=N3awlEyY980' },
-            { name: '55. Gêmeos Sentado (Cavalinho)', videoUrl: 'https://www.youtube.com/watch?v=Jb13xLd1yR0' }
-        ];
-
-        const DEFAULT_WORKOUTS = [
-            {
-                id: 'w_demo_1',
-                title: 'TREINO A - PEITO E TRÍCEPS',
-                coverUrl: PRESET_COVERS[0].url,
-                exercises: [
-                    { name: '1. Supino Reto com Barra', sets: '4', reps: '10-12', weight: '60', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
-                    { name: '2. Supino Inclinado com Halteres', sets: '3', reps: '12', weight: '22', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=0G2_XV7slIg' },
-                    { name: '4. Crossover na Polia Alta', sets: '3', reps: '15', weight: '15', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=taI4XduLpTk' },
-                    { name: '43. Tríceps Corda na Polia', sets: '4', reps: '12', weight: '20', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' }
-                ]
-            },
-            {
-                id: 'w_demo_2',
-                title: 'TREINO B - COSTAS E BÍCEPS',
-                coverUrl: PRESET_COVERS[1].url,
-                exercises: [
-                    { name: '9. Puxada Frontal no Pulley', sets: '4', reps: '10-12', weight: '50', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
-                    { name: '10. Remada Curvada com Barra', sets: '4', reps: '10', weight: '45', rest: '60', videoUrl: 'https://www.youtube.com/watch?v=VKFeB7ClX30' },
-                    { name: '37. Rosca Direta com Barra W', sets: '3', reps: '12', weight: '25', rest: '45', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' }
-                ]
-            }
-        ];
-
-        let currentUser = null;
-        let authRole = 'atleta';
-        let pendingRegistration = null;
-        let generatedActivationCode = '';
-
-        let activeWorkoutSession = null;
-        let workoutTimerInterval = null;
-        let workoutSeconds = 0;
-        let restTimerInterval = null;
-        let restSecondsLeft = 0;
-        let currentCoverBase64 = '';
-
-        let localWorkouts = JSON.parse(localStorage.getItem('stravion_local_workouts') || 'null') || DEFAULT_WORKOUTS;
-        let localHistory = JSON.parse(localStorage.getItem('stravion_local_history') || '[]');
-
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                if (splash) {
-                    splash.style.opacity = '0';
-                    splash.style.visibility = 'hidden';
-                    splash.style.pointerEvents = 'none';
-                }
-            }, 1000);
-
-            const savedUser = localStorage.getItem('stravion_user');
-            if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    authRole = currentUser.role || 'atleta';
-                    hideAuthOverlay();
-                    updateHeaderUser();
-                    loadCloudData();
-                } catch (e) {
-                    currentUser = null;
-                    showAuthOverlay();
-                }
-            } else {
-                showAuthOverlay();
-            }
-
-            const savedTheme = localStorage.getItem('stravion_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            
-            const savedWaApi = localStorage.getItem('stravion_wa_api_url') || '';
-            const waInput = document.getElementById('wa-api-url');
-            if (waInput) waInput.value = savedWaApi;
-
-            renderPresetCoversGrid();
-            renderWorkoutCatalog();
-            renderHistory();
-        });
-
-        function showAuthOverlay() {
-            const overlay = document.getElementById('auth-overlay');
-            if (overlay) overlay.style.display = 'flex';
-        }
-
-        function hideAuthOverlay() {
-            const overlay = document.getElementById('auth-overlay');
-            if (overlay) overlay.style.display = 'none';
-        }
-
-        function setAuthRole(role) {
-            authRole = role;
-            document.getElementById('btn-type-atleta').classList.toggle('active', role === 'atleta');
-            document.getElementById('btn-type-personal').classList.toggle('active', role === 'personal');
-            
-            const subtitle = document.getElementById('auth-subtitle-text');
-            const labelRegName = document.getElementById('label-reg-name');
-
-            if (role === 'personal') {
-                subtitle.innerText = "Área Exclusiva do Personal Trainer";
-                document.getElementById('label-login-user').innerText = "Usuário do Personal";
-                labelRegName.innerText = "Nome Completo do Personal Trainer";
-            } else {
-                subtitle.innerText = "Acesse com seu usuário e senha para treinar";
-                document.getElementById('label-login-user').innerText = "Nome de Usuário";
-                labelRegName.innerText = "Nome do Atleta";
-            }
-        }
-
-        function switchAuthTab(tab) {
-            document.getElementById('btn-tab-login').classList.toggle('active', tab === 'login');
-            document.getElementById('btn-tab-register').classList.toggle('active', tab === 'register');
-            document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
-            document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
-            document.getElementById('activation-step').style.display = 'none';
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const usernameInput = document.getElementById('login-username').value.trim();
-            const passwordInput = document.getElementById('login-password').value.trim();
-
-            if (!usernameInput || !passwordInput) {
-                showToast("Preencha o usuário e a senha!");
-                return;
-            }
-
-            const usernameKey = usernameInput.toLowerCase();
-            let authenticatedUser = null;
-
-            if (db) {
-                try {
-                    const snapshot = await db.ref('app_users/' + usernameKey).once('value');
-                    const userData = snapshot.val();
-                    if (userData && userData.password === passwordInput) {
-                        authenticatedUser = {
-                            uid: usernameKey,
-                            username: userData.username,
-                            displayName: userData.name || userData.username,
-                            whatsapp: userData.whatsapp || '',
-                            role: userData.role || 'atleta'
-                        };
-                    }
-                } catch (err) {}
-            }
-
-            if (!authenticatedUser) {
-                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-                if (storedUsers[usernameKey] && storedUsers[usernameKey].password === passwordInput) {
-                    authenticatedUser = {
-                        uid: usernameKey,
-                        username: storedUsers[usernameKey].username,
-                        displayName: storedUsers[usernameKey].name,
-                        whatsapp: storedUsers[usernameKey].whatsapp || '',
-                        role: storedUsers[usernameKey].role || 'atleta'
-                    };
-                }
-            }
-
-            if (authenticatedUser) {
-                currentUser = authenticatedUser;
-                localStorage.setItem('stravion_user', JSON.stringify(currentUser));
-                hideAuthOverlay();
-                updateHeaderUser();
-                loadCloudData();
-                showToast(`Bem-vindo, ${currentUser.displayName}!`);
-            } else {
-                showToast("Usuário ou senha incorretos!");
-            }
-        }
-
-        function sendWhatsAppAutomaticMsg(phone, messageText) {
+        async function sendWhatsAppAutomaticMsg(phone, messageText) {
             console.log(`[WhatsApp API Dispatched] Para +55${phone}: "${messageText}"`);
 
-            // 1. Notificação Visual e Sonora na Tela (Banner de WhatsApp Recebido)
+            // 1. Notificação Visual e Sonora na Tela (Banner de WhatsApp)
             showWhatsAppPushBanner(phone, messageText);
 
-            // 2. Disparo para API Real de WhatsApp em Produção (se configurada)
-            const apiEndpoint = localStorage.getItem('stravion_wa_api_url') || window.WHATSAPP_API_ENDPOINT;
+            // 2. Disparo para API da Meta Cloud API
+            const apiEndpoint = localStorage.getItem('stravion_wa_api_url') || DEFAULT_META_ENDPOINT;
+            const apiToken = localStorage.getItem('stravion_wa_api_token') || DEFAULT_META_TOKEN;
+
             if (apiEndpoint) {
-                fetch(apiEndpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone: `55${phone}`, message: messageText })
-                }).catch(err => console.warn('Erro ao disparar API externa de WhatsApp:', err));
+                try {
+                    let headers = { 'Content-Type': 'application/json' };
+                    let body = {};
+
+                    if (apiEndpoint.includes('graph.facebook.com')) {
+                        if (apiToken) {
+                            headers['Authorization'] = `Bearer ${apiToken.trim()}`;
+                        }
+                        body = {
+                            messaging_product: "whatsapp",
+                            recipient_type: "individual",
+                            to: `55${phone}`,
+                            type: "text",
+                            text: { preview_url: false, body: messageText }
+                        };
+                    } else {
+                        body = {
+                            phone: `55${phone}`,
+                            number: `55${phone}`,
+                            message: messageText,
+                            text: messageText
+                        };
+                    }
+
+                    await fetch(apiEndpoint, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(body)
+                    });
+                } catch (err) {
+                    console.warn('Erro ao disparar API externa de WhatsApp:', err);
+                }
             }
         }
 
@@ -2398,6 +2188,10 @@
         }
 
         function openProfileModal() {
+            const waInput = document.getElementById('wa-api-url');
+            const tokenInput = document.getElementById('wa-api-token');
+            if (waInput) waInput.value = localStorage.getItem('stravion_wa_api_url') || DEFAULT_META_ENDPOINT;
+            if (tokenInput) tokenInput.value = localStorage.getItem('stravion_wa_api_token') || DEFAULT_META_TOKEN;
             openModal('modal-profile');
         }
 
@@ -2405,6 +2199,7 @@
             e.preventDefault();
             const newName = document.getElementById('profile-name').value;
             const waUrl = document.getElementById('wa-api-url').value.trim();
+            const waToken = document.getElementById('wa-api-token').value.trim();
 
             if (currentUser) {
                 currentUser.displayName = newName;
@@ -2421,8 +2216,14 @@
                 localStorage.removeItem('stravion_wa_api_url');
             }
 
+            if (waToken) {
+                localStorage.setItem('stravion_wa_api_token', waToken);
+            } else {
+                localStorage.removeItem('stravion_wa_api_token');
+            }
+
             closeModal('modal-profile');
-            showToast("Perfil atualizado!");
+            showToast("Perfil e chaves de WhatsApp atualizados!");
         }
 
         function openModal(id) {
