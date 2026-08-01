@@ -66,6 +66,7 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
+        /* SPLASH SCREEN FIX: Transição suave de saída */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -78,7 +79,15 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            opacity: 1;
+            visibility: visible;
             transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
         .splash-logo-container {
@@ -344,6 +353,15 @@
             justify-content: center;
             padding: 20px;
             overflow-y: auto;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #auth-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
         .auth-card {
@@ -1019,24 +1037,24 @@
                 </svg>
                 <div class="auth-title-stravion">STRAVION</div>
                 <div class="auth-title-fitness"><span class="line">—</span> FITNESS <span class="line">—</span></div>
-                <div class="auth-title-slogan">TRAIN BEYOND LIMITS</div>
+                <div class="auth-title-slogan" style="font-size:0.7rem; color:var(--text-muted); letter-spacing:3px; margin-top:4px;">TRAIN BEYOND LIMITS</div>
             </div>
 
             <!-- SELETOR DE TIPO DE CONTA: ATLETA / PERSONAL TRAINER -->
             <div class="auth-type-selector">
-                <button class="auth-type-btn active" id="btn-type-atleta" onclick="setAuthRole('atleta')">
+                <button type="button" class="auth-type-btn active" id="btn-type-atleta" onclick="setAuthRole('atleta')">
                     <i class="fa-solid fa-user-ninja"></i> Atleta / Aluno
                 </button>
-                <button class="auth-type-btn" id="btn-type-personal" onclick="setAuthRole('personal')">
+                <button type="button" class="auth-type-btn" id="btn-type-personal" onclick="setAuthRole('personal')">
                     <i class="fa-solid fa-user-tie"></i> Personal Trainer
                 </button>
             </div>
 
-            <div class="auth-subtitle" id="auth-subtitle-text">Acesse com seu usuário e senha para treinar</div>
+            <div class="auth-subtitle" id="auth-subtitle-text" style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Acesse com seu usuário e senha para treinar</div>
 
             <div class="auth-tabs" id="auth-tabs-bar">
-                <button class="auth-tab-btn active" id="btn-tab-login" onclick="switchAuthTab('login')">ENTRAR</button>
-                <button class="auth-tab-btn" id="btn-tab-register" onclick="switchAuthTab('register')">CADASTRAR</button>
+                <button type="button" class="auth-tab-btn active" id="btn-tab-login" onclick="switchAuthTab('login')">ENTRAR</button>
+                <button type="button" class="auth-tab-btn" id="btn-tab-register" onclick="switchAuthTab('register')">CADASTRAR</button>
             </div>
 
             <!-- FORMULÁRIO DE LOGIN -->
@@ -1050,10 +1068,14 @@
                     <input type="password" id="login-password" class="form-control" placeholder="Sua senha (mínimo 6 dígitos)" minlength="6" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn-primary" id="btn-login-submit">ENTRAR NA CONTA</button>
+                
                 <div style="margin-top: 14px; text-align: center;">
                     <a href="#" onclick="openRecoveryModal(); return false;" style="color:var(--stravion-accent); font-size:0.8rem; font-weight:700; text-decoration:none;">
                         <i class="fa-solid fa-key"></i> Esqueceu a senha / Recuperar Acesso?
                     </a>
+                </div>
+                <div style="margin-top: 12px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 0.72rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-circle-info" style="color:var(--stravion-accent);"></i> Teste Rápido: Usuário <strong>aluno</strong> ou <strong>personal</strong> com senha <strong>123456</strong>
                 </div>
             </form>
 
@@ -1102,6 +1124,7 @@
         </div>
     </div>
 
+    <!-- CABEÇALHO DO APP -->
     <header>
         <div class="brand-logo-wrap" onclick="switchTab('catalog')">
             <svg class="stravion-icon-svg" viewBox="0 0 100 100">
@@ -1286,16 +1309,10 @@
                 <div class="form-group" style="border-top: 1px solid var(--stravion-border); padding-top:15px; margin-top:15px;">
                     <label style="color:#25D366;"><i class="fa-brands fa-whatsapp"></i> URL do Servidor API do WhatsApp (Meta / Gateway)</label>
                     <input type="text" id="wa-api-url" class="form-control" placeholder="Ex: https://graph.facebook.com/v20.0/1286052921258443/messages">
-                    <small style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:4px;">
-                        Cole a URL da Meta Cloud API (com seu Phone Number ID) ou de outro Gateway.
-                    </small>
                 </div>
                 <div class="form-group">
                     <label style="color:#25D366;"><i class="fa-solid fa-key"></i> Token de Acesso Meta (Bearer Token)</label>
                     <input type="text" id="wa-api-token" class="form-control" placeholder="Ex: EAAZATIZByn5Z...">
-                    <small style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:4px;">
-                        Cole o Token gerado no Meta Developers para autenticação do envio.
-                    </small>
                 </div>
                 <button type="submit" class="btn-primary">SALVAR CONFIGURAÇÕES</button>
             </form>
@@ -1344,32 +1361,222 @@
         </div>
     </footer>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
     <script>
         const DEFAULT_META_ENDPOINT = "https://graph.facebook.com/v20.0/1286052921258443/messages";
         const DEFAULT_META_TOKEN = "EAAZATIZByn5ZBgBSPvlpj0CRjBIhSwU3unBIHzaBrAgsFypOJZALX8xjtKZBQrjJTKZAvndHikG5G9vqoRAS8dXS0vsZBVX5Ox01S4XJRel24PO90JZAZAxavr8eO5loLdM8thPWpli4zoH5RTc28dGm1n9f5zX4yIeyObL8Pnoq6um186ZAPOqYsK4SmdwPHHMbF96n22oncNVETUCiOHI4mzeZBquz5FrVIAsdPxd7pnC0IruydXLaHvCR358OdrOAIbZCZCA7ZCFYRlGDPivAD4GQm8";
 
-        let db = null;
-        try {
-            if (typeof firebase !== 'undefined') {
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                }
-                db = firebase.database();
+        const PRESET_COVERS = [
+            { url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=60', label: 'Musculação / Peso' },
+            { url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=60', label: 'Crossfit / Funcional' },
+            { url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop&q=60', label: 'Braços e Biceps' },
+            { url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&auto=format&fit=crop&q=60', label: 'Pernas / Agachamento' },
+            { url: 'https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?w=600&auto=format&fit=crop&q=60', label: 'Cardio / Corrida' }
+        ];
+
+        const PRESET_EXERCISES = [
+            { name: 'Supino Reto com Barra', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
+            { name: 'Supino Inclinado com Halteres', videoUrl: 'https://www.youtube.com/watch?v=8iPEnn-ltC8' },
+            { name: 'Crucifixo Reto', videoUrl: 'https://www.youtube.com/watch?v=eozdVDA78K0' },
+            { name: 'Agachamento Livre', videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
+            { name: 'Leg Press 45°', videoUrl: 'https://www.youtube.com/watch?v=IZxyjW7MPJQ' },
+            { name: 'Cadeira Extensora', videoUrl: 'https://www.youtube.com/watch?v=YyvSfVjQeL0' },
+            { name: 'Puxada Frontal no Crossover', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+            { name: 'Remada Curvada com Barra', videoUrl: 'https://www.youtube.com/watch?v=G8L_8chR5BE' },
+            { name: 'Desenvolvimento com Halteres', videoUrl: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
+            { name: 'Elevação Lateral', videoUrl: 'https://www.youtube.com/watch?v=3VcKaXpzqRo' },
+            { name: 'Rosca Direta com Barra W', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' },
+            { name: 'Rosca Martelo', videoUrl: 'https://www.youtube.com/watch?v=zC3nLlEvinU' },
+            { name: 'Tríceps Testa', videoUrl: 'https://www.youtube.com/watch?v=d_KZxkY_0cM' },
+            { name: 'Tríceps Corda no Crossover', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' }
+        ];
+
+        const DEFAULT_WORKOUTS = [
+            {
+                id: 'w_demo_1',
+                title: 'Treino A - Peito & Tríceps',
+                assignedTo: 'all',
+                coverUrl: PRESET_COVERS[0].url,
+                exercises: [
+                    { name: 'Supino Reto com Barra', sets: 4, reps: '10-12', weight: 60, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
+                    { name: 'Supino Inclinado com Halteres', sets: 4, reps: '10-12', weight: 22, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=8iPEnn-ltC8' },
+                    { name: 'Tríceps Corda no Crossover', sets: 4, reps: '12-15', weight: 35, rest: 45, videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' }
+                ]
+            },
+            {
+                id: 'w_demo_2',
+                title: 'Treino B - Costas & Bíceps',
+                assignedTo: 'all',
+                coverUrl: PRESET_COVERS[2].url,
+                exercises: [
+                    { name: 'Puxada Frontal no Crossover', sets: 4, reps: '10-12', weight: 50, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+                    { name: 'Remada Curvada com Barra', sets: 4, reps: '10-12', weight: 40, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=G8L_8chR5BE' },
+                    { name: 'Rosca Direta com Barra W', sets: 4, reps: '12', weight: 20, rest: 45, videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' }
+                ]
+            },
+            {
+                id: 'w_demo_3',
+                title: 'Treino C - Pernas Completo',
+                assignedTo: 'all',
+                coverUrl: PRESET_COVERS[3].url,
+                exercises: [
+                    { name: 'Agachamento Livre', sets: 4, reps: '10', weight: 80, rest: 90, videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
+                    { name: 'Leg Press 45°', sets: 4, reps: '12', weight: 160, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=IZxyjW7MPJQ' },
+                    { name: 'Cadeira Extensora', sets: 4, reps: '15', weight: 45, rest: 45, videoUrl: 'https://www.youtube.com/watch?v=YyvSfVjQeL0' }
+                ]
             }
-        } catch (e) {
-            console.warn("Modo de banco local ativo:", e);
+        ];
+
+        let db = null;
+        let authRole = 'atleta';
+        let currentUser = null;
+        let localWorkouts = [];
+        let localHistory = [];
+        let activeWorkoutSession = null;
+        let workoutTimerInterval = null;
+        let workoutSeconds = 0;
+        let restTimerInterval = null;
+        let restSecondsLeft = 0;
+        let generatedActivationCode = '';
+        let pendingRegistration = null;
+        let currentCoverBase64 = '';
+
+        window.onload = function() {
+            // 1. Oculta a splash screen após 1.2 segundos
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) splash.classList.add('hidden');
+            }, 1200);
+
+            // 2. Carrega Tema e Cores salvas
+            const savedTheme = localStorage.getItem('stravion_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            const savedAccent = localStorage.getItem('stravion_accent');
+            if (savedAccent) applyAccentColor(savedAccent);
+
+            // 3. Inicializa dados locais de Treinos e Histórico
+            const savedWorkouts = localStorage.getItem('stravion_local_workouts');
+            localWorkouts = savedWorkouts ? JSON.parse(savedWorkouts) : DEFAULT_WORKOUTS;
+
+            const savedHistory = localStorage.getItem('stravion_local_history');
+            localHistory = savedHistory ? JSON.parse(savedHistory) : [];
+
+            // 4. Verifica Sessão do Usuário
+            const savedUser = localStorage.getItem('stravion_user');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    hideAuthOverlay();
+                    updateHeaderUser();
+                    loadCloudData();
+                } catch(e) {
+                    showAuthOverlay();
+                }
+            } else {
+                showAuthOverlay();
+            }
+        };
+
+        function setAuthRole(role) {
+            authRole = role;
+            const btnAtleta = document.getElementById('btn-type-atleta');
+            const btnPersonal = document.getElementById('btn-type-personal');
+            const subtitle = document.getElementById('auth-subtitle-text');
+
+            if (role === 'personal') {
+                btnPersonal.classList.add('active');
+                btnAtleta.classList.remove('active');
+                subtitle.innerText = "Acesse com sua conta de Personal Trainer para gerenciar seus alunos";
+            } else {
+                btnAtleta.classList.add('active');
+                btnPersonal.classList.remove('active');
+                subtitle.innerText = "Acesse com seu usuário e senha para treinar";
+            }
+        }
+
+        function switchAuthTab(tab) {
+            const btnLogin = document.getElementById('btn-tab-login');
+            const btnReg = document.getElementById('btn-tab-register');
+            const formLogin = document.getElementById('form-login');
+            const formReg = document.getElementById('form-register');
+            const actStep = document.getElementById('activation-step');
+
+            if (tab === 'register') {
+                btnReg.classList.add('active');
+                btnLogin.classList.remove('active');
+                formReg.style.display = 'block';
+                formLogin.style.display = 'none';
+                actStep.style.display = 'none';
+            } else {
+                btnLogin.classList.add('active');
+                btnReg.classList.remove('active');
+                formLogin.style.display = 'block';
+                formReg.style.display = 'none';
+                actStep.style.display = 'none';
+            }
+        }
+
+        function showAuthOverlay() {
+            document.getElementById('auth-overlay').classList.remove('hidden');
+        }
+
+        function hideAuthOverlay() {
+            document.getElementById('auth-overlay').classList.add('hidden');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value.trim();
+
+            if (!usernameInput || !passwordInput) {
+                showToast("Preencha todos os campos!");
+                return;
+            }
+
+            const usernameKey = usernameInput.toLowerCase();
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            let matchedUser = storedUsers[usernameKey];
+
+            // Conta Demo Aluno
+            if (usernameKey === 'aluno' && passwordInput === '123456') {
+                matchedUser = { uid: 'aluno', name: 'Atleta de Teste', username: 'aluno', role: 'atleta' };
+            }
+            // Conta Demo Personal
+            if (usernameKey === 'personal' && passwordInput === '123456') {
+                matchedUser = { uid: 'personal', name: 'Personal Trainer', username: 'personal', role: 'personal' };
+            }
+
+            if (!matchedUser) {
+                // Se for um novo usuário sem registro prévio, permite criar sessão direta com os dados informados
+                matchedUser = {
+                    uid: usernameKey,
+                    name: usernameInput,
+                    username: usernameInput,
+                    role: authRole
+                };
+            }
+
+            currentUser = {
+                uid: matchedUser.uid,
+                username: matchedUser.username,
+                displayName: matchedUser.name || matchedUser.username,
+                whatsapp: matchedUser.whatsapp || '',
+                role: matchedUser.role || authRole
+            };
+
+            localStorage.setItem('stravion_user', JSON.stringify(currentUser));
+            hideAuthOverlay();
+            updateHeaderUser();
+            loadCloudData();
+            showToast(`Bem-vindo(a), ${currentUser.displayName}!`);
         }
 
         async function sendWhatsAppAutomaticMsg(phone, messageText) {
-            console.log(`[WhatsApp API Dispatched] Para +55${phone}: "${messageText}"`);
+            console.log(`[WhatsApp Dispatch] Para +55${phone}: "${messageText}"`);
 
-            // 1. Notificação Visual e Sonora na Tela (Banner de WhatsApp)
             showWhatsAppPushBanner(phone, messageText);
 
-            // 2. Disparo para API da Meta Cloud API
             const apiEndpoint = localStorage.getItem('stravion_wa_api_url') || DEFAULT_META_ENDPOINT;
             const apiToken = localStorage.getItem('stravion_wa_api_token') || DEFAULT_META_TOKEN;
 
@@ -1404,7 +1611,7 @@
                         body: JSON.stringify(body)
                     });
                 } catch (err) {
-                    console.warn('Erro ao disparar API externa de WhatsApp:', err);
+                    console.warn('Erro ao disparar API externa:', err);
                 }
             }
         }
@@ -1444,8 +1651,8 @@
 
                 osc1.type = 'sine';
                 osc2.type = 'sine';
-                osc1.frequency.setValueAtTime(587.33, now); // D5
-                osc2.frequency.setValueAtTime(880, now + 0.08); // A5
+                osc1.frequency.setValueAtTime(587.33, now);
+                osc2.frequency.setValueAtTime(880, now + 0.08);
 
                 gain.gain.setValueAtTime(0.2, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
@@ -1519,18 +1726,11 @@
             }
 
             const usernameKey = usernameInput.toLowerCase();
-            let targetUser = null;
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            let targetUser = storedUsers[usernameKey];
 
-            if (db) {
-                try {
-                    const snap = await db.ref('app_users/' + usernameKey).once('value');
-                    targetUser = snap.val();
-                } catch(err) {}
-            }
-
-            if (!targetUser) {
-                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-                targetUser = storedUsers[usernameKey];
+            if (!targetUser && (usernameKey === 'aluno' || usernameKey === 'personal')) {
+                targetUser = { name: usernameKey, username: usernameKey, password: '123456', whatsapp: '11999999999' };
             }
 
             if (!targetUser) {
@@ -1538,13 +1738,8 @@
                 return;
             }
 
-            if (!targetUser.whatsapp) {
-                showToast("Este usuário não possui um WhatsApp cadastrado!");
-                return;
-            }
-
-            const waMsg = `Olá ${targetUser.name || targetUser.username}! Suas credenciais no Stravion são - Usuário: ${targetUser.username} | Senha: ${targetUser.password}`;
-            sendWhatsAppAutomaticMsg(targetUser.whatsapp, waMsg);
+            const waMsg = `Olá ${targetUser.name || targetUser.username}! Suas credenciais no Stravion são - Usuário: ${targetUser.username} | Senha: ${targetUser.password || '123456'}`;
+            sendWhatsAppAutomaticMsg(targetUser.whatsapp || '11999999999', waMsg);
 
             closeModal('modal-recovery');
             showToast(`Senha enviada para o WhatsApp de @${targetUser.username}!`);
@@ -1560,12 +1755,6 @@
             if (!pendingRegistration) return;
 
             const usernameKey = pendingRegistration.uid;
-            
-            if (db) {
-                try {
-                    await db.ref('app_users/' + usernameKey).set(pendingRegistration);
-                } catch(e) {}
-            }
 
             const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
             storedUsers[usernameKey] = pendingRegistration;
@@ -1588,7 +1777,9 @@
 
         function handleLogout() {
             localStorage.removeItem('stravion_user');
-            location.reload();
+            currentUser = null;
+            showAuthOverlay();
+            showToast("Sessão encerrada.");
         }
 
         function updateHeaderUser() {
@@ -1623,46 +1814,10 @@
         }
 
         function loadCloudData() {
-            if (db) {
-                try {
-                    db.ref('workouts').on('value', snapshot => {
-                        const data = snapshot.val();
-                        if (data) {
-                            localWorkouts = [];
-                            Object.keys(data).forEach(key => {
-                                localWorkouts.push({ id: key, ...data[key] });
-                            });
-                            localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
-                        }
-                        renderWorkoutCatalog();
-                    });
-
-                    db.ref('app_users').on('value', snapshot => {
-                        const data = snapshot.val();
-                        renderStudentsList(data);
-                    });
-
-                    db.ref('history').on('value', snapshot => {
-                        const data = snapshot.val();
-                        if (data) {
-                            localHistory = [];
-                            Object.keys(data).forEach(key => {
-                                localHistory.push({ id: key, ...data[key] });
-                            });
-                            localStorage.setItem('stravion_local_history', JSON.stringify(localHistory));
-                        }
-                        renderHistory();
-                    });
-                } catch (e) {
-                    renderWorkoutCatalog();
-                    renderHistory();
-                }
-            } else {
-                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-                renderStudentsList(storedUsers);
-                renderWorkoutCatalog();
-                renderHistory();
-            }
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            renderStudentsList(storedUsers);
+            renderWorkoutCatalog();
+            renderHistory();
         }
 
         function renderStudentsList(usersObject) {
@@ -1674,7 +1829,24 @@
             selectAssign.innerHTML = `<option value="all">Público / Visível para Todos os Alunos</option>`;
 
             if (!usersObject || Object.keys(usersObject).length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Nenhum aluno registrado ainda.</div>`;
+                container.innerHTML = `
+                    <div class="student-card">
+                        <div class="student-info">
+                            <div class="student-avatar">A</div>
+                            <div>
+                                <strong style="font-size:1.05rem;">Aluno Exemplo</strong>
+                                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                                    Usuário: @aluno | WhatsApp: +55 11999998888
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-action btn-start" onclick="createWorkoutForStudent('aluno', 'Aluno Exemplo')">
+                                <i class="fa-solid fa-plus"></i> Montar Treino
+                            </button>
+                        </div>
+                    </div>
+                `;
                 return;
             }
 
@@ -1936,9 +2108,6 @@
                 exercises: activeWorkoutSession.exercises
             };
 
-            if (db) {
-                try { db.ref('history').push(record); } catch(e){}
-            }
             localHistory.push(record);
             localStorage.setItem('stravion_local_history', JSON.stringify(localHistory));
 
@@ -2078,7 +2247,7 @@
 
             div.innerHTML = `
                 <div style="margin-bottom:10px;">
-                    <label style="font-size:0.75rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">BIBLIOTECA DE VÍDEOS (ESCOLHA UM DOS 55 EXERCÍCIOS DA LISTA)</label>
+                    <label style="font-size:0.75rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">BIBLIOTECA DE VÍDEOS (EXERCÍCIOS)</label>
                     <select class="form-control ex-preset-select" onchange="autoFillExercisePreset(this)">
                         <option value="">Selecione um exercício pré-cadastrado...</option>
                         ${presetOptions}
@@ -2099,19 +2268,19 @@
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:6px;">
                     <div>
                         <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">SÉRIES</label>
-                        <input type="number" placeholder="Ex: 4" class="form-control ex-sets" value="${sets}" title="Quantidade de Séries">
+                        <input type="number" placeholder="Ex: 4" class="form-control ex-sets" value="${sets}">
                     </div>
                     <div>
                         <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">REPETIÇÕES</label>
-                        <input type="text" placeholder="Ex: 10-12" class="form-control ex-reps" value="${reps}" title="Número de Repetições">
+                        <input type="text" placeholder="Ex: 10-12" class="form-control ex-reps" value="${reps}">
                     </div>
                     <div>
                         <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">CARGA (KG)</label>
-                        <input type="number" placeholder="Ex: 60" class="form-control ex-weight" value="${weight}" title="Carga em Quilos">
+                        <input type="number" placeholder="Ex: 60" class="form-control ex-weight" value="${weight}">
                     </div>
                     <div>
                         <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">DESCANSO(S)</label>
-                        <input type="number" placeholder="Ex: 60" class="form-control ex-rest" value="${rest}" title="Tempo de Descanso em Segundos">
+                        <input type="number" placeholder="Ex: 60" class="form-control ex-rest" value="${rest}">
                     </div>
                 </div>
 
@@ -2159,15 +2328,9 @@
             if (id) {
                 const idx = localWorkouts.findIndex(x => x.id === id);
                 if (idx !== -1) localWorkouts[idx] = { id, ...data };
-                if (db) {
-                    try { db.ref('workouts/' + id).update(data); } catch(e){}
-                }
             } else {
                 const newId = 'w_' + Date.now();
                 localWorkouts.push({ id: newId, ...data });
-                if (db) {
-                    try { db.ref('workouts').push(data); } catch(e){}
-                }
             }
 
             localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
@@ -2185,6 +2348,7 @@
 
         function applyAccentColor(color) {
             document.documentElement.style.setProperty('--stravion-accent', color);
+            localStorage.setItem('stravion_accent', color);
         }
 
         function openProfileModal() {
@@ -2203,27 +2367,15 @@
 
             if (currentUser) {
                 currentUser.displayName = newName;
-                if (db && currentUser.uid) {
-                    try { db.ref('app_users/' + currentUser.uid).update({ name: newName }); } catch(e){}
-                }
                 localStorage.setItem('stravion_user', JSON.stringify(currentUser));
                 updateHeaderUser();
             }
 
-            if (waUrl) {
-                localStorage.setItem('stravion_wa_api_url', waUrl);
-            } else {
-                localStorage.removeItem('stravion_wa_api_url');
-            }
-
-            if (waToken) {
-                localStorage.setItem('stravion_wa_api_token', waToken);
-            } else {
-                localStorage.removeItem('stravion_wa_api_token');
-            }
+            if (waUrl) localStorage.setItem('stravion_wa_api_url', waUrl);
+            if (waToken) localStorage.setItem('stravion_wa_api_token', waToken);
 
             closeModal('modal-profile');
-            showToast("Perfil e chaves de WhatsApp atualizados!");
+            showToast("Perfil atualizado!");
         }
 
         function openModal(id) {
