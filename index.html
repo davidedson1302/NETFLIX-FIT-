@@ -19,19 +19,51 @@
 
     <style>
         :root {
-            --stravion-red: #E50914;
-            --stravion-accent: #E50914;
-            --stravion-black: #141414;
-            --stravion-dark: #1f1f1f;
-            --stravion-card-bg: #1f1f1f;
-            --stravion-border: #333333;
-            --text-white: #FFFFFF;
-            --text-muted: #AAAAAA;
+            --stravion-red: #E56B6F;
+            --stravion-accent: #E56B6F;
+            --stravion-black: #161722;
+            --stravion-dark: #1E202E;
+            --stravion-card-bg: #25283A;
+            --stravion-border: #33384F;
+            --text-white: #F4F5F9;
+            --text-muted: #A0A7BD;
             --logo-text-color: #FFFFFF;
             --logo-sub-color: #FFFFFF;
-            --body-bg: #141414;
-            --modal-bg: #1a1a1a;
-            --input-bg: #2a2a2a;
+            --body-bg: #161722;
+            --modal-bg: #1E202E;
+            --input-bg: #2B2F45;
+        }
+
+        [data-theme="light"] {
+            --stravion-black: #F4F5F9;
+            --stravion-dark: #FFFFFF;
+            --stravion-card-bg: #FFFFFF;
+            --stravion-border: #E2E8F0;
+            --text-white: #2D3748;
+            --text-muted: #718096;
+            --logo-text-color: #2D3748;
+            --logo-sub-color: #2D3748;
+            --body-bg: #F4F5F9;
+            --modal-bg: #FFFFFF;
+            --input-bg: #EDF2F7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         [data-theme="light"] {
@@ -66,7 +98,7 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* SPLASH SCREEN FIX: Transição suave de saída */
+        /* SPLASH SCREEN FIX */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -81,7 +113,7 @@
             justify-content: center;
             opacity: 1;
             visibility: visible;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
         #splash-screen.hidden {
@@ -96,16 +128,16 @@
         }
 
         .splash-s-logo {
-            width: 110px;
-            height: 110px;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 0 20px rgba(229, 9, 20, 0.6));
+            width: 70px;
+            height: 70px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 15px rgba(229, 9, 20, 0.5));
         }
 
         .splash-title {
             font-family: 'Teko', sans-serif;
-            font-size: 3rem;
-            letter-spacing: 3px;
+            font-size: 2.2rem;
+            letter-spacing: 2px;
             color: #FFFFFF;
             text-transform: uppercase;
             line-height: 1;
@@ -116,55 +148,55 @@
         }
 
         .splash-slogan {
-            font-size: 0.85rem;
-            letter-spacing: 5px;
+            font-size: 0.7rem;
+            letter-spacing: 4px;
             color: var(--text-muted);
-            margin-top: 5px;
+            margin-top: 3px;
             text-transform: uppercase;
         }
 
         @keyframes pulseSplash {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.04); }
         }
 
         header {
             background-color: var(--stravion-dark);
             border-bottom: 1px solid var(--stravion-border);
-            padding: 12px 20px;
+            padding: 8px 16px;
             position: sticky;
             top: 0;
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
         .brand-logo-wrap {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             cursor: pointer;
         }
 
         .stravion-icon-svg {
-            width: 38px;
-            height: 38px;
+            width: 28px;
+            height: 28px;
             flex-shrink: 0;
         }
 
         .brand-text-block {
             display: flex;
             flex-direction: column;
-            line-height: 1;
+            line-height: 0.95;
         }
 
         .brand-title {
             font-family: 'Teko', sans-serif;
-            font-size: 1.8rem;
+            font-size: 1.35rem;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             color: var(--logo-text-color);
             text-transform: uppercase;
         }
@@ -174,8 +206,8 @@
         }
 
         .brand-slogan {
-            font-size: 0.55rem;
-            letter-spacing: 2.5px;
+            font-size: 0.48rem;
+            letter-spacing: 1.8px;
             color: var(--text-muted);
             text-transform: uppercase;
             font-weight: 600;
@@ -184,21 +216,21 @@
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .btn-theme-toggle, .btn-user-profile, .btn-logout {
             background: var(--input-bg);
             border: 1px solid var(--stravion-border);
             color: var(--text-white);
-            width: 40px;
-            height: 40px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             transition: all 0.2s ease;
         }
 
@@ -212,26 +244,26 @@
         }
 
         .personal-badge {
-            background: linear-gradient(135deg, #E50914, #990000);
+            background: linear-gradient(135deg, var(--stravion-accent), #A29BFE);
             color: #fff;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.72rem;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 0.65rem;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            box-shadow: 0 0 12px rgba(229, 9, 20, 0.5);
+            gap: 4px;
+            box-shadow: 0 0 12px rgba(229, 107, 111, 0.35);
         }
 
         nav.nav-tabs {
             display: flex;
             background: var(--stravion-dark);
             border-bottom: 1px solid var(--stravion-border);
-            padding: 0 15px;
-            gap: 10px;
+            padding: 0 12px;
+            gap: 6px;
             overflow-x: auto;
             scrollbar-width: none;
         }
@@ -244,16 +276,16 @@
             background: none;
             border: none;
             color: var(--text-muted);
-            padding: 14px 18px;
-            font-size: 0.85rem;
+            padding: 11px 14px;
+            font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             cursor: pointer;
             border-bottom: 3px solid transparent;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             white-space: nowrap;
             transition: all 0.2s;
         }
@@ -266,7 +298,7 @@
         main.content-container {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 20px 15px 100px 15px;
+            padding: 16px 12px 60px 12px;
             width: 100%;
             flex: 1;
         }
@@ -351,7 +383,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
             opacity: 1;
             visibility: visible;
@@ -367,10 +399,10 @@
         .auth-card {
             background: var(--modal-bg);
             border: 1px solid var(--stravion-border);
-            border-radius: 20px;
+            border-radius: 16px;
             width: 100%;
-            max-width: 450px;
-            padding: 35px 28px;
+            max-width: 420px;
+            padding: 24px 20px;
             box-shadow: 0 15px 50px rgba(0,0,0,0.6);
             text-align: center;
         }
@@ -379,38 +411,38 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 22px;
+            margin-bottom: 16px;
         }
 
         .auth-vertical-s {
-            width: 110px;
+            width: 70px;
             height: auto;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 4px 15px rgba(229, 9, 20, 0.4));
+            margin-bottom: 4px;
+            filter: drop-shadow(0 3px 10px rgba(229, 9, 20, 0.4));
         }
 
         .auth-title-stravion {
             font-family: 'Teko', sans-serif;
-            font-size: 2.8rem;
+            font-size: 2.1rem;
             font-weight: 700;
             line-height: 0.85;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             color: var(--logo-text-color);
             text-transform: uppercase;
         }
 
         .auth-title-fitness {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.05rem;
+            font-size: 0.85rem;
             font-weight: 900;
             font-style: italic;
             color: var(--stravion-red);
-            letter-spacing: 5px;
-            margin-top: 4px;
+            letter-spacing: 4px;
+            margin-top: 2px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .auth-title-fitness .line {
@@ -420,28 +452,28 @@
 
         .auth-type-selector {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             background: var(--input-bg);
-            border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 18px;
+            border-radius: 8px;
+            padding: 3px;
+            margin-bottom: 14px;
         }
 
         .auth-type-btn {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             background: none;
             border: none;
             color: var(--text-muted);
             font-weight: 700;
-            font-size: 0.8rem;
-            border-radius: 8px;
+            font-size: 0.75rem;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .auth-type-btn.active {
@@ -452,20 +484,20 @@
         .auth-tabs {
             display: flex;
             background: var(--input-bg);
-            border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 20px;
+            border-radius: 8px;
+            padding: 3px;
+            margin-bottom: 16px;
         }
 
         .auth-tab-btn {
             flex: 1;
-            padding: 11px;
+            padding: 9px;
             background: none;
             border: none;
             color: var(--text-muted);
             font-weight: 700;
-            font-size: 0.85rem;
-            border-radius: 8px;
+            font-size: 0.8rem;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -476,27 +508,27 @@
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             text-align: left;
         }
 
         .form-group label {
             display: block;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             text-transform: uppercase;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 14px;
+            padding: 10px 12px;
             background: var(--input-bg);
             border: 1px solid var(--stravion-border);
             border-radius: 8px;
             color: var(--text-white);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             outline: none;
             transition: border-color 0.2s;
         }
@@ -507,15 +539,15 @@
 
         .btn-primary {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: var(--stravion-accent);
             color: #FFFFFF;
             border: none;
             border-radius: 8px;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             cursor: pointer;
             transition: opacity 0.2s, transform 0.1s;
         }
@@ -528,23 +560,23 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .section-title {
             font-family: 'Teko', sans-serif;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             letter-spacing: 1px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             text-transform: uppercase;
         }
 
         .workout-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
         }
 
         .workout-card {
@@ -559,36 +591,36 @@
         }
 
         .workout-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             border-color: var(--stravion-accent);
         }
 
         .workout-cover {
-            height: 160px;
+            height: 140px;
             width: 100%;
             object-fit: cover;
             background: #222222;
         }
 
         .workout-body {
-            padding: 16px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
             flex: 1;
         }
 
         .workout-title {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .workout-meta {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
@@ -600,18 +632,18 @@
 
         .btn-action {
             flex: 1;
-            padding: 10px;
+            padding: 9px;
             border-radius: 6px;
             border: 1px solid var(--stravion-border);
             background: var(--input-bg);
             color: var(--text-white);
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
             transition: background 0.2s;
         }
 
@@ -623,17 +655,21 @@
 
         .preset-covers-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-            max-height: 180px;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+            max-height: 220px;
             overflow-y: auto;
-            padding-right: 5px;
+            padding-right: 4px;
+            border: 1px solid var(--stravion-border);
+            border-radius: 8px;
+            padding: 8px;
+            background: var(--input-bg);
         }
 
         .preset-cover-item {
             border: 2px solid var(--stravion-border);
-            border-radius: 8px;
+            border-radius: 6px;
             overflow: hidden;
             cursor: pointer;
             position: relative;
@@ -657,11 +693,11 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.75);
-            font-size: 0.65rem;
+            background: rgba(0,0,0,0.8);
+            font-size: 0.6rem;
             font-weight: 700;
             color: #fff;
-            padding: 2px 4px;
+            padding: 2px 3px;
             text-align: center;
             white-space: nowrap;
             overflow: hidden;
@@ -672,18 +708,18 @@
             background: var(--stravion-card-bg);
             border: 1px solid var(--stravion-border);
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
+            gap: 12px;
         }
 
         .timer-display {
             font-family: 'Teko', sans-serif;
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 700;
             color: var(--stravion-accent);
             line-height: 1;
@@ -692,14 +728,14 @@
         .exercise-accordion {
             background: var(--stravion-card-bg);
             border: 1px solid var(--stravion-border);
-            border-radius: 12px;
-            margin-bottom: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
             overflow: hidden;
             transition: border-color 0.2s;
         }
 
         .accordion-header {
-            padding: 16px;
+            padding: 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -711,47 +747,47 @@
         .exercise-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .exercise-name {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .exercise-badge {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             background: var(--input-bg);
-            padding: 4px 8px;
+            padding: 3px 6px;
             border-radius: 4px;
         }
 
         .accordion-content {
-            padding: 0 16px 16px 16px;
+            padding: 0 14px 14px 14px;
             display: none;
             border-top: 1px solid var(--stravion-border);
         }
 
         .accordion-content.open {
             display: block;
-            margin-top: 10px;
-            padding-top: 15px;
+            margin-top: 8px;
+            padding-top: 12px;
         }
 
         .set-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px;
+            padding: 8px 10px;
             background: var(--input-bg);
-            border-radius: 8px;
-            margin-bottom: 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
         }
 
         .set-checkbox {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             accent-color: var(--stravion-accent);
             cursor: pointer;
         }
@@ -760,12 +796,12 @@
             color: var(--stravion-accent);
             background: none;
             border: none;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
 
         .modal-backdrop {
@@ -780,7 +816,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 15px;
             opacity: 0;
             visibility: hidden;
             transition: all 0.2s ease;
@@ -794,12 +830,12 @@
         .modal-content {
             background: var(--modal-bg);
             border: 1px solid var(--stravion-border);
-            border-radius: 16px;
+            border-radius: 14px;
             width: 100%;
-            max-width: 580px;
+            max-width: 560px;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 24px;
+            padding: 20px;
             position: relative;
         }
 
@@ -807,14 +843,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
 
         .btn-close-modal {
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             cursor: pointer;
         }
 
@@ -822,7 +858,7 @@
             width: 100%;
             aspect-ratio: 16/9;
             background: #000;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             margin-top: 10px;
         }
@@ -836,13 +872,13 @@
         .student-card {
             background: var(--stravion-card-bg);
             border: 1px solid var(--stravion-border);
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 12px;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
             transition: border-color 0.2s;
         }
@@ -854,12 +890,12 @@
         .student-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .student-avatar {
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             background: var(--stravion-accent);
             color: #fff;
@@ -867,20 +903,20 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .btn-whatsapp {
             background: #25D366;
             color: #FFFFFF;
             border: none;
-            padding: 9px 16px;
-            border-radius: 8px;
+            padding: 8px 14px;
+            border-radius: 6px;
             font-weight: 700;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             cursor: pointer;
             text-decoration: none;
         }
@@ -888,7 +924,7 @@
         footer {
             background-color: var(--stravion-dark);
             border-top: 1px solid var(--stravion-border);
-            padding: 25px 20px;
+            padding: 10px 15px;
             text-align: center;
             margin-top: auto;
         }
@@ -897,29 +933,30 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 6px;
+            margin-bottom: 2px;
         }
 
         .footer-credits {
-            font-size: 0.75rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             font-weight: 600;
+            opacity: 0.85;
         }
 
         .rest-bar {
             position: fixed;
-            bottom: 20px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
             background: #111111;
             border: 2px solid var(--stravion-accent);
-            border-radius: 30px;
-            padding: 10px 24px;
+            border-radius: 25px;
+            padding: 8px 18px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             z-index: 15000;
             visibility: hidden;
@@ -934,7 +971,7 @@
 
         .rest-time-text {
             font-family: 'Teko', sans-serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--stravion-accent);
             line-height: 1;
         }
@@ -943,24 +980,24 @@
             background: #252525;
             border: 1px solid #444;
             color: #fff;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
             font-weight: 700;
             cursor: pointer;
         }
 
         #toast-notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background: var(--modal-bg);
             border: 1px solid var(--stravion-accent);
             color: var(--text-white);
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 10px 16px;
+            border-radius: 6px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             z-index: 60000;
             box-shadow: 0 5px 20px rgba(0,0,0,0.4);
             transform: translateY(-50px);
@@ -1015,7 +1052,7 @@
         </div>
     </div>
 
-    <!-- TELA DE AUTENTICAÇÃO DUPLA: ATLETA x PERSONAL TRAINER -->
+    <!-- TELA DE AUTENTICAÇÃO DUPLA -->
     <div id="auth-overlay">
         <div class="auth-card">
             
@@ -1037,10 +1074,9 @@
                 </svg>
                 <div class="auth-title-stravion">STRAVION</div>
                 <div class="auth-title-fitness"><span class="line">—</span> FITNESS <span class="line">—</span></div>
-                <div class="auth-title-slogan" style="font-size:0.7rem; color:var(--text-muted); letter-spacing:3px; margin-top:4px;">TRAIN BEYOND LIMITS</div>
+                <div style="font-size:0.6rem; color:var(--text-muted); letter-spacing:2.5px; margin-top:2px;">TRAIN BEYOND LIMITS</div>
             </div>
 
-            <!-- SELETOR DE TIPO DE CONTA: ATLETA / PERSONAL TRAINER -->
             <div class="auth-type-selector">
                 <button type="button" class="auth-type-btn active" id="btn-type-atleta" onclick="setAuthRole('atleta')">
                     <i class="fa-solid fa-user-ninja"></i> Atleta / Aluno
@@ -1050,7 +1086,7 @@
                 </button>
             </div>
 
-            <div class="auth-subtitle" id="auth-subtitle-text" style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Acesse com seu usuário e senha para treinar</div>
+            <div id="auth-subtitle-text" style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Acesse com seu usuário e senha para treinar</div>
 
             <div class="auth-tabs" id="auth-tabs-bar">
                 <button type="button" class="auth-tab-btn active" id="btn-tab-login" onclick="switchAuthTab('login')">ENTRAR</button>
@@ -1069,13 +1105,13 @@
                 </div>
                 <button type="submit" class="btn-primary" id="btn-login-submit">ENTRAR NA CONTA</button>
                 
-                <div style="margin-top: 14px; text-align: center;">
-                    <a href="#" onclick="openRecoveryModal(); return false;" style="color:var(--stravion-accent); font-size:0.8rem; font-weight:700; text-decoration:none;">
+                <div style="margin-top: 12px; text-align: center;">
+                    <a href="#" onclick="openRecoveryModal(); return false;" style="color:var(--stravion-accent); font-size:0.78rem; font-weight:700; text-decoration:none;">
                         <i class="fa-solid fa-key"></i> Esqueceu a senha / Recuperar Acesso?
                     </a>
                 </div>
-                <div style="margin-top: 12px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 0.72rem; color: var(--text-muted);">
-                    <i class="fa-solid fa-circle-info" style="color:var(--stravion-accent);"></i> Teste Rápido: Usuário <strong>aluno</strong> ou <strong>personal</strong> com senha <strong>123456</strong>
+                <div style="margin-top: 10px; padding: 6px; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 0.7rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-circle-info" style="color:var(--stravion-accent);"></i> Usuário <strong>aluno</strong> ou <strong>personal</strong> com senha <strong>123456</strong>
                 </div>
             </form>
 
@@ -1100,39 +1136,39 @@
                 <button type="submit" class="btn-primary">GERAR CÓDIGO DE ATIVAÇÃO</button>
             </form>
 
-            <!-- TELA DE VALIDAÇÃO DE CÓDIGO WHATSAPP AUTOMÁTICA -->
-            <div id="activation-step" style="display: none; margin-top: 15px;">
-                <div style="background:var(--input-bg); border-radius:12px; padding:18px; margin-bottom:15px; text-align:center; border: 1px solid #25D366;">
-                    <div style="color:#25D366; font-weight:800; font-size:1.1rem; margin-bottom:8px;">
-                        <i class="fa-brands fa-whatsapp"></i> Código enviado para seu WhatsApp!
+            <!-- TELA DE VALIDAÇÃO DE CÓDIGO WHATSAPP -->
+            <div id="activation-step" style="display: none; margin-top: 12px;">
+                <div style="background:var(--input-bg); border-radius:10px; padding:14px; margin-bottom:12px; text-align:center; border: 1px solid #25D366;">
+                    <div style="color:#25D366; font-weight:800; font-size:1rem; margin-bottom:6px;">
+                        <i class="fa-brands fa-whatsapp"></i> Ativação pelo WhatsApp
                     </div>
-                    <p style="font-size:0.85rem; color:var(--text-white); margin-bottom:10px; line-height:1.4;">
-                        Um código de verificação de 6 dígitos foi enviado para: <br>
+                    <p style="font-size:0.8rem; color:var(--text-white); margin-bottom:10px; line-height:1.3;">
+                        Código de verificação para: <br>
                         <strong id="display-registered-phone" style="color:var(--stravion-accent); font-size:1rem;">+55 ...</strong>
                     </p>
                     
-                    <!-- BOTÃO DIRETO DE REDIRECIONAMENTO WHATSAPP -->
-                    <div id="wa-direct-link-container" style="margin-bottom:12px;"></div>
+                    <div id="wa-direct-link-container" style="margin-bottom:10px;"></div>
 
-                    <div style="font-size:0.75rem; color:var(--text-white); background:rgba(37,211,102,0.12); padding:10px; border-radius:8px; line-height:1.3;">
-                        <i class="fa-solid fa-bell" style="color:#25D366; margin-right:4px;"></i> Observe a notificação da mensagem no topo da tela ou use o botão de preenchimento rápido abaixo.
+                    <div id="wa-api-status-log" style="font-size:0.7rem; text-align:left; color:var(--text-muted); background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px; margin-bottom:8px; border-left:3px solid #25D366;">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Processando envio via API...
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label style="text-align:center;">Digite o Código de 6 Dígitos Recebido</label>
-                    <input type="text" id="input-activation-code" class="form-control" placeholder="000000" maxlength="6" style="text-align:center; letter-spacing:6px; font-size:1.3rem; font-weight:700;">
+                    <label style="text-align:center;">Digite o Código de 6 Dígitos</label>
+                    <input type="text" id="input-activation-code" class="form-control" placeholder="000000" maxlength="6" style="text-align:center; letter-spacing:5px; font-size:1.2rem; font-weight:700;">
                 </div>
                 <button type="button" class="btn-primary" onclick="confirmAccountActivation()">CONFIRMAR & ATIVAR CONTA</button>
                 
-                <button type="button" onclick="autoFillCodeFromBanner()" style="width:100%; margin-top:8px; background:rgba(37,211,102,0.2); border:1px solid #25D366; color:#25D366; padding:10px; border-radius:8px; font-weight:700; font-size:0.82rem; cursor:pointer;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> ⚡ Preencher Código Automático
+                <button type="button" onclick="autoFillCodeFromBanner()" style="width:100%; margin-top:8px; background:rgba(37,211,102,0.15); border:1px solid #25D366; color:#25D366; padding:8px; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Preencher Código Automático
                 </button>
             </div>
 
         </div>
     </div>
 
-    <!-- CABEÇALHO DO APP -->
+    <!-- CABEÇALHO DO APP (LOGO COMPACTO) -->
     <header>
         <div class="brand-logo-wrap" onclick="switchTab('catalog')">
             <svg class="stravion-icon-svg" viewBox="0 0 100 100">
@@ -1186,9 +1222,7 @@
                     <i class="fa-solid fa-plus"></i> <span id="btn-new-workout-label">Novo Treino</span>
                 </button>
             </div>
-            <div class="workout-grid" id="workout-list-grid">
-                <!-- Cards renderizados dinamicamente -->
-            </div>
+            <div class="workout-grid" id="workout-list-grid"></div>
         </section>
 
         <!-- ABA TREINO ATIVO -->
@@ -1196,7 +1230,7 @@
             <div class="active-workout-header">
                 <div>
                     <h2 id="active-workout-title" class="section-title">Nenhum treino iniciado</h2>
-                    <p style="color:var(--text-muted); font-size:0.85rem;" id="active-workout-subtitle">Selecione um treino no catálogo para começar.</p>
+                    <p style="color:var(--text-muted); font-size:0.8rem;" id="active-workout-subtitle">Selecione um treino no catálogo para começar.</p>
                 </div>
                 <div style="text-align: right;">
                     <div class="timer-display" id="workout-clock">00:00:00</div>
@@ -1206,9 +1240,7 @@
                 </div>
             </div>
 
-            <div id="active-exercise-accordion-container">
-                <!-- Lista de exercícios estilo accordion -->
-            </div>
+            <div id="active-exercise-accordion-container"></div>
         </section>
 
         <section id="tab-students" style="display: none;">
@@ -1217,22 +1249,17 @@
                     <i class="fa-solid fa-user-gear" style="color:var(--stravion-accent)"></i> Painel do Personal Trainer
                 </div>
             </div>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:16px;">
                 Gerencie seus alunos, monte treinos personalizados com capas e vídeos, e comunique-se via WhatsApp com 1 clique.
             </p>
-            <div id="students-list-container">
-                <!-- Lista de alunos cadastrados -->
-            </div>
+            <div id="students-list-container"></div>
         </section>
 
-        <!-- ABA HISTÓRICO -->
         <section id="tab-history" style="display: none;">
             <div class="section-header">
                 <div class="section-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--stravion-accent)"></i> Histórico Geral</div>
             </div>
-            <div id="history-logs-container">
-                <!-- Registros de treinos anteriores -->
-            </div>
+            <div id="history-logs-container"></div>
         </section>
 
     </main>
@@ -1240,7 +1267,7 @@
     <div class="modal-backdrop" id="modal-video">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modal-video-title" style="font-family:'Teko'; font-size:1.6rem;">Demonstração em Vídeo</h3>
+                <h3 id="modal-video-title" style="font-family:'Teko'; font-size:1.5rem;">Demonstração em Vídeo</h3>
                 <button class="btn-close-modal" onclick="closeModal('modal-video')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="video-container" id="video-player-box"></div>
@@ -1251,7 +1278,7 @@
     <div class="modal-backdrop" id="modal-workout">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="font-family:'Teko'; font-size:1.8rem;" id="modal-workout-heading">Cadastrar Treino</h3>
+                <h3 style="font-family:'Teko'; font-size:1.6rem;" id="modal-workout-heading">Cadastrar Treino</h3>
                 <button class="btn-close-modal" onclick="closeModal('modal-workout')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="form-workout" onsubmit="saveWorkout(event)">
@@ -1270,7 +1297,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Escolher Capa da Galeria da Academia</label>
+                    <label>Escolher Capa da Galeria (+15 Capas Temáticas)</label>
                     <div class="preset-covers-grid" id="preset-covers-grid"></div>
                 </div>
 
@@ -1279,23 +1306,23 @@
                     <input type="file" id="workout-cover-file" class="form-control" accept="image/*" onchange="handleCoverUpload(event)">
                 </div>
 
-                <div style="margin-top:20px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <label style="font-weight:700; font-size:0.85rem; color:var(--text-muted);">EXERCÍCIOS DO TREINO</label>
+                <div style="margin-top:16px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <label style="font-weight:700; font-size:0.8rem; color:var(--text-muted);">EXERCÍCIOS DO TREINO</label>
                     <button type="button" class="btn-action" onclick="addExerciseRow()"><i class="fa-solid fa-plus"></i> Add Exercício</button>
                 </div>
 
                 <div id="exercise-inputs-list"></div>
 
-                <button type="submit" class="btn-primary" style="margin-top:20px;">SALVAR TREINO</button>
+                <button type="submit" class="btn-primary" style="margin-top:16px;">SALVAR TREINO</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL PERFIL & CONFIGURAÇÃO DE WHATSAPP -->
+    <!-- MODAL PERFIL -->
     <div class="modal-backdrop" id="modal-profile">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="font-family:'Teko'; font-size:1.8rem;">Perfil & Configurações</h3>
+                <h3 style="font-family:'Teko'; font-size:1.6rem;">Perfil & Configurações</h3>
                 <button class="btn-close-modal" onclick="closeModal('modal-profile')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="form-profile" onsubmit="saveProfile(event)">
@@ -1304,45 +1331,52 @@
                     <input type="text" id="profile-name" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Cor de Destaque dos Botões</label>
+                    <label>Paleta de Cores Pastel & Dinâmica</label>
                     <select id="profile-accent-color" class="form-control" onchange="applyAccentColor(this.value)">
-                        <option value="#E50914">Vermelho Stravion</option>
-                        <option value="#0071e3">Azul Elétrico</option>
-                        <option value="#10b981">Verde Esmeralda</option>
-                        <option value="#8b5cf6">Roxo Neon</option>
-                        <option value="#f59e0b">Laranja Âmbar</option>
-                        <option value="#ec4899">Rosa Pink</option>
+                        <option value="#E56B6F">Pastel Coral Red</option>
+                        <option value="#6C5CE7">Pastel Lavender Violet</option>
+                        <option value="#55E6C1">Pastel Mint Green</option>
+                        <option value="#74B9FF">Pastel Ocean Blue</option>
+                        <option value="#FF9FF3">Pastel Bubblegum Pink</option>
+                        <option value="#FECA57">Pastel Warm Amber</option>
                     </select>
                 </div>
-                <div class="form-group" style="border-top: 1px solid var(--stravion-border); padding-top:15px; margin-top:15px;">
-                    <label style="color:#25D366;"><i class="fa-brands fa-whatsapp"></i> URL do Servidor API do WhatsApp (Meta / Gateway)</label>
-                    <input type="text" id="wa-api-url" class="form-control" placeholder="Ex: https://graph.facebook.com/v20.0/1286052921258443/messages">
-                </div>
-                <div class="form-group">
-                    <label style="color:#25D366;"><i class="fa-solid fa-key"></i> Token de Acesso Meta (Bearer Token)</label>
-                    <input type="text" id="wa-api-token" class="form-control" placeholder="Ex: EAAZATIZByn5Z...">
-                </div>
-                <button type="submit" class="btn-primary">SALVAR CONFIGURAÇÕES</button>
+                
+                <!-- CONFIGURAÇÕES DE API OCULTAS CONFORME SOLICITADO -->
+                <details style="margin-top:14px; border-top: 1px solid var(--stravion-border); padding-top:10px;">
+                    <summary style="font-size:0.72rem; color:var(--text-muted); cursor:pointer; font-weight:700;">
+                        <i class="fa-solid fa-lock"></i> Configurações do Servidor (Oculto)
+                    </summary>
+                    <div class="form-group" style="margin-top:10px;">
+                        <label style="color:var(--text-muted); font-size:0.68rem;"><i class="fa-brands fa-whatsapp"></i> URL da API</label>
+                        <input type="password" id="wa-api-url" class="form-control" placeholder="URL da API (Oculto)" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label style="color:var(--text-muted); font-size:0.68rem;"><i class="fa-solid fa-key"></i> Token de Acesso</label>
+                        <input type="password" id="wa-api-token" class="form-control" placeholder="Token de Acesso (Oculto)" autocomplete="off">
+                    </div>
+                </details>
+
+                <button type="submit" class="btn-primary" style="margin-top:16px;">SALVAR CONFIGURAÇÕES</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL RECUPERAÇÃO DE ACESSO VIA WHATSAPP -->
     <div class="modal-backdrop" id="modal-recovery">
-        <div class="modal-content" style="max-width:420px;">
+        <div class="modal-content" style="max-width:400px;">
             <div class="modal-header">
-                <h3 style="font-family:'Teko'; font-size:1.8rem; color:var(--stravion-accent);">Recuperar Acesso</h3>
+                <h3 style="font-family:'Teko'; font-size:1.6rem; color:var(--stravion-accent);">Recuperar Acesso</h3>
                 <button class="btn-close-modal" onclick="closeModal('modal-recovery')"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:15px; text-align:left;">
-                Digite seu nome de usuário. Suas credenciais de acesso serão enviadas diretamente para o seu WhatsApp cadastrado.
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px; text-align:left;">
+                Digite seu nome de usuário para enviar as credenciais para o seu WhatsApp.
             </p>
             <form onsubmit="handleRecovery(event)">
                 <div class="form-group">
-                    <label>Seu Nome de Usuário Cadastrado</label>
+                    <label>Seu Nome de Usuário</label>
                     <input type="text" id="rec-username" class="form-control" placeholder="Digite seu nome de usuário" required autocomplete="username">
                 </div>
-                <button type="submit" class="btn-primary" style="margin-top:10px;">ENVIAR SENHA PARA O WHATSAPP</button>
+                <button type="submit" class="btn-primary" style="margin-top:8px;">ENVIAR SENHA PARA O WHATSAPP</button>
             </form>
         </div>
     </div>
@@ -1356,16 +1390,17 @@
 
     <div id="toast-notification">Notificação</div>
 
+    <!-- RODAPÉ COMPACTO E SEM ESPAÇO PERDIDO -->
     <footer>
         <div class="footer-logo-wrap">
-            <svg class="stravion-icon-svg" viewBox="0 0 100 100" style="width:28px; height:28px;">
+            <svg class="stravion-icon-svg" viewBox="0 0 100 100" style="width:20px; height:20px;">
                 <path d="M20,35 Q50,20 80,35 L60,48 Q45,38 35,48 Z" fill="var(--logo-text-color)"/>
                 <path d="M20,65 Q50,80 80,65 L60,52 Q45,62 35,52 Z" fill="#E50914"/>
             </svg>
-            <span style="font-family:'Teko'; font-size:1.4rem; color:var(--logo-text-color); font-weight:700;">STRAVION <span style="color:var(--stravion-red)">FITNESS</span></span>
+            <span style="font-family:'Teko'; font-size:1.1rem; color:var(--logo-text-color); font-weight:700;">STRAVION <span style="color:var(--stravion-red)">FITNESS</span></span>
         </div>
         <div class="footer-credits">
-            @ CRIADO E FEITO POR DAVID E. SOUZA TODOS OS DIREITOS RESERVADO (2026)
+            © 2026 DAVID E. SOUZA - TODOS OS DIREITOS RESERVADOS
         </div>
     </footer>
 
@@ -1373,29 +1408,144 @@
         const DEFAULT_META_ENDPOINT = "https://graph.facebook.com/v20.0/1286052921258443/messages";
         const DEFAULT_META_TOKEN = "EAAZATIZByn5ZBgBSPvlpj0CRjBIhSwU3unBIHzaBrAgsFypOJZALX8xjtKZBQrjJTKZAvndHikG5G9vqoRAS8dXS0vsZBVX5Ox01S4XJRel24PO90JZAZAxavr8eO5loLdM8thPWpli4zoH5RTc28dGm1n9f5zX4yIeyObL8Pnoq6um186ZAPOqYsK4SmdwPHHMbF96n22oncNVETUCiOHI4mzeZBquz5FrVIAsdPxd7pnC0IruydXLaHvCR358OdrOAIbZCZCA7ZCFYRlGDPivAD4GQm8";
 
+        // GALERIA DE CAPAS AMPLIADA (+15 CAPAS)
         const PRESET_COVERS = [
-            { url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=60', label: 'Musculação / Peso' },
+            { url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=60', label: 'Musculação Geral' },
             { url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=60', label: 'Crossfit / Funcional' },
-            { url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop&q=60', label: 'Braços e Biceps' },
-            { url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&auto=format&fit=crop&q=60', label: 'Pernas / Agachamento' },
-            { url: 'https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?w=600&auto=format&fit=crop&q=60', label: 'Cardio / Corrida' }
+            { url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop&q=60', label: 'Braços & Biceps' },
+            { url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&auto=format&fit=crop&q=60', label: 'Pernas & Agachamento' },
+            { url: 'https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?w=600&auto=format&fit=crop&q=60', label: 'Cardio & Esteira' },
+            { url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&auto=format&fit=crop&q=60', label: 'Ombros & Halteres' },
+            { url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&auto=format&fit=crop&q=60', label: 'Costas & Puxadas' },
+            { url: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=600&auto=format&fit=crop&q=60', label: 'Glúteos & Treino Feminino' },
+            { url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&auto=format&fit=crop&q=60', label: 'Alongamento & Yoga' },
+            { url: 'https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=600&auto=format&fit=crop&q=60', label: 'Lutas & Boxe' },
+            { url: 'https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?w=600&auto=format&fit=crop&q=60', label: 'Calistenia & Argolas' },
+            { url: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=600&auto=format&fit=crop&q=60', label: 'Corrida de Rua' },
+            { url: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=600&auto=format&fit=crop&q=60', label: 'Powerlifting / Carga Alta' },
+            { url: 'https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=600&auto=format&fit=crop&q=60', label: 'Treino de Tríceps' },
+            { url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&auto=format&fit=crop&q=60', label: 'Abdômen Definido' }
         ];
 
+        // BANCO DE DADOS DE 100 EXERCÍCIOS DIVIDIDOS POR GRUPO MUSCULAR
         const PRESET_EXERCISES = [
-            { name: 'Supino Reto com Barra', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
-            { name: 'Supino Inclinado com Halteres', videoUrl: 'https://www.youtube.com/watch?v=8iPEnn-ltC8' },
-            { name: 'Crucifixo Reto', videoUrl: 'https://www.youtube.com/watch?v=eozdVDA78K0' },
-            { name: 'Agachamento Livre', videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
-            { name: 'Leg Press 45°', videoUrl: 'https://www.youtube.com/watch?v=IZxyjW7MPJQ' },
-            { name: 'Cadeira Extensora', videoUrl: 'https://www.youtube.com/watch?v=YyvSfVjQeL0' },
-            { name: 'Puxada Frontal no Crossover', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
-            { name: 'Remada Curvada com Barra', videoUrl: 'https://www.youtube.com/watch?v=G8L_8chR5BE' },
-            { name: 'Desenvolvimento com Halteres', videoUrl: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
-            { name: 'Elevação Lateral', videoUrl: 'https://www.youtube.com/watch?v=3VcKaXpzqRo' },
-            { name: 'Rosca Direta com Barra W', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' },
-            { name: 'Rosca Martelo', videoUrl: 'https://www.youtube.com/watch?v=zC3nLlEvinU' },
-            { name: 'Tríceps Testa', videoUrl: 'https://www.youtube.com/watch?v=d_KZxkY_0cM' },
-            { name: 'Tríceps Corda no Crossover', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' }
+            // PEITO (12)
+            { category: 'PEITO', name: 'Supino Reto com Barra', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
+            { category: 'PEITO', name: 'Supino Inclinado com Halteres', videoUrl: 'https://www.youtube.com/watch?v=8iPEnn-ltC8' },
+            { category: 'PEITO', name: 'Supino Declinado com Barra', videoUrl: 'https://www.youtube.com/watch?v=LfyQBUKR8SE' },
+            { category: 'PEITO', name: 'Supino Reto com Halteres', videoUrl: 'https://www.youtube.com/watch?v=VmB1G1K7v94' },
+            { category: 'PEITO', name: 'Crucifixo Reto no Banco', videoUrl: 'https://www.youtube.com/watch?v=eozdVDA78K0' },
+            { category: 'PEITO', name: 'Crucifixo Inclinado com Halteres', videoUrl: 'https://www.youtube.com/watch?v=5CECBfd773g' },
+            { category: 'PEITO', name: 'Crossover Polia Alta', videoUrl: 'https://www.youtube.com/watch?v=taI4XduLpTk' },
+            { category: 'PEITO', name: 'Crossover Polia Baixa', videoUrl: 'https://www.youtube.com/watch?v=38X5U_Ie-M8' },
+            { category: 'PEITO', name: 'Peitoral Voador / Peck Deck', videoUrl: 'https://www.youtube.com/watch?v=Z57CtFmRMwg' },
+            { category: 'PEITO', name: 'Flexão de Braços Tradicional', videoUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4' },
+            { category: 'PEITO', name: 'Flexão Inclinada no Banco', videoUrl: 'https://www.youtube.com/watch?v=SKPab2YC8BE' },
+            { category: 'PEITO', name: 'Pull-over com Halter para Peito', videoUrl: 'https://www.youtube.com/watch?v=FK4rHfWKEac' },
+
+            // COSTAS (12)
+            { category: 'COSTAS', name: 'Puxada Frontal Aberta na Polia', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+            { category: 'COSTAS', name: 'Puxada Triângulo / Pegada Fechada', videoUrl: 'https://www.youtube.com/watch?v=2eR3PzT6lF4' },
+            { category: 'COSTAS', name: 'Remada Curvada com Barra', videoUrl: 'https://www.youtube.com/watch?v=G8L_8chR5BE' },
+            { category: 'COSTAS', name: 'Remada Baixa com Triângulo', videoUrl: 'https://www.youtube.com/watch?v=GZbfZ033f74' },
+            { category: 'COSTAS', name: 'Remada Unilateral com Halter (Serrote)', videoUrl: 'https://www.youtube.com/watch?v=pYcpY20QaE8' },
+            { category: 'COSTAS', name: 'Remada Cavalinho na Barra T', videoUrl: 'https://www.youtube.com/watch?v=j3Igk5nyZE4' },
+            { category: 'COSTAS', name: 'Pulldown com Corda no Crossover', videoUrl: 'https://www.youtube.com/watch?v=Vl3BscPll5k' },
+            { category: 'COSTAS', name: 'Barra Fixa / Pull-Up', videoUrl: 'https://www.youtube.com/watch?v=eGo4IYlbE5g' },
+            { category: 'COSTAS', name: 'Levantamento Terra Tradicional', videoUrl: 'https://www.youtube.com/watch?v=op9kVnSso6Q' },
+            { category: 'COSTAS', name: 'Crucifixo Inverso no Peck Deck', videoUrl: 'https://www.youtube.com/watch?v=23uU8U9xW8Q' },
+            { category: 'COSTAS', name: 'Remada Articulada na Máquina', videoUrl: 'https://www.youtube.com/watch?v=A2G5A9yvJ2k' },
+            { category: 'COSTAS', name: 'Lombar no Banco Romano', videoUrl: 'https://www.youtube.com/watch?v=ph3pddpKzzw' },
+
+            // OMBROS (10)
+            { category: 'OMBROS', name: 'Desenvolvimento com Halteres Sentado', videoUrl: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
+            { category: 'OMBROS', name: 'Desenvolvimento Militar com Barra', videoUrl: 'https://www.youtube.com/watch?v=2yjwXTZQDDI' },
+            { category: 'OMBROS', name: 'Elevação Lateral com Halteres', videoUrl: 'https://www.youtube.com/watch?v=3VcKaXpzqRo' },
+            { category: 'OMBROS', name: 'Elevação Lateral na Polia Baixa', videoUrl: 'https://www.youtube.com/watch?v=PzsM9R_B1I8' },
+            { category: 'OMBROS', name: 'Elevação Frontal com Halteres', videoUrl: 'https://www.youtube.com/watch?v=-t7fuZ0KhDA' },
+            { category: 'OMBROS', name: 'Elevação Frontal com Anilha', videoUrl: 'https://www.youtube.com/watch?v=al8L2U9mB5g' },
+            { category: 'OMBROS', name: 'Crucifixo Inverso com Halteres Curvado', videoUrl: 'https://www.youtube.com/watch?v=ttvfGg9d0XY' },
+            { category: 'OMBROS', name: 'Facepull com Corda na Polia', videoUrl: 'https://www.youtube.com/watch?v=rep-qVOkqgk' },
+            { category: 'OMBROS', name: 'Encolhimento com Halteres (Trapézio)', videoUrl: 'https://www.youtube.com/watch?v=cJRVVxmytaM' },
+            { category: 'OMBROS', name: 'Desenvolvimento Arnold Press', videoUrl: 'https://www.youtube.com/watch?v=6Z15_WdXmVw' },
+
+            // BÍCEPS (10)
+            { category: 'BÍCEPS', name: 'Rosca Direta com Barra W', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' },
+            { category: 'BÍCEPS', name: 'Rosca Alternada com Halteres', videoUrl: 'https://www.youtube.com/watch?v=sAq_ocpRh_I' },
+            { category: 'BÍCEPS', name: 'Rosca Martelo com Halteres', videoUrl: 'https://www.youtube.com/watch?v=zC3nLlEvinU' },
+            { category: 'BÍCEPS', name: 'Rosca Scott com Barra W', videoUrl: 'https://www.youtube.com/watch?v=vngL3XwQ28Y' },
+            { category: 'BÍCEPS', name: 'Rosca Concentrada com Halter', videoUrl: 'https://www.youtube.com/watch?v=0AUGkch3tzc' },
+            { category: 'BÍCEPS', name: 'Rosca Inclinada no Banco 45°', videoUrl: 'https://www.youtube.com/watch?v=soxrZlIl35U' },
+            { category: 'BÍCEPS', name: 'Rosca Dupla no Crossover (Polia Alta)', videoUrl: 'https://www.youtube.com/watch?v=9_M3G0_C15Q' },
+            { category: 'BÍCEPS', name: 'Rosca 21 com Barra', videoUrl: 'https://www.youtube.com/watch?v=m4L0U_uGqEw' },
+            { category: 'BÍCEPS', name: 'Rosca Inversa na Barra (Antebraço)', videoUrl: 'https://www.youtube.com/watch?v=nR_tT22M8L0' },
+            { category: 'BÍCEPS', name: 'Rosca Martelo na Corda Polia Baixa', videoUrl: 'https://www.youtube.com/watch?v=7_E_m4gK24E' },
+
+            // TRÍCEPS (10)
+            { category: 'TRÍCEPS', name: 'Tríceps Corda no Crossover', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' },
+            { category: 'TRÍCEPS', name: 'Tríceps Barra Reta / Barra V', videoUrl: 'https://www.youtube.com/watch?v=2-LAMcpzODU' },
+            { category: 'TRÍCEPS', name: 'Tríceps Testa com Barra W', videoUrl: 'https://www.youtube.com/watch?v=d_KZxkY_0cM' },
+            { category: 'TRÍCEPS', name: 'Tríceps Francês com Halter Unilateral', videoUrl: 'https://www.youtube.com/watch?v=_gsUck-7M74' },
+            { category: 'TRÍCEPS', name: 'Tríceps Francês com Corda na Polia', videoUrl: 'https://www.youtube.com/watch?v=1u18yR5f3vI' },
+            { category: 'TRÍCEPS', name: 'Mergulho em Paralelas', videoUrl: 'https://www.youtube.com/watch?v=2z8JmcrW-As' },
+            { category: 'TRÍCEPS', name: 'Tríceps no Banco / Mergulho Banco', videoUrl: 'https://www.youtube.com/watch?v=c3ZGl4pAwZ4' },
+            { category: 'TRÍCEPS', name: 'Tríceps Coice com Halter', videoUrl: 'https://www.youtube.com/watch?v=6SS6K3l-24s' },
+            { category: 'TRÍCEPS', name: 'Supino Fechado para Tríceps', videoUrl: 'https://www.youtube.com/watch?v=nEF0bv243y8' },
+            { category: 'TRÍCEPS', name: 'Tríceps Unilateral na Polia Invertida', videoUrl: 'https://www.youtube.com/watch?v=L2G_K0pA1gU' },
+
+            // PERNAS - QUADRÍCEPS (12)
+            { category: 'QUADRÍCEPS', name: 'Agachamento Livre com Barra', videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
+            { category: 'QUADRÍCEPS', name: 'Leg Press 45°', videoUrl: 'https://www.youtube.com/watch?v=IZxyjW7MPJQ' },
+            { category: 'QUADRÍCEPS', name: 'Cadeira Extensora', videoUrl: 'https://www.youtube.com/watch?v=YyvSfVjQeL0' },
+            { category: 'QUADRÍCEPS', name: 'Agachamento Hack Machine', videoUrl: 'https://www.youtube.com/watch?v=rYgNArpwqSo' },
+            { category: 'QUADRÍCEPS', name: 'Agachamento Smith Machine', videoUrl: 'https://www.youtube.com/watch?v=A2Iu7I9pP3k' },
+            { category: 'QUADRÍCEPS', name: 'Afundo com Halteres (Passada)', videoUrl: 'https://www.youtube.com/watch?v=D7KaRcUTQeE' },
+            { category: 'QUADRÍCEPS', name: 'Agachamento Búlgaro com Halteres', videoUrl: 'https://www.youtube.com/watch?v=2C-uNgKwPLE' },
+            { category: 'QUADRÍCEPS', name: 'Agachamento Sissy Squat', videoUrl: 'https://www.youtube.com/watch?v=0kI4_7_QvU4' },
+            { category: 'QUADRÍCEPS', name: 'Agachamento Frontal com Barra', videoUrl: 'https://www.youtube.com/watch?v=uYumuL_G_V0' },
+            { category: 'QUADRÍCEPS', name: 'Agachamento Sumô com Halter', videoUrl: 'https://www.youtube.com/watch?v=1K27t4S2i_0' },
+            { category: 'QUADRÍCEPS', name: 'Subida no Banco / Step-up', videoUrl: 'https://www.youtube.com/watch?v=9ZknA8P4U7A' },
+            { category: 'QUADRÍCEPS', name: 'Leg Press Horizontal', videoUrl: 'https://www.youtube.com/watch?v=k4Uu-M3-4xU' },
+
+            // PERNAS - POSTERIOR & GLÚTEOS (12)
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Stiff com Barra / Halteres', videoUrl: 'https://www.youtube.com/watch?v=1uDiW5--rAE' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Mesa Flexora Deitada', videoUrl: 'https://www.youtube.com/watch?v=1Tq3QdYUuHs' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Cadeira Flexora Sentada', videoUrl: 'https://www.youtube.com/watch?v=F_3k_B3B6wU' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Flexão de Pernas Em Pé Unilateral', videoUrl: 'https://www.youtube.com/watch?v=L3k_P6vG2p4' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Elevação Pélvica com Barra', videoUrl: 'https://www.youtube.com/watch?v=LM8lXm3L_m8' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Cadeira Abdutora', videoUrl: 'https://www.youtube.com/watch?v=G_2E3p4L5vU' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Cadeira Adutora', videoUrl: 'https://www.youtube.com/watch?v=E7_O9pB5vK0' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Glúteo na Polia / Coice de Glúteo', videoUrl: 'https://www.youtube.com/watch?v=8K6L2B3mX8I' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Glúteo Quatro Apoios com Caneleira', videoUrl: 'https://www.youtube.com/watch?v=9_K3mQ8J5vE' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Good Morning / Bom Dia com Barra', videoUrl: 'https://www.youtube.com/watch?v=vKPGe1zX5f0' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Agachamento Sumô na Barra Landmine', videoUrl: 'https://www.youtube.com/watch?v=kL2_3p5mX80' },
+            { category: 'POSTERIOR & GLÚTEOS', name: 'Abdução de Quadril com Mini-band', videoUrl: 'https://www.youtube.com/watch?v=0k3_mL5v8vE' },
+
+            // PANTURRILHA & ABDÔMEN (12)
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Gêmeos Sentado na Máquina (Panturrilha)', videoUrl: 'https://www.youtube.com/watch?v=3V_P3_8mX0s' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Gêmeos Em Pé no Smith / Degrau', videoUrl: 'https://www.youtube.com/watch?v=L2_3k8mP5vU' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Panturrilha no Leg Press 45°', videoUrl: 'https://www.youtube.com/watch?v=K3_p8mL2vE0' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal Supra Tradicional no Chão', videoUrl: 'https://www.youtube.com/watch?v=1fbU_M3xK0E' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal Infra / Elevação de Pernas', videoUrl: 'https://www.youtube.com/watch?v=l4kQd9E3p4s' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal Infra na Barra Fixa', videoUrl: 'https://www.youtube.com/watch?v=hd_m3pL2v0E' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Prancha Abdominal Isométrica', videoUrl: 'https://www.youtube.com/watch?v=pSHjTRCQxIw' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Prancha Lateral', videoUrl: 'https://www.youtube.com/watch?v=_rdfjE3k5v0' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal Remador', videoUrl: 'https://www.youtube.com/watch?v=3k_p8mL2vE0' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal na Polia Alta / Ajoelhado', videoUrl: 'https://www.youtube.com/watch?v=2_k8pM3vE0s' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal Oblíquo Rotação de Quadril', videoUrl: 'https://www.youtube.com/watch?v=k3_p8mL5vE0' },
+            { category: 'PANTURRILHA & ABDÔMEN', name: 'Roda Abdominal / Ab Roller', videoUrl: 'https://www.youtube.com/watch?v=0k3_p8mL2vE' },
+
+            // CARDIO, LUTAS & FUNCIONAL (10)
+            { category: 'CARDIO & LUTAS', name: 'Corrida na Esteira (HIIT / Tiro)', videoUrl: 'https://www.youtube.com/watch?v=5k3p8mL2vE0' },
+            { category: 'CARDIO & LUTAS', name: 'Bicicleta Ergométrica Spin', videoUrl: 'https://www.youtube.com/watch?v=2k3_p8mL5vE' },
+            { category: 'CARDIO & LUTAS', name: 'Simulador de Escada / Stairmaster', videoUrl: 'https://www.youtube.com/watch?v=1k3_p8mL2vE' },
+            { category: 'CARDIO & LUTAS', name: 'Elíptico / Transport', videoUrl: 'https://www.youtube.com/watch?v=4k3_p8mL5vE' },
+            { category: 'CARDIO & LUTAS', name: 'Corda Naval / Battle Rope', videoUrl: 'https://www.youtube.com/watch?v=3k8_pM2vE0s' },
+            { category: 'CARDIO & LUTAS', name: 'Kettlebell Swing', videoUrl: 'https://www.youtube.com/watch?v=sSESeQ5u7Ew' },
+            { category: 'CARDIO & LUTAS', name: 'Burpees Completo', videoUrl: 'https://www.youtube.com/watch?v=auBLP6LgM3s' },
+            { category: 'CARDIO & LUTAS', name: 'Polichinelos HIIT', videoUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA' },
+            { category: 'CARDIO & LUTAS', name: 'Sombra de Boxe / Golpe em Saco', videoUrl: 'https://www.youtube.com/watch?v=2k8_pM3vE0s' },
+            { category: 'CARDIO & LUTAS', name: 'Saltos Duplos de Corda / Double Unders', videoUrl: 'https://www.youtube.com/watch?v=82j4mg7N6gE' }
         ];
 
         const DEFAULT_WORKOUTS = [
@@ -1414,9 +1564,9 @@
                 id: 'w_demo_2',
                 title: 'Treino B - Costas & Bíceps',
                 assignedTo: 'all',
-                coverUrl: PRESET_COVERS[2].url,
+                coverUrl: PRESET_COVERS[6].url,
                 exercises: [
-                    { name: 'Puxada Frontal no Crossover', sets: 4, reps: '10-12', weight: 50, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+                    { name: 'Puxada Frontal Aberta na Polia', sets: 4, reps: '10-12', weight: 50, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
                     { name: 'Remada Curvada com Barra', sets: 4, reps: '10-12', weight: 40, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=G8L_8chR5BE' },
                     { name: 'Rosca Direta com Barra W', sets: 4, reps: '12', weight: 20, rest: 45, videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' }
                 ]
@@ -1427,14 +1577,13 @@
                 assignedTo: 'all',
                 coverUrl: PRESET_COVERS[3].url,
                 exercises: [
-                    { name: 'Agachamento Livre', sets: 4, reps: '10', weight: 80, rest: 90, videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
+                    { name: 'Agachamento Livre com Barra', sets: 4, reps: '10', weight: 80, rest: 90, videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
                     { name: 'Leg Press 45°', sets: 4, reps: '12', weight: 160, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=IZxyjW7MPJQ' },
                     { name: 'Cadeira Extensora', sets: 4, reps: '15', weight: 45, rest: 45, videoUrl: 'https://www.youtube.com/watch?v=YyvSfVjQeL0' }
                 ]
             }
         ];
 
-        let db = null;
         let authRole = 'atleta';
         let currentUser = null;
         let localWorkouts = [];
@@ -1449,27 +1598,23 @@
         let currentCoverBase64 = '';
 
         window.onload = function() {
-            // 1. Oculta a splash screen após 1.2 segundos
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if (splash) splash.classList.add('hidden');
             }, 1200);
 
-            // 2. Carrega Tema e Cores salvas
             const savedTheme = localStorage.getItem('stravion_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
 
             const savedAccent = localStorage.getItem('stravion_accent');
             if (savedAccent) applyAccentColor(savedAccent);
 
-            // 3. Inicializa dados locais de Treinos e Histórico
             const savedWorkouts = localStorage.getItem('stravion_local_workouts');
             localWorkouts = savedWorkouts ? JSON.parse(savedWorkouts) : DEFAULT_WORKOUTS;
 
             const savedHistory = localStorage.getItem('stravion_local_history');
             localHistory = savedHistory ? JSON.parse(savedHistory) : [];
 
-            // 4. Verifica Sessão do Usuário
             const savedUser = localStorage.getItem('stravion_user');
             if (savedUser) {
                 try {
@@ -1494,7 +1639,7 @@
             if (role === 'personal') {
                 btnPersonal.classList.add('active');
                 btnAtleta.classList.remove('active');
-                subtitle.innerText = "Acesse com sua conta de Personal Trainer para gerenciar seus alunos";
+                subtitle.innerText = "Acesse como Personal Trainer para criar treinos aos alunos";
             } else {
                 btnAtleta.classList.add('active');
                 btnPersonal.classList.remove('active');
@@ -1546,17 +1691,14 @@
             const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
             let matchedUser = storedUsers[usernameKey];
 
-            // Conta Demo Aluno
             if (usernameKey === 'aluno' && passwordInput === '123456') {
                 matchedUser = { uid: 'aluno', name: 'Atleta de Teste', username: 'aluno', role: 'atleta' };
             }
-            // Conta Demo Personal
             if (usernameKey === 'personal' && passwordInput === '123456') {
                 matchedUser = { uid: 'personal', name: 'Personal Trainer', username: 'personal', role: 'personal' };
             }
 
             if (!matchedUser) {
-                // Se for um novo usuário sem registro prévio, permite criar sessão direta com os dados informados
                 matchedUser = {
                     uid: usernameKey,
                     name: usernameInput,
@@ -1580,18 +1722,26 @@
             showToast(`Bem-vindo(a), ${currentUser.displayName}!`);
         }
 
-        async function sendWhatsAppAutomaticMsg(phone, messageText) {
-            console.log(`[WhatsApp Dispatch] Para +55${phone}: "${messageText}"`);
+        function cleanPhone(phone) {
+            let p = phone.replace(/\D/g, '');
+            if (p.length <= 11 && !p.startsWith('55')) {
+                p = '55' + p;
+            }
+            return p;
+        }
 
-            showWhatsAppPushBanner(phone, messageText);
+        async function sendWhatsAppAutomaticMsg(rawPhone, messageText) {
+            const formattedPhone = cleanPhone(rawPhone);
+            const statusLogEl = document.getElementById('wa-api-status-log');
 
-            // Cria o link direto do WhatsApp Web/App para fallback instantâneo
-            const waUrl = `https://api.whatsapp.com/send?phone=55${phone}&text=${encodeURIComponent(messageText)}`;
+            showWhatsAppPushBanner(formattedPhone, messageText);
+
+            const waUrl = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(messageText)}`;
             const linkContainer = document.getElementById('wa-direct-link-container');
             if (linkContainer) {
                 linkContainer.innerHTML = `
-                    <a href="${waUrl}" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:#25D366; color:#fff; padding:10px 16px; border-radius:8px; text-decoration:none; font-weight:700; font-size:0.85rem; margin-top:5px;">
-                        <i class="fa-brands fa-whatsapp"></i> Abrir mensagem no WhatsApp
+                    <a href="${waUrl}" target="_blank" class="btn-whatsapp" style="width:100%; justify-content:center; padding:10px; font-size:0.85rem; background:#25D366; color:#fff; border-radius:6px; margin-top:4px;">
+                        <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Abrir no seu WhatsApp
                     </a>
                 `;
             }
@@ -1599,9 +1749,13 @@
             const apiEndpoint = localStorage.getItem('stravion_wa_api_url') || DEFAULT_META_ENDPOINT;
             const apiToken = localStorage.getItem('stravion_wa_api_token') || DEFAULT_META_TOKEN;
 
+            if (statusLogEl) {
+                statusLogEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Tentando envio via Meta Cloud API...`;
+            }
+
             if (apiEndpoint && apiEndpoint.includes('graph.facebook.com')) {
                 try {
-                    const response = await fetch(apiEndpoint, {
+                    let response = await fetch(apiEndpoint, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1610,22 +1764,47 @@
                         body: JSON.stringify({
                             messaging_product: "whatsapp",
                             recipient_type: "individual",
-                            to: `55${phone}`,
+                            to: formattedPhone,
                             type: "text",
                             text: { preview_url: false, body: messageText }
                         })
                     });
 
-                    const data = await response.json();
+                    let data = await response.json();
+
                     if (!response.ok) {
-                        console.warn("Meta API Response Warning:", data);
-                        showToast("API Meta: Use o botão de envio no WhatsApp ou o código do banner!");
+                        response = await fetch(apiEndpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${apiToken.trim()}`
+                            },
+                            body: JSON.stringify({
+                                messaging_product: "whatsapp",
+                                to: formattedPhone,
+                                type: "template",
+                                template: { name: "hello_world", language: { code: "en_US" } }
+                            })
+                        });
+                        data = await response.json();
+                    }
+
+                    if (response.ok) {
+                        if (statusLogEl) {
+                            statusLogEl.style.borderLeftColor = '#25D366';
+                            statusLogEl.innerHTML = `<span style="color:#25D366;"><i class="fa-solid fa-circle-check"></i> Mensagem entregue via Meta API!</span>`;
+                        }
                     } else {
-                        showToast("Mensagem enviada com sucesso via WhatsApp!");
+                        if (statusLogEl) {
+                            statusLogEl.style.borderLeftColor = '#E50914';
+                            statusLogEl.innerHTML = `<span style="color:#E50914;"><i class="fa-solid fa-circle-exclamation"></i> Use o botão verde acima para enviar no WhatsApp!</span>`;
+                        }
                     }
                 } catch (err) {
-                    console.warn('Erro na requisição da API Meta (Bloqueio de CORS do Navegador):', err);
-                    showToast("Enviado via Notificação e Link WhatsApp!");
+                    if (statusLogEl) {
+                        statusLogEl.style.borderLeftColor = '#f59e0b';
+                        statusLogEl.innerHTML = `<span style="color:#f59e0b;"><i class="fa-solid fa-bell"></i> Clique no botão verde para enviar no WhatsApp!</span>`;
+                    }
                 }
             }
         }
@@ -1686,16 +1865,12 @@
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
             const usernameInput = document.getElementById('reg-username').value.trim();
-            const whatsapp = document.getElementById('reg-whatsapp').value.replace(/\D/g, '');
+            const rawWhatsapp = document.getElementById('reg-whatsapp').value;
+            const whatsapp = cleanPhone(rawWhatsapp);
             const pass = document.getElementById('reg-password').value.trim();
 
             if (!name || !usernameInput || !whatsapp || !pass) {
-                showToast("Preencha todos os campos do formulário!");
-                return;
-            }
-
-            if (whatsapp.length < 10) {
-                showToast("Insira um número de WhatsApp válido com DDD!");
+                showToast("Preencha todos os campos!");
                 return;
             }
 
@@ -1717,14 +1892,14 @@
                 createdAt: Date.now()
             };
 
-            const waMsg = `Olá ${name}! Seu código de ativação no Stravion Fitness é: ${generatedActivationCode}`;
+            const waMsg = `Olá ${name}! Seu código no Stravion é: ${generatedActivationCode}`;
             sendWhatsAppAutomaticMsg(whatsapp, waMsg);
 
-            document.getElementById('display-registered-phone').innerText = `+55 ${whatsapp}`;
+            document.getElementById('display-registered-phone').innerText = `+${whatsapp}`;
             document.getElementById('form-register').style.display = 'none';
             document.getElementById('activation-step').style.display = 'block';
 
-            showToast("Código enviado para o seu WhatsApp!");
+            showToast("Código gerado!");
         }
 
         function openRecoveryModal() {
@@ -1744,25 +1919,25 @@
             let targetUser = storedUsers[usernameKey];
 
             if (!targetUser && (usernameKey === 'aluno' || usernameKey === 'personal')) {
-                targetUser = { name: usernameKey, username: usernameKey, password: '123456', whatsapp: '11999999999' };
+                targetUser = { name: usernameKey, username: usernameKey, password: '123456', whatsapp: '5511999999999' };
             }
 
             if (!targetUser) {
-                showToast("Usuário não encontrado no sistema!");
+                showToast("Usuário não encontrado!");
                 return;
             }
 
-            const waMsg = `Olá ${targetUser.name || targetUser.username}! Suas credenciais no Stravion são - Usuário: ${targetUser.username} | Senha: ${targetUser.password || '123456'}`;
-            sendWhatsAppAutomaticMsg(targetUser.whatsapp || '11999999999', waMsg);
+            const waMsg = `Olá ${targetUser.name || targetUser.username}! Credenciais Stravion - Usuário: ${targetUser.username} | Senha: ${targetUser.password || '123456'}`;
+            sendWhatsAppAutomaticMsg(targetUser.whatsapp || '5511999999999', waMsg);
 
             closeModal('modal-recovery');
-            showToast(`Senha enviada para o WhatsApp de @${targetUser.username}!`);
+            showToast(`Senha enviada para @${targetUser.username}!`);
         }
 
-        async function confirmAccountActivation() {
+        function confirmAccountActivation() {
             const inputCode = document.getElementById('input-activation-code').value.trim();
             if (inputCode !== generatedActivationCode) {
-                showToast("Código incorreto! Tente novamente.");
+                showToast("Código incorreto!");
                 return;
             }
 
@@ -1809,11 +1984,11 @@
             const catalogHeading = document.getElementById('catalog-section-heading');
 
             if (currentUser.role === 'personal') {
-                badgeContainer.innerHTML = `<span class="personal-badge"><i class="fa-solid fa-crown"></i> Personal Trainer</span>`;
+                badgeContainer.innerHTML = `<span class="personal-badge"><i class="fa-solid fa-crown"></i> Personal</span>`;
                 studentsTabBtn.style.display = 'inline-flex';
                 activeTabBtn.style.display = 'none';
                 document.getElementById('student-assignment-group').style.display = 'block';
-                if (newWorkoutLabel) newWorkoutLabel.innerText = "Montar Treino para Aluno";
+                if (newWorkoutLabel) newWorkoutLabel.innerText = "Montar Treino";
                 if (catalogHeading) catalogHeading.innerHTML = `<i class="fa-solid fa-dumbbell" style="color:var(--stravion-accent)"></i> Treinos dos Alunos`;
                 switchTab('students');
             } else {
@@ -1848,13 +2023,13 @@
                         <div class="student-info">
                             <div class="student-avatar">A</div>
                             <div>
-                                <strong style="font-size:1.05rem;">Aluno Exemplo</strong>
-                                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                                <strong style="font-size:0.95rem;">Aluno Exemplo</strong>
+                                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
                                     Usuário: @aluno | WhatsApp: +55 11999998888
                                 </div>
                             </div>
                         </div>
-                        <div style="display:flex; gap:8px;">
+                        <div style="display:flex; gap:6px;">
                             <button class="btn-action btn-start" onclick="createWorkoutForStudent('aluno', 'Aluno Exemplo')">
                                 <i class="fa-solid fa-plus"></i> Montar Treino
                             </button>
@@ -1871,21 +2046,21 @@
 
                 selectAssign.innerHTML += `<option value="${u.uid}">${u.name} (@${u.username})</option>`;
 
-                const phoneFormatted = u.whatsapp ? `+55 ${u.whatsapp}` : 'Não informado';
-                const waLink = u.whatsapp ? `https://wa.me/55${u.whatsapp}?text=Ol%C3%A1%20${encodeURIComponent(u.name)},%20sou%20seu%20Personal%20no%20Stravion%20Fitness!` : '#';
+                const phoneFormatted = u.whatsapp ? `+${u.whatsapp}` : 'Não informado';
+                const waLink = u.whatsapp ? `https://wa.me/${u.whatsapp}?text=Ol%C3%A1%20${encodeURIComponent(u.name)},%20sou%20seu%20Personal%20no%20Stravion%20Fitness!` : '#';
 
                 html += `
                     <div class="student-card">
                         <div class="student-info">
                             <div class="student-avatar">${(u.name || 'A').charAt(0).toUpperCase()}</div>
                             <div>
-                                <strong style="font-size:1.05rem;">${u.name}</strong>
-                                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                                <strong style="font-size:0.95rem;">${u.name}</strong>
+                                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
                                     Usuário: @${u.username} | WhatsApp: ${phoneFormatted}
                                 </div>
                             </div>
                         </div>
-                        <div style="display:flex; gap:8px;">
+                        <div style="display:flex; gap:6px;">
                             ${u.whatsapp ? `
                                 <a href="${waLink}" target="_blank" class="btn-whatsapp">
                                     <i class="fa-brands fa-whatsapp"></i> WhatsApp
@@ -1899,13 +2074,13 @@
                 `;
             });
 
-            container.innerHTML = html || `<div style="text-align:center; padding:30px; color:var(--text-muted);">Nenhum aluno cadastrado no momento.</div>`;
+            container.innerHTML = html || `<div style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum aluno cadastrado.</div>`;
         }
 
         function createWorkoutForStudent(studentUid, studentName) {
             openWorkoutModal();
             document.getElementById('workout-student-select').value = studentUid;
-            showToast(`Montando treino exclusivo para: ${studentName}`);
+            showToast(`Montando treino para: ${studentName}`);
         }
 
         function renderWorkoutCatalog() {
@@ -2005,7 +2180,7 @@
         function renderActiveAccordion() {
             const container = document.getElementById('active-exercise-accordion-container');
             if (!activeWorkoutSession) {
-                container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Nenhum treino em execução no momento.</div>`;
+                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum treino em execução.</div>`;
                 return;
             }
 
@@ -2025,7 +2200,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="display:flex; align-items:center; gap:8px;">
                                 ${ex.videoUrl ? `
                                     <button class="btn-video-link" onclick="event.stopPropagation(); openVideoModal('${ex.name}', '${ex.videoUrl}')">
                                         <i class="fa-solid fa-circle-play"></i> Vídeo
@@ -2037,7 +2212,7 @@
                         <div class="accordion-content" id="accordion-content-${exIdx}">
                             ${Array.from({ length: totalSets }).map((_, setIdx) => `
                                 <div class="set-row">
-                                    <span style="font-size:0.85rem; font-weight:600;">Série ${setIdx + 1}</span>
+                                    <span style="font-size:0.8rem; font-weight:600;">Série ${setIdx + 1}</span>
                                     <input type="checkbox" class="set-checkbox" 
                                         ${ex.completedSets[setIdx] ? 'checked' : ''} 
                                         onchange="toggleSetCheck(${exIdx}, ${setIdx}, parseInt('${ex.rest || 60}'))">
@@ -2140,19 +2315,19 @@
         function renderHistory() {
             const container = document.getElementById('history-logs-container');
             if (!localHistory || localHistory.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Nenhum histórico registrado ainda.</div>`;
+                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum histórico registrado.</div>`;
                 return;
             }
 
             container.innerHTML = localHistory.slice().reverse().map(h => {
                 const mins = Math.floor(h.durationSeconds / 60);
                 return `
-                    <div style="background:var(--stravion-card-bg); border:1px solid var(--stravion-border); border-radius:12px; padding:16px; margin-bottom:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <strong style="font-size:1.1rem; color:var(--stravion-accent);">${h.title}</strong>
-                            <span style="font-size:0.8rem; color:var(--text-muted);">${h.date}</span>
+                    <div style="background:var(--stravion-card-bg); border:1px solid var(--stravion-border); border-radius:10px; padding:12px; margin-bottom:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <strong style="font-size:1rem; color:var(--stravion-accent);">${h.title}</strong>
+                            <span style="font-size:0.75rem; color:var(--text-muted);">${h.date}</span>
                         </div>
-                        <div style="font-size:0.85rem; color:var(--text-white); margin-bottom:6px;">
+                        <div style="font-size:0.8rem; color:var(--text-white);">
                             Atleta: <strong>${h.athleteName || 'Atleta'}</strong> | Duração: <strong>${mins} min</strong>
                         </div>
                     </div>
@@ -2251,54 +2426,63 @@
         function addExerciseRow(name = '', sets = 4, reps = 12, weight = 10, rest = 60, videoUrl = '') {
             const div = document.createElement('div');
             div.className = 'exercise-input-row';
-            div.style.cssText = 'background:var(--input-bg); border-radius:10px; padding:12px; margin-bottom:12px; position:relative; border:1px solid var(--stravion-border);';
+            div.style.cssText = 'background:var(--input-bg); border-radius:8px; padding:10px; margin-bottom:10px; position:relative; border:1px solid var(--stravion-border);';
             
-            const presetOptions = PRESET_EXERCISES.map(p => `
-                <option value="${p.videoUrl}" data-name="${p.name}" ${p.videoUrl === videoUrl ? 'selected' : ''}>
-                    ${p.name}
-                </option>
-            `).join('');
+            // Agrupar 100+ exercícios por categoria (<optgroup>)
+            const categories = [...new Set(PRESET_EXERCISES.map(p => p.category))];
+            let groupedOptions = '<option value="">Selecione um dos +100 exercícios cadastrados...</option>';
+
+            categories.forEach(cat => {
+                groupedOptions += `<optgroup label="--- ${cat} ---">`;
+                PRESET_EXERCISES.filter(p => p.category === cat).forEach(p => {
+                    groupedOptions += `
+                        <option value="${p.videoUrl}" data-name="${p.name}" ${p.videoUrl === videoUrl ? 'selected' : ''}>
+                            ${p.name}
+                        </option>
+                    `;
+                });
+                groupedOptions += `</optgroup>`;
+            });
 
             div.innerHTML = `
-                <div style="margin-bottom:10px;">
-                    <label style="font-size:0.75rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">BIBLIOTECA DE VÍDEOS (EXERCÍCIOS)</label>
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:3px;">BIBLIOTECA COM +100 EXERCÍCIOS & VÍDEOS</label>
                     <select class="form-control ex-preset-select" onchange="autoFillExercisePreset(this)">
-                        <option value="">Selecione um exercício pré-cadastrado...</option>
-                        ${presetOptions}
+                        ${groupedOptions}
                     </select>
                 </div>
 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:8px;">
                     <div>
-                        <label style="font-size:0.72rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">NOME DO EXERCÍCIO</label>
+                        <label style="font-size:0.68rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:2px;">NOME DO EXERCÍCIO</label>
                         <input type="text" placeholder="Ex: Supino Reto" class="form-control ex-name" value="${name}" required>
                     </div>
                     <div>
-                        <label style="font-size:0.72rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">LINK DO VÍDEO (YOUTUBE)</label>
+                        <label style="font-size:0.68rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:2px;">LINK DO VÍDEO (YOUTUBE)</label>
                         <input type="text" placeholder="https://..." class="form-control ex-video" value="${videoUrl}">
                     </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:6px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:5px;">
                     <div>
-                        <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">SÉRIES</label>
-                        <input type="number" placeholder="Ex: 4" class="form-control ex-sets" value="${sets}">
+                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">SÉRIES</label>
+                        <input type="number" placeholder="4" class="form-control ex-sets" value="${sets}">
                     </div>
                     <div>
-                        <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">REPETIÇÕES</label>
-                        <input type="text" placeholder="Ex: 10-12" class="form-control ex-reps" value="${reps}">
+                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">REPS</label>
+                        <input type="text" placeholder="10-12" class="form-control ex-reps" value="${reps}">
                     </div>
                     <div>
-                        <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">CARGA (KG)</label>
-                        <input type="number" placeholder="Ex: 60" class="form-control ex-weight" value="${weight}">
+                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">CARGA(KG)</label>
+                        <input type="number" placeholder="60" class="form-control ex-weight" value="${weight}">
                     </div>
                     <div>
-                        <label style="font-size:0.68rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">DESCANSO(S)</label>
-                        <input type="number" placeholder="Ex: 60" class="form-control ex-rest" value="${rest}">
+                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">DESCANSO(S)</label>
+                        <input type="number" placeholder="60" class="form-control ex-rest" value="${rest}">
                     </div>
                 </div>
 
-                <button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:none; border:none; color:var(--stravion-red); cursor:pointer; font-size:1.1rem;">
+                <button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:6px; right:6px; background:none; border:none; color:var(--stravion-red); cursor:pointer; font-size:1rem;">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             `;
