@@ -1220,9 +1220,14 @@
                     <i class="fa-solid fa-user-gear" style="color:var(--stravion-accent)"></i> Painel do Personal Trainer
                 </div>
             </div>
-            <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:16px;">
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:12px;">
                 Gerencie seus alunos, monte treinos personalizados com capas e vídeos, e comunique-se via WhatsApp com 1 clique.
             </p>
+
+            <div class="form-group" style="margin-bottom:16px;">
+                <input type="text" id="student-search-input" class="form-control" placeholder="🔍 Buscar aluno por nome ou número de telefone..." oninput="filterStudentsList(this.value)">
+            </div>
+
             <div id="students-list-container"></div>
         </section>
 
@@ -1974,7 +1979,7 @@
             renderHistory();
         }
 
-        function renderStudentsList(usersObject) {
+        function renderStudentsList(usersObject, searchQuery = '') {
             const container = document.getElementById('students-list-container');
             const selectAssign = document.getElementById('workout-student-select');
 
@@ -2005,11 +2010,27 @@
             }
 
             let html = '';
+            const query = (searchQuery || '').trim().toLowerCase();
+            const queryDigits = searchQuery ? searchQuery.replace(/\D/g, '') : '';
+
             Object.keys(usersObject).forEach(key => {
                 const u = usersObject[key];
                 if (u.role === 'personal') return;
 
                 selectAssign.innerHTML += `<option value="${u.uid}">${u.name} (@${u.username})</option>`;
+
+                const nameMatch = (u.name || '').toLowerCase().includes(query);
+                const usernameMatch = (u.username || '').toLowerCase().includes(query);
+                
+                // Busca inteligente por telefone ignorando espaços, traços e parenteses
+                const uWhatsappDigits = (u.whatsapp || '').replace(/\D/g, '');
+                const phoneMatch = queryDigits.length > 0 
+                    ? uWhatsappDigits.includes(queryDigits) 
+                    : (u.whatsapp || '').toLowerCase().includes(query);
+
+                if (query && !nameMatch && !usernameMatch && !phoneMatch) {
+                    return;
+                }
 
                 const phoneFormatted = u.whatsapp ? `+${u.whatsapp}` : 'Não informado';
                 const waLink = u.whatsapp ? `https://wa.me/${u.whatsapp}?text=Ol%C3%A1%20${encodeURIComponent(u.name)},%20sou%20seu%20Personal%20no%20Stravion%20Fitness!` : '#';
@@ -2039,7 +2060,12 @@
                 `;
             });
 
-            container.innerHTML = html || `<div style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum aluno cadastrado.</div>`;
+            container.innerHTML = html || `<div style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum aluno encontrado para "${searchQuery}".</div>`;
+        }
+
+        function filterStudentsList(query) {
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            renderStudentsList(storedUsers, query);
         }
 
         function createWorkoutForStudent(studentUid, studentName) {
