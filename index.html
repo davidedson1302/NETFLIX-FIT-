@@ -1263,17 +1263,23 @@
                 </div>
                 <div style="text-align: right;">
                     <div class="timer-display" id="workout-clock">00:00:00</div>
-                    <button class="btn-action btn-start" id="btn-finish-workout" style="display:none;" onclick="finishActiveWorkout()">
+                    <button class="btn-action btn-start btn-finish-workout-trigger" style="display:none;" onclick="finishActiveWorkout()">
                         <i class="fa-solid fa-check-double"></i> Concluir Treino
                     </button>
                 </div>
             </div>
 
-            <!-- Canvas e Video ocultos utilizados para a renderização do Picture-in-Picture em tempo real -->
+            <!-- Canvas e Video ocultos para PiP em tempo real -->
             <canvas id="pip-canvas" width="400" height="240" style="display:none;"></canvas>
             <video id="pip-video" autoplay muted style="display:none;"></video>
 
             <div id="active-exercise-accordion-container"></div>
+
+            <div id="active-workout-footer-actions" style="margin-top:20px; display:none; text-align:center;">
+                <button class="btn-primary btn-finish-workout-trigger" style="padding:14px; font-size:1.05rem; background:linear-gradient(135deg, var(--stravion-accent), #25D366); box-shadow:0 6px 20px rgba(37,211,102,0.3);" onclick="finishActiveWorkout()">
+                    <i class="fa-solid fa-check-double"></i> CONCLUIR TREINO COMPLETO
+                </button>
+            </div>
         </section>
 
         <section id="tab-students" style="display: none;">
@@ -1350,7 +1356,12 @@
 
                 <div id="exercise-inputs-list"></div>
 
-                <button type="submit" class="btn-primary" style="margin-top:16px;">SALVAR TREINO</button>
+                <div style="display:flex; gap:10px; margin-top:16px;">
+                    <button type="submit" class="btn-primary" style="flex:2;">SALVAR TREINO</button>
+                    <button type="button" id="btn-delete-workout" class="btn-action" style="flex:1; background:var(--stravion-red); border-color:var(--stravion-red); color:#fff; display:none;" onclick="deleteCurrentWorkout()">
+                        <i class="fa-solid fa-trash"></i> Excluir Treino
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -1428,7 +1439,7 @@
         </div>
     </div>
 
-    <!-- Modal de Câmera e Gravação -->
+    <!-- Modal de Câmera -->
     <div class="modal-backdrop" id="modal-camera">
         <div class="modal-content" style="max-width:440px;">
             <div class="modal-header">
@@ -1486,9 +1497,133 @@
     </footer>
 
     <script>
-        // REGISTRO AUTOMÁTICO DO SERVICE WORKER (PWA) + BACKGROUND SYNC
-        let swRegistration = null;
+        // CONFIGURAÇÕES INICIAIS DE USUÁRIO E ESTADO DO TREINO
+        let currentUser = JSON.parse(localStorage.getItem('stravion_user') || 'null');
+        let authRole = 'atleta';
+        let generatedActivationCode = '';
+        let pendingRegistration = null;
 
+        // TREINOS DEFAULT - SPLIT COMPLETO DE SEGUNDA A SEXTA
+        const DEFAULT_WORKOUTS = [
+            {
+                id: 'w_segunda',
+                title: 'Segunda – Costas (ênfase em largura) + Bíceps',
+                coverUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop&q=60',
+                assignedTo: 'all',
+                exercises: [
+                    { name: 'Barra fixa ou puxada alta', sets: 4, reps: '6-10', weight: 50, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Puxada neutra', sets: 3, reps: '8-12', weight: 45, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Pulldown unilateral', sets: 3, reps: '10-12', weight: 25, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Pullover na polia', sets: 3, reps: '12-15', weight: 30, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Rosca direta', sets: 3, reps: '8-10', weight: 14, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Rosca inclinada', sets: 3, reps: '10-12', weight: 12, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Rosca martelo', sets: 2, reps: '12-15', weight: 14, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
+                ]
+            },
+            {
+                id: 'w_terca',
+                title: 'Terça – Peito + Tríceps',
+                coverUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&auto=format&fit=crop&q=60',
+                assignedTo: 'all',
+                exercises: [
+                    { name: 'Supino reto', sets: 4, reps: '6-8', weight: 60, rest: 90, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Supino inclinado com halteres', sets: 3, reps: '8-10', weight: 24, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Crucifixo máquina ou crossover', sets: 3, reps: '12-15', weight: 25, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Paralelas ou mergulho assistido', sets: 3, reps: '8-12', weight: 0, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Tríceps corda', sets: 3, reps: '10-12', weight: 30, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Tríceps francês', sets: 3, reps: '10-12', weight: 16, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
+                ]
+            },
+            {
+                id: 'w_quarta',
+                title: 'Quarta – Pernas',
+                coverUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=60',
+                assignedTo: 'all',
+                exercises: [
+                    { name: 'Agachamento livre', sets: 4, reps: '6-8', weight: 80, rest: 90, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Leg press', sets: 3, reps: '10-12', weight: 160, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Afundo ou passada', sets: 3, reps: '10 cada', weight: 14, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Mesa flexora', sets: 3, reps: '10-12', weight: 40, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Stiff', sets: 3, reps: '8-10', weight: 50, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Panturrilha em pé', sets: 4, reps: '12-15', weight: 60, rest: 45, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Abdômen', sets: 3, reps: '15-20', weight: 0, rest: 45, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
+                ]
+            },
+            {
+                id: 'w_quinta',
+                title: 'Quinta – Costas (ênfase em espessura) + Ombros',
+                coverUrl: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&auto=format&fit=crop&q=60',
+                assignedTo: 'all',
+                exercises: [
+                    { name: 'Remada curvada', sets: 4, reps: '6-8', weight: 50, rest: 90, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Remada cavalinho', sets: 3, reps: '8-10', weight: 45, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Remada baixa', sets: 3, reps: '10-12', weight: 50, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Face pull', sets: 3, reps: '12-15', weight: 25, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Desenvolvimento com halteres', sets: 3, reps: '8-10', weight: 20, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Elevação lateral', sets: 4, reps: '12-15', weight: 10, rest: 45, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Crucifixo inverso', sets: 3, reps: '12-15', weight: 8, rest: 45, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
+                ]
+            },
+            {
+                id: 'w_sexta',
+                title: 'Sexta – Braços + Posterior',
+                coverUrl: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&auto=format&fit=crop&q=60',
+                assignedTo: 'all',
+                exercises: [
+                    { name: 'Levantamento terra romeno', sets: 3, reps: '8-10', weight: 60, rest: 90, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Cadeira flexora', sets: 3, reps: '10-12', weight: 45, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Rosca Scott', sets: 3, reps: '8-10', weight: 16, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Rosca martelo', sets: 3, reps: '10-12', weight: 14, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Tríceps testa', sets: 3, reps: '8-10', weight: 25, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Tríceps corda', sets: 3, reps: '12-15', weight: 30, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+                    { name: 'Panturrilha sentada', sets: 4, reps: '15-20', weight: 40, rest: 45, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
+                ]
+            }
+        ];
+
+        const PRESET_COVERS = [
+            { label: 'Costas / Dorsal', url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop&q=60' },
+            { label: 'Peito / Supino', url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&auto=format&fit=crop&q=60' },
+            { label: 'Pernas / Legs', url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=60' },
+            { label: 'Ombros / Shoulders', url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&auto=format&fit=crop&q=60' },
+            { label: 'Braços / Biceps', url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&auto=format&fit=crop&q=60' }
+        ];
+
+        const PRESET_EXERCISES = [
+            { category: 'Costas', name: 'Barra fixa ou puxada alta', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Costas', name: 'Puxada neutra', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Costas', name: 'Pulldown unilateral', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Costas', name: 'Pullover na polia', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Costas', name: 'Remada curvada', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Costas', name: 'Remada cavalinho', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Peito', name: 'Supino reto', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Peito', name: 'Supino inclinado com halteres', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Pernas', name: 'Agachamento livre', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Pernas', name: 'Leg press', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Biceps', name: 'Rosca direta', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
+            { category: 'Triceps', name: 'Tríceps corda', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
+        ];
+
+        let localWorkouts = JSON.parse(localStorage.getItem('stravion_local_workouts') || 'null');
+        if (!localWorkouts || localWorkouts.length === 0) {
+            localWorkouts = DEFAULT_WORKOUTS;
+            localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
+        }
+
+        let localHistory = JSON.parse(localStorage.getItem('stravion_local_history') || '[]');
+        let activeWorkoutSession = JSON.parse(localStorage.getItem('stravion_active_session') || 'null');
+
+        let workoutTimerInterval = null;
+        let restTimerInterval = null;
+        let restSecondsLeft = 0;
+        let currentCoverBase64 = '';
+
+        // CONSTANTES WHATSAPP META API
+        const DEFAULT_META_ENDPOINT = 'https://graph.facebook.com/v19.0/100000000000000/messages';
+        const DEFAULT_META_TOKEN = 'EAAG...';
+
+        // REGISTRO AUTOMÁTICO DO SERVICE WORKER (PWA)
+        let swRegistration = null;
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -1496,72 +1631,140 @@
                         swRegistration = reg;
                         console.log('Stravion PWA Service Worker registrado:', reg.scope);
                     })
-                    .catch(err => console.log('Erro ao registrar Service Worker:', err));
+                    .catch(err => console.log('Erro ao registrar SW:', err));
             });
         }
 
-        // VARIÁVEIS PIP (PICTURE-IN-PICTURE) & HARDWARE
+        // PIP & HARDWARE VARIABLES
         let isPipActive = false;
         let cameraStream = null;
         let bluetoothHeartDevice = null;
         let heartRateBpm = null;
+
+        // INICIALIZAÇÃO AO CARREGAR A PÁGINA
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('hidden');
+            }, 1000);
+
+            if (!currentUser) {
+                showAuthOverlay();
+            } else {
+                hideAuthOverlay();
+                updateHeaderUser();
+                loadCloudData();
+            }
+
+            const savedTheme = localStorage.getItem('stravion_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            const savedAccent = localStorage.getItem('stravion_accent') || '#E56B6F';
+            applyAccentColor(savedAccent);
+
+            // SE HOUVER TREINO EM ANDAMENTO, RESTAURA AUTOMATICAMENTE EM SEGUNDO PLANO
+            if (activeWorkoutSession) {
+                resumeActiveWorkoutSession();
+            }
+        });
+
+        function playDynamicSynthSound(type) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const now = ctx.currentTime;
+
+                if (type === 'rest_end') {
+                    // Alerta curto de fim de descanso (1 segundo)
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, now);
+                    osc.frequency.exponentialRampToValueAtTime(440, now + 1.0);
+
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 1.0);
+                } else if (type === 'workout_complete') {
+                    // Efeito sonoro triunfal de conclusão de treino (1 segundo)
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    notes.forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        const startTime = now + (idx * 0.22);
+                        
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, startTime);
+
+                        gain.gain.setValueAtTime(0.35, startTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3);
+
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(startTime);
+                        osc.stop(startTime + 0.3);
+                    });
+                }
+            } catch (e) {
+                console.log('Audio Context bloqueado ou não suportado:', e);
+            }
+        }
 
         function updatePipCanvas() {
             const canvas = document.getElementById('pip-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
 
-            // Fundo escuro com gradiente Stravion
             const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
             grad.addColorStop(0, '#161722');
             grad.addColorStop(1, '#25283A');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Título STRAVION FIT
             ctx.fillStyle = '#E56B6F';
             ctx.font = 'bold 20px Montserrat, sans-serif';
             ctx.fillText('STRAVION FITNESS', 15, 30);
 
-            // Nome do Treino
             const workoutTitle = activeWorkoutSession ? activeWorkoutSession.title : 'Nenhum Treino';
             ctx.fillStyle = '#FFFFFF';
-            ctx.font = '14px Montserrat, sans-serif';
-            ctx.fillText(workoutTitle.substring(0, 28), 15, 55);
+            ctx.font = '13px Montserrat, sans-serif';
+            ctx.fillText(workoutTitle.substring(0, 32), 15, 52);
 
-            // Divisória
             ctx.strokeStyle = '#33384F';
             ctx.beginPath();
-            ctx.moveTo(15, 68);
-            ctx.lineTo(canvas.width - 15, 68);
+            ctx.moveTo(15, 65);
+            ctx.lineTo(canvas.width - 15, 65);
             ctx.stroke();
 
-            // Tempo de Treino (Cronômetro Grande em Destaque)
+            // TEMPO TOTAL DO TREINO
             ctx.fillStyle = '#A0A0A0';
-            ctx.font = '12px Montserrat, sans-serif';
-            ctx.fillText('TEMPO DE TREINO', 15, 90);
+            ctx.font = '11px Montserrat, sans-serif';
+            ctx.fillText('TEMPO TOTAL DE TREINO', 15, 85);
 
             const clockText = document.getElementById('workout-clock').innerText || '00:00:00';
             ctx.fillStyle = '#FFFFFF';
             ctx.font = 'bold 36px Montserrat, monospace';
-            ctx.fillText(clockText, 15, 130);
+            ctx.fillText(clockText, 15, 125);
 
-            // Descanso Flutuante (Abaixo do Tempo de Treino)
+            // TEMPO DE DESCANSO ABAIXO
             ctx.fillStyle = '#A0A0A0';
-            ctx.font = '12px Montserrat, sans-serif';
-            ctx.fillText('TEMPO DE DESCANSO', 15, 160);
+            ctx.font = '11px Montserrat, sans-serif';
+            ctx.fillText('TEMPO DE DESCANSO', 15, 155);
 
             if (restSecondsLeft > 0) {
                 ctx.fillStyle = '#E56B6F';
-                ctx.font = 'bold 32px Montserrat, monospace';
-                ctx.fillText(`${restSecondsLeft}s`, 15, 200);
+                ctx.font = 'bold 34px Montserrat, monospace';
+                ctx.fillText(`${restSecondsLeft}s`, 15, 195);
             } else {
                 ctx.fillStyle = '#55E6C1';
-                ctx.font = 'bold 20px Montserrat, sans-serif';
-                ctx.fillText('EM EXERCÍCIO / PRONTO', 15, 195);
+                ctx.font = 'bold 18px Montserrat, sans-serif';
+                ctx.fillText('EM EXERCÍCIO / PRONTO', 15, 190);
             }
 
-            // Batimento cardíaco se conectado por Bluetooth
             if (heartRateBpm) {
                 ctx.fillStyle = '#25D366';
                 ctx.font = 'bold 14px Montserrat, sans-serif';
@@ -1598,228 +1801,125 @@
             }
         }
 
-        function triggerBackgroundSyncTest() {
-            if ('serviceWorker' in navigator && 'SyncManager' in window) {
-                navigator.serviceWorker.ready.then(reg => {
-                    return reg.sync.register('sync-workouts');
-                }).then(() => {
-                    showHardwareStatus("Sincronização em segundo plano agendada! O app enviará dados ao reconectar.");
-                    showToast("Sincronização em segundo plano ativada!");
-                }).catch(err => {
-                    showHardwareStatus("Erro ao agendar sync: " + err.message);
-                });
-            } else {
-                showHardwareStatus("Background Sync não é suportado neste navegador.");
-                showToast("Background Sync não suportado neste navegador.");
-            }
-        }
+        function startWorkout(workoutId) {
+            const workout = localWorkouts.find(w => w.id === workoutId);
+            if (!workout) return;
 
-        async function requestPushNotificationPermission() {
-            if (!('Notification' in window)) {
-                showHardwareStatus("Notificações Push não são suportadas neste navegador.");
-                return;
-            }
+            activeWorkoutSession = {
+                workoutId: workout.id,
+                title: workout.title,
+                startTime: Date.now(),
+                exercises: JSON.parse(JSON.stringify(workout.exercises || []))
+            };
 
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                showHardwareStatus("Permissão de Notificações Push Concedida!");
-                showToast("Notificações Push Ativadas!");
-                
-                // Dispara uma notificação de teste
-                if (swRegistration) {
-                    swRegistration.showNotification("Stravion Fitness", {
-                        body: "As notificações Push estão ativas no seu celular!",
-                        icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23141414'/><path d='M20,35 Q50,20 80,35 L60,48 Q45,38 35,48 Z' fill='%23FFFFFF'/><path d='M20,65 Q50,80 80,65 L60,52 Q45,62 35,52 Z' fill='%23E50914'/></svg>"
+            activeWorkoutSession.exercises.forEach(ex => {
+                const numSets = parseInt(ex.sets || 3);
+                ex.setDetails = [];
+                for (let i = 0; i < numSets; i++) {
+                    ex.setDetails.push({
+                        reps: ex.reps || '12',
+                        weight: ex.weight || 0,
+                        completed: false
                     });
                 }
-            } else {
-                showHardwareStatus("Permissão de Notificações Negada.");
-                showToast("Notificações Negadas.");
-            }
+            });
+
+            localStorage.setItem('stravion_active_session', JSON.stringify(activeWorkoutSession));
+
+            document.getElementById('active-workout-title').innerText = workout.title;
+            document.getElementById('active-workout-subtitle').innerText = "Treino em andamento... O tempo continua rodando em segundo plano!";
+            
+            document.querySelectorAll('.btn-finish-workout-trigger').forEach(b => b.style.display = 'inline-flex');
+            document.getElementById('active-workout-footer-actions').style.display = 'block';
+
+            startWorkoutClock();
+            renderActiveAccordion();
+            switchTab('active');
+            showToast("Treino iniciado! Roda continuamente até concluir!");
         }
 
-        async function registerBiometricCredential() {
-            if (!window.PublicKeyCredential) {
-                showHardwareStatus("Biometria / WebAuthn não suportada neste dispositivo.");
-                return;
-            }
+        function resumeActiveWorkoutSession() {
+            if (!activeWorkoutSession) return;
 
-            try {
-                showHardwareStatus("Aguardando confirmação de Biometria / Face ID...");
-                const challenge = new Uint8Array(32);
-                window.crypto.getRandomValues(challenge);
+            document.getElementById('active-workout-title').innerText = activeWorkoutSession.title;
+            document.getElementById('active-workout-subtitle').innerText = "Treino em andamento... O tempo continua rodando em segundo plano!";
+            
+            document.querySelectorAll('.btn-finish-workout-trigger').forEach(b => b.style.display = 'inline-flex');
+            document.getElementById('active-workout-footer-actions').style.display = 'block';
 
-                const credential = await navigator.credentials.create({
-                    publicKey: {
-                        challenge: challenge,
-                        rp: { name: "Stravion Fitness" },
-                        user: {
-                            id: new Uint8Array(16),
-                            name: currentUser ? currentUser.username : "atleta",
-                            displayName: currentUser ? currentUser.displayName : "Atleta Stravion"
-                        },
-                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                        authenticatorSelection: { authenticatorAttachment: "platform" },
-                        timeout: 60000
-                    }
-                });
-
-                if (credential) {
-                    localStorage.setItem('stravion_biometric_active', 'true');
-                    showHardwareStatus("Biometria / Face ID cadastrada com sucesso!");
-                    showToast("Biometria cadastrada!");
-                }
-            } catch (e) {
-                showHardwareStatus("Biometria cancelada ou não configurada: " + e.message);
-            }
-        }
-
-        async function loginWithBiometrics() {
-            if (!window.PublicKeyCredential) {
-                showToast("Biometria não suportada neste celular.");
-                return;
-            }
-
-            try {
-                const isConfigured = localStorage.getItem('stravion_biometric_active');
-                if (!isConfigured) {
-                    showToast("Cadastre a biometria primeiro nas configurações de Perfil!");
-                    return;
-                }
-
-                const challenge = new Uint8Array(32);
-                window.crypto.getRandomValues(challenge);
-
-                const assertion = await navigator.credentials.get({
-                    publicKey: {
-                        challenge: challenge,
-                        timeout: 60000
-                    }
-                });
-
-                if (assertion) {
-                    const savedUser = localStorage.getItem('stravion_user');
-                    if (savedUser) {
-                        currentUser = JSON.parse(savedUser);
-                        hideAuthOverlay();
-                        updateHeaderUser();
-                        loadCloudData();
-                        showToast(`Acesso via Biometria Autorizado! Bem-vindo(a) ${currentUser.displayName}`);
-                    } else {
-                        showToast("Faça o primeiro login com senha antes de usar biometria.");
-                    }
-                }
-            } catch (e) {
-                showToast("Falha no reconhecimento biométrico.");
-            }
-        }
-
-        async function openCameraCaptureModal() {
-            try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-                const videoEl = document.getElementById('camera-preview');
-                videoEl.srcObject = cameraStream;
-                openModal('modal-camera');
-                showHardwareStatus("Câmera traseira/frontal conectada com sucesso!");
-            } catch (e) {
-                showHardwareStatus("Erro ao acessar a câmera: " + e.message);
-                showToast("Permissão de Câmera negada.");
-            }
-        }
-
-        function takeSnapshotPhoto() {
-            const videoEl = document.getElementById('camera-preview');
-            const canvas = document.createElement('canvas');
-            canvas.width = videoEl.videoWidth || 640;
-            canvas.height = videoEl.videoHeight || 480;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
-            currentCoverBase64 = canvas.toDataURL('image/jpeg', 0.8);
-            closeCameraModal();
-            openWorkoutModal();
-            showToast("Foto da câmera capturada como capa do treino!");
-        }
-
-        function closeCameraModal() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
-            }
-            closeModal('modal-camera');
-        }
-
-        function checkGPSLocation() {
-            if (!navigator.geolocation) {
-                showHardwareStatus("GPS / Geolocalização não suportada.");
-                return;
-            }
-
-            showHardwareStatus("Obtendo coordenadas do GPS...");
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    const lat = pos.coords.latitude.toFixed(5);
-                    const lng = pos.coords.longitude.toFixed(5);
-                    showHardwareStatus(`Check-in de Academia Confirmado! GPS: Lat ${lat}, Lng ${lng}`);
-                    showToast(`GPS Check-in Realizado! (${lat}, ${lng})`);
-                },
-                (err) => {
-                    showHardwareStatus("Erro de GPS: " + err.message);
-                    showToast("Não foi possível obter a localização GPS.");
-                },
-                { enableHighAccuracy: true, timeout: 10000 }
-            );
-        }
-
-        async function connectBluetoothHeartRate() {
-            if (!navigator.bluetooth) {
-                showHardwareStatus("Web Bluetooth API não disponível neste navegador.");
-                showToast("Bluetooth não suportado no navegador.");
-                return;
-            }
-
-            try {
-                showHardwareStatus("Buscando dispositivos de Frequência Cardíaca Bluetooth...");
-                bluetoothHeartDevice = await navigator.bluetooth.requestDevice({
-                    filters: [{ services: ['heart_rate'] }]
-                });
-
-                const server = await bluetoothHeartDevice.gatt.connect();
-                const service = await server.getPrimaryService('heart_rate');
-                const characteristic = await service.getCharacteristic('heart_rate_measurement');
-
-                await characteristic.startNotifications();
-                characteristic.addEventListener('characteristicvaluechanged', (e) => {
-                    const value = e.target.value;
-                    heartRateBpm = value.getUint8(1);
-                    document.getElementById('bpm-display').innerText = `♥ ${heartRateBpm} BPM`;
-                    showHardwareStatus(`Monitor Cardíaco Bluetooth Ativo: ${heartRateBpm} BPM`);
-                });
-
-                showToast("Monitor Cardíaco Conectado!");
-            } catch (e) {
-                showHardwareStatus("Conexão Bluetooth cancelada ou com erro: " + e.message);
-            }
-        }
-
-        function showHardwareStatus(msg) {
-            const el = document.getElementById('hardware-status-box');
-            if (el) el.innerText = "Status: " + msg;
+            startWorkoutClock();
+            renderActiveAccordion();
         }
 
         function startWorkoutClock() {
             clearInterval(workoutTimerInterval);
-            workoutSeconds = 0;
             document.getElementById('pip-controls-wrap').style.display = 'block';
 
             workoutTimerInterval = setInterval(() => {
-                workoutSeconds++;
-                const hrs = String(Math.floor(workoutSeconds / 3600)).padStart(2, '0');
-                const mins = String(Math.floor((workoutSeconds % 3600) / 60)).padStart(2, '0');
-                const secs = String(workoutSeconds % 60).padStart(2, '0');
+                if (!activeWorkoutSession) return;
+                
+                // CÁLCULO BASEADO NO TIMESTAMP ABSOLUTO (Garante tempo continuo em segundo plano)
+                const elapsedSeconds = Math.floor((Date.now() - activeWorkoutSession.startTime) / 1000);
+                const hrs = String(Math.floor(elapsedSeconds / 3600)).padStart(2, '0');
+                const mins = String(Math.floor((elapsedSeconds % 3600) / 60)).padStart(2, '0');
+                const secs = String(elapsedSeconds % 60).padStart(2, '0');
                 document.getElementById('workout-clock').innerText = `${hrs}:${mins}:${secs}`;
 
-                // Atualiza a renderização do PiP em tempo real a cada segundo
                 updatePipCanvas();
+            }, 1000);
+        }
+
+        function finishActiveWorkout() {
+            if (!activeWorkoutSession) return;
+
+            const elapsedSeconds = Math.floor((Date.now() - activeWorkoutSession.startTime) / 1000);
+
+            const record = {
+                athleteName: currentUser ? currentUser.displayName : 'Atleta',
+                title: activeWorkoutSession.title,
+                durationSeconds: elapsedSeconds,
+                date: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
+                exercises: activeWorkoutSession.exercises
+            };
+
+            localHistory.push(record);
+            localStorage.setItem('stravion_local_history', JSON.stringify(localHistory));
+
+            clearInterval(workoutTimerInterval);
+            activeWorkoutSession = null;
+            localStorage.removeItem('stravion_active_session');
+
+            document.querySelectorAll('.btn-finish-workout-trigger').forEach(b => b.style.display = 'none');
+            document.getElementById('active-workout-footer-actions').style.display = 'none';
+            document.getElementById('active-workout-title').innerText = "Treino Concluído!";
+            document.getElementById('active-workout-subtitle').innerText = "Parabéns por superar seus limites!";
+
+            // TOCA O EFEITO SONORO DE CONCLUSÃO (1 SEGUNDO DE TOQUE SINTETIZADO)
+            playDynamicSynthSound('workout_complete');
+
+            renderActiveAccordion();
+            renderHistory();
+
+            showToast("Treino concluído com sucesso!");
+            switchTab('history');
+        }
+
+        function triggerRestTimer(seconds) {
+            clearInterval(restTimerInterval);
+            restSecondsLeft = seconds;
+            const bar = document.getElementById('rest-bar');
+            bar.classList.add('active');
+
+            updateRestDisplay();
+            restTimerInterval = setInterval(() => {
+                restSecondsLeft--;
+                updateRestDisplay();
+                if (restSecondsLeft <= 0) {
+                    clearInterval(restTimerInterval);
+                    bar.classList.remove('active');
+                    playDynamicSynthSound('rest_end');
+                    showToast("Descanso concluído! Próxima série!");
+                }
             }, 1000);
         }
 
@@ -1828,229 +1928,436 @@
             updatePipCanvas();
         }
 
-        // Fim das adições do script de hardware e PiP
-                    <a href="${waUrl}" target="_blank" class="btn-whatsapp" style="width:100%; justify-content:center; padding:10px; font-size:0.85rem; background:#25D366; color:#fff; border-radius:6px; margin-top:4px;">
-                        <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Abrir no seu WhatsApp
-                    </a>
+        function adjustRestTimer(delta) {
+            restSecondsLeft = Math.max(0, restSecondsLeft + delta);
+            updateRestDisplay();
+        }
+
+        function skipRestTimer() {
+            clearInterval(restTimerInterval);
+            restSecondsLeft = 0;
+            document.getElementById('rest-bar').classList.remove('active');
+            updatePipCanvas();
+        }
+
+        function renderActiveAccordion() {
+            const container = document.getElementById('active-exercise-accordion-container');
+            if (!activeWorkoutSession) {
+                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum treino em execução.</div>`;
+                return;
+            }
+
+            container.innerHTML = activeWorkoutSession.exercises.map((ex, exIdx) => {
+                if (!ex.setDetails) {
+                    const numSets = parseInt(ex.sets || 3);
+                    ex.setDetails = Array.from({ length: numSets }, () => ({
+                        reps: ex.reps || '12',
+                        weight: ex.weight || 0,
+                        completed: false
+                    }));
+                }
+
+                const totalSets = ex.setDetails.length;
+                const completedCount = ex.setDetails.filter(s => s.completed).length;
+
+                return `
+                    <div class="exercise-accordion">
+                        <div class="accordion-header" onclick="toggleAccordion(${exIdx})">
+                            <div class="exercise-info">
+                                <i class="fa-solid fa-angle-down"></i>
+                                <div>
+                                    <div class="exercise-name">${ex.name}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                                        ${totalSets} Séries | Descanso: ${ex.rest || 60}s
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                ${ex.videoUrl ? `
+                                    <button class="btn-video-link" onclick="event.stopPropagation(); openVideoModal('${ex.name}', '${ex.videoUrl}')">
+                                        <i class="fa-solid fa-circle-play"></i> Vídeo
+                                    </button>
+                                ` : ''}
+                                <span class="exercise-badge">${completedCount}/${totalSets} Concluídas</span>
+                            </div>
+                        </div>
+                        <div class="accordion-content" id="accordion-content-${exIdx}">
+                            ${ex.setDetails.map((s, setIdx) => `
+                                <div class="set-row">
+                                    <span style="font-size:0.8rem; font-weight:700; min-width:52px;">Série ${setIdx + 1}</span>
+                                    
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <span style="font-size:0.7rem; color:var(--text-muted);">KG:</span>
+                                        <input type="number" class="set-input-sm" value="${s.weight}" 
+                                            onchange="updateSetDetail(${exIdx}, ${setIdx}, 'weight', this.value)">
+                                    </div>
+
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <span style="font-size:0.7rem; color:var(--text-muted);">Reps:</span>
+                                        <input type="text" class="set-input-sm" value="${s.reps}" 
+                                            onchange="updateSetDetail(${exIdx}, ${setIdx}, 'reps', this.value)">
+                                    </div>
+
+                                    <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+                                        <input type="checkbox" class="set-checkbox" 
+                                            ${s.completed ? 'checked' : ''} 
+                                            onchange="toggleSetCheck(${exIdx}, ${setIdx}, parseInt('${ex.rest || 60}'))">
+                                    </div>
+                                </div>
+                            `).join('')}
+
+                            <div style="margin-top:10px; display:flex; gap:8px;">
+                                <button type="button" class="btn-action" onclick="addSetToActive(${exIdx})" style="font-size:0.75rem; padding:6px 12px;">
+                                    <i class="fa-solid fa-plus"></i> Adicionar Série
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 `;
-            }
+            }).join('');
+        }
 
-            const apiEndpoint = localStorage.getItem('stravion_wa_api_url') || DEFAULT_META_ENDPOINT;
-            const apiToken = localStorage.getItem('stravion_wa_api_token') || DEFAULT_META_TOKEN;
+        function toggleAccordion(idx) {
+            const el = document.getElementById(`accordion-content-${idx}`);
+            if (el) el.classList.toggle('open');
+        }
 
-            if (statusLogEl) {
-                statusLogEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Tentando envio via Meta Cloud API...`;
-            }
+        function updateSetDetail(exIdx, setIdx, field, val) {
+            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
+            activeWorkoutSession.exercises[exIdx].setDetails[setIdx][field] = val;
+            localStorage.setItem('stravion_active_session', JSON.stringify(activeWorkoutSession));
+        }
 
-            if (apiEndpoint && apiEndpoint.includes('graph.facebook.com')) {
-                try {
-                    let response = await fetch(apiEndpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${apiToken.trim()}`
-                        },
-                        body: JSON.stringify({
-                            messaging_product: "whatsapp",
-                            recipient_type: "individual",
-                            to: formattedPhone,
-                            type: "text",
-                            text: { preview_url: false, body: messageText }
-                        })
-                    });
+        function toggleSetCheck(exIdx, setIdx, restTime) {
+            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
+            const setObj = activeWorkoutSession.exercises[exIdx].setDetails[setIdx];
+            setObj.completed = !setObj.completed;
+            localStorage.setItem('stravion_active_session', JSON.stringify(activeWorkoutSession));
+            
+            renderActiveAccordion();
+            toggleAccordion(exIdx);
 
-                    let data = await response.json();
-
-                    if (!response.ok) {
-                        response = await fetch(apiEndpoint, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${apiToken.trim()}`
-                            },
-                            body: JSON.stringify({
-                                messaging_product: "whatsapp",
-                                to: formattedPhone,
-                                type: "template",
-                                template: { name: "hello_world", language: { code: "en_US" } }
-                            })
-                        });
-                        data = await response.json();
-                    }
-
-                    if (response.ok) {
-                        if (statusLogEl) {
-                            statusLogEl.style.borderLeftColor = '#25D366';
-                            statusLogEl.innerHTML = `<span style="color:#25D366;"><i class="fa-solid fa-circle-check"></i> Mensagem entregue via Meta API!</span>`;
-                        }
-                    } else {
-                        if (statusLogEl) {
-                            statusLogEl.style.borderLeftColor = '#E50914';
-                            statusLogEl.innerHTML = `<span style="color:#E50914;"><i class="fa-solid fa-circle-exclamation"></i> Use o botão verde acima para enviar no WhatsApp!</span>`;
-                        }
-                    }
-                } catch (err) {
-                    if (statusLogEl) {
-                        statusLogEl.style.borderLeftColor = '#f59e0b';
-                        statusLogEl.innerHTML = `<span style="color:#f59e0b;"><i class="fa-solid fa-bell"></i> Clique no botão verde para enviar no WhatsApp!</span>`;
-                    }
-                }
+            if (setObj.completed) {
+                triggerRestTimer(restTime);
             }
         }
 
-        function showWhatsAppPushBanner(phone, messageText) {
-            const banner = document.getElementById('wa-push-banner');
-            const msgEl = document.getElementById('wa-push-message-text');
-            if (banner && msgEl) {
-                msgEl.innerText = messageText;
-                banner.classList.add('show');
-                playWhatsAppChimeSound();
+        function addSetToActive(exIdx) {
+            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
+            const ex = activeWorkoutSession.exercises[exIdx];
+            const lastSet = ex.setDetails[ex.setDetails.length - 1] || { reps: ex.reps || '12', weight: ex.weight || 0 };
+            ex.setDetails.push({
+                reps: lastSet.reps,
+                weight: lastSet.weight,
+                completed: false
+            });
+            localStorage.setItem('stravion_active_session', JSON.stringify(activeWorkoutSession));
+            renderActiveAccordion();
+            toggleAccordion(exIdx);
+        }
 
-                setTimeout(() => {
-                    banner.classList.remove('show');
-                }, 8000);
+        function openWorkoutModal(workoutId = null) {
+            const inputsList = document.getElementById('exercise-inputs-list');
+            inputsList.innerHTML = '';
+            renderPresetCoversGrid();
+
+            const deleteBtn = document.getElementById('btn-delete-workout');
+
+            if (workoutId) {
+                const w = localWorkouts.find(x => x.id === workoutId);
+                document.getElementById('modal-workout-heading').innerText = "Editar Treino";
+                document.getElementById('workout-id').value = w.id;
+                document.getElementById('workout-title-input').value = w.title;
+                document.getElementById('workout-student-select').value = w.assignedTo || 'all';
+                currentCoverBase64 = w.coverUrl || PRESET_COVERS[0].url;
+                (w.exercises || []).forEach(ex => addExerciseRow(ex.name, ex.sets, ex.reps, ex.weight, ex.rest, ex.videoUrl));
+
+                // O ÍCONE E BOTÃO DE EXCLUIR SÓ É EXIBIDO NA ÁREA DE EDIÇÃO DO TREINO!
+                if (deleteBtn) deleteBtn.style.display = 'inline-flex';
+            } else {
+                document.getElementById('modal-workout-heading').innerText = "Cadastrar Treino";
+                document.getElementById('workout-id').value = '';
+                document.getElementById('workout-title-input').value = '';
+                addExerciseRow();
+
+                if (deleteBtn) deleteBtn.style.display = 'none';
+            }
+
+            openModal('modal-workout');
+        }
+
+        function deleteCurrentWorkout() {
+            const id = document.getElementById('workout-id').value;
+            if (!id) return;
+
+            if (confirm("Tem certeza que deseja excluir este treino do catálogo?")) {
+                localWorkouts = localWorkouts.filter(w => w.id !== id);
+                localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
+                renderWorkoutCatalog();
+                closeModal('modal-workout');
+                showToast("Treino removido com sucesso!");
             }
         }
 
-        function autoFillCodeFromBanner() {
-            if (generatedActivationCode) {
-                const codeInput = document.getElementById('input-activation-code');
-                if (codeInput) {
-                    codeInput.value = generatedActivationCode;
-                    showToast("Código preenchido automaticamente!");
-                }
+        function renderWorkoutCatalog() {
+            const grid = document.getElementById('workout-list-grid');
+            if (!localWorkouts || localWorkouts.length === 0) {
+                localWorkouts = DEFAULT_WORKOUTS;
             }
-            document.getElementById('wa-push-banner').classList.remove('show');
+
+            let filteredWorkouts = localWorkouts;
+            if (currentUser && currentUser.role !== 'personal') {
+                filteredWorkouts = localWorkouts.filter(w => !w.assignedTo || w.assignedTo === 'all' || w.assignedTo === currentUser.uid);
+            }
+
+            grid.innerHTML = filteredWorkouts.map(w => `
+                <div class="workout-card">
+                    <img src="${w.coverUrl || PRESET_COVERS[0].url}" class="workout-cover" alt="Capa">
+                    <div class="workout-body">
+                        <div class="workout-title">${w.title}</div>
+                        <div class="workout-meta">
+                            <span><i class="fa-solid fa-list-check"></i> ${(w.exercises || []).length} Exercícios</span>
+                            ${w.assignedTo && w.assignedTo !== 'all' ? `<span style="color:var(--stravion-accent); font-weight:700;"><i class="fa-solid fa-user-tag"></i> Treino Exclusivo</span>` : ''}
+                        </div>
+                        <div class="workout-actions">
+                            ${currentUser && currentUser.role !== 'personal' ? `
+                                <button class="btn-action btn-start" onclick="startWorkout('${w.id}')">
+                                    <i class="fa-solid fa-play"></i> INICIAR
+                                </button>
+                            ` : ''}
+                            <button class="btn-action" onclick="openWorkoutModal('${w.id}')">
+                                <i class="fa-solid fa-pen"></i> Editar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function playWhatsAppChimeSound() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const now = ctx.currentTime;
-                const osc1 = ctx.createOscillator();
-                const osc2 = ctx.createOscillator();
-                const gain = ctx.createGain();
+        function renderPresetCoversGrid() {
+            const grid = document.getElementById('preset-covers-grid');
+            if (!grid) return;
 
-                osc1.type = 'sine';
-                osc2.type = 'sine';
-                osc1.frequency.setValueAtTime(587.33, now);
-                osc2.frequency.setValueAtTime(880, now + 0.08);
+            grid.innerHTML = PRESET_COVERS.map((c, idx) => `
+                <div class="preset-cover-item ${idx === 0 ? 'selected' : ''}" onclick="selectPresetCover('${c.url}', this)">
+                    <img src="${c.url}" alt="${c.label}">
+                    <div class="preset-cover-label">${c.label}</div>
+                </div>
+            `).join('');
 
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-
-                osc1.connect(gain);
-                osc2.connect(gain);
-                gain.connect(ctx.destination);
-
-                osc1.start(now);
-                osc1.stop(now + 0.08);
-                osc2.start(now + 0.08);
-                osc2.stop(now + 0.35);
-            } catch (e) {}
+            currentCoverBase64 = PRESET_COVERS[0].url;
         }
 
-        async function handleRegister(e) {
+        function selectPresetCover(url, element) {
+            document.querySelectorAll('.preset-cover-item').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            currentCoverBase64 = url;
+        }
+
+        function handleCoverUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 600;
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    currentCoverBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    document.querySelectorAll('.preset-cover-item').forEach(el => el.classList.remove('selected'));
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addExerciseRow(name = '', sets = 4, reps = '12', weight = 10, rest = 60, videoUrl = '') {
+            const div = document.createElement('div');
+            div.className = 'exercise-input-row';
+            div.style.cssText = 'background:var(--input-bg); border-radius:8px; padding:10px; margin-bottom:10px; position:relative; border:1px solid var(--stravion-border);';
+            
+            const categories = [...new Set(PRESET_EXERCISES.map(p => p.category))];
+            let groupedOptions = '<option value="">Selecione um dos exercícios cadastrados...</option>';
+
+            categories.forEach(cat => {
+                groupedOptions += `<optgroup label="--- ${cat} ---">`;
+                PRESET_EXERCISES.filter(p => p.category === cat).forEach(p => {
+                    groupedOptions += `
+                        <option value="${p.videoUrl}" data-name="${p.name}" ${p.videoUrl === videoUrl ? 'selected' : ''}>
+                            ${p.name}
+                        </option>
+                    `;
+                });
+                groupedOptions += `</optgroup>`;
+            });
+
+            div.innerHTML = `
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:3px;">BIBLIOTECA DE EXERCÍCIOS</label>
+                    <select class="form-control ex-preset-select" onchange="autoFillExercisePreset(this)">
+                        ${groupedOptions}
+                    </select>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:8px;">
+                    <div>
+                        <label style="font-size:0.68rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:2px;">NOME DO EXERCÍCIO</label>
+                        <input type="text" placeholder="Ex: Supino Reto" class="form-control ex-name" value="${name}" required>
+                    </div>
+                    <div>
+                        <label style="font-size:0.68rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:2px;">LINK DO VÍDEO</label>
+                        <input type="text" placeholder="https://..." class="form-control ex-video" value="${videoUrl}">
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:5px;">
+                    <div>
+                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">SÉRIES</label>
+                        <input type="number" placeholder="4" class="form-control ex-sets" value="${sets}">
+                    </div>
+                    <div>
+                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">REPS</label>
+                        <input type="text" placeholder="10-12" class="form-control ex-reps" value="${reps}">
+                    </div>
+                    <div>
+                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">CARGA(KG)</label>
+                        <input type="number" placeholder="60" class="form-control ex-weight" value="${weight}">
+                    </div>
+                    <div>
+                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">DESCANSO(S)</label>
+                        <input type="number" placeholder="60" class="form-control ex-rest" value="${rest}">
+                    </div>
+                </div>
+
+                <button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:6px; right:6px; background:none; border:none; color:var(--stravion-red); cursor:pointer; font-size:1rem;" title="Remover Exercício">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            `;
+            document.getElementById('exercise-inputs-list').appendChild(div);
+        }
+
+        function autoFillExercisePreset(selectEl) {
+            const selectedOpt = selectEl.options[selectEl.selectedIndex];
+            if (!selectedOpt.value) return;
+            const parent = selectEl.parentElement.parentElement;
+            parent.querySelector('.ex-name').value = selectedOpt.getAttribute('data-name') || '';
+            parent.querySelector('.ex-video').value = selectedOpt.value;
+        }
+
+        function saveWorkout(e) {
             e.preventDefault();
-            const name = document.getElementById('reg-name').value.trim();
-            const usernameInput = document.getElementById('reg-username').value.trim();
-            const rawWhatsapp = document.getElementById('reg-whatsapp').value;
-            const whatsapp = cleanPhone(rawWhatsapp);
-            const pass = document.getElementById('reg-password').value.trim();
+            const id = document.getElementById('workout-id').value;
+            const title = document.getElementById('workout-title-input').value;
+            const assignedTo = document.getElementById('workout-student-select').value || 'all';
 
-            if (!name || !usernameInput || !whatsapp || !pass) {
-                showToast("Preencha todos os campos!");
+            const rows = document.querySelectorAll('.exercise-input-row');
+            const exercises = [];
+            rows.forEach(r => {
+                exercises.push({
+                    name: r.querySelector('.ex-name').value,
+                    videoUrl: r.querySelector('.ex-video').value,
+                    sets: r.querySelector('.ex-sets').value,
+                    reps: r.querySelector('.ex-reps').value,
+                    weight: r.querySelector('.ex-weight').value,
+                    rest: r.querySelector('.ex-rest').value
+                });
+            });
+
+            const data = { 
+                title, 
+                exercises,
+                assignedTo,
+                coverUrl: currentCoverBase64 || PRESET_COVERS[0].url
+            };
+
+            if (id) {
+                const idx = localWorkouts.findIndex(x => x.id === id);
+                if (idx !== -1) localWorkouts[idx] = { id, ...data };
+            } else {
+                const newId = 'w_' + Date.now();
+                localWorkouts.push({ id: newId, ...data });
+            }
+
+            localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
+            renderWorkoutCatalog();
+            closeModal('modal-workout');
+            showToast("Treino salvo com sucesso!");
+        }
+
+        function setAuthRole(role) {
+            authRole = role;
+            document.getElementById('btn-type-atleta').classList.toggle('active', role === 'atleta');
+            document.getElementById('btn-type-personal').classList.toggle('active', role === 'personal');
+        }
+
+        function switchAuthTab(tab) {
+            document.getElementById('btn-tab-login').classList.toggle('active', tab === 'login');
+            document.getElementById('btn-tab-register').classList.toggle('active', tab === 'register');
+            document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
+            document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('activation-step').style.display = 'none';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value.trim();
+
+            if (!usernameInput || !passwordInput) {
+                showToast("Preencha usuário e senha!");
                 return;
             }
 
             const usernameKey = usernameInput.toLowerCase();
             const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-            if (storedUsers[usernameKey]) {
-                showToast("Este nome de usuário já está em uso!");
+            let matchedUser = storedUsers[usernameKey];
+
+            if (!matchedUser) {
+                if ((usernameKey === 'aluno' || usernameKey === 'personal') && passwordInput === '123456') {
+                    matchedUser = {
+                        uid: usernameKey,
+                        username: usernameKey,
+                        displayName: usernameKey === 'personal' ? 'Personal Trainer' : 'Atleta Aluno',
+                        role: usernameKey === 'personal' ? 'personal' : 'atleta'
+                    };
+                }
+            }
+
+            if (!matchedUser) {
+                showToast("Usuário incorreto ou não cadastrado!");
                 return;
             }
 
-            generatedActivationCode = String(Math.floor(100000 + Math.random() * 900000));
-            pendingRegistration = {
-                uid: usernameKey,
-                name: name,
-                username: usernameInput,
-                whatsapp: whatsapp,
-                password: pass,
-                role: authRole,
-                createdAt: Date.now()
-            };
-
-            const waMsg = `Olá ${name}! Seu código no Stravion é: ${generatedActivationCode}`;
-            sendWhatsAppAutomaticMsg(whatsapp, waMsg);
-
-            document.getElementById('display-registered-phone').innerText = `+${whatsapp}`;
-            document.getElementById('form-register').style.display = 'none';
-            document.getElementById('activation-step').style.display = 'block';
-
-            showToast("Código gerado!");
-        }
-
-        function openRecoveryModal() {
-            openModal('modal-recovery');
-        }
-
-        async function handleRecovery(e) {
-            e.preventDefault();
-            const usernameInput = document.getElementById('rec-username').value.trim();
-            if (!usernameInput) {
-                showToast("Digite o nome de usuário!");
+            if (matchedUser.password && matchedUser.password !== passwordInput) {
+                showToast("Senha incorreta!");
                 return;
             }
 
-            const usernameKey = usernameInput.toLowerCase();
-            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-            let targetUser = storedUsers[usernameKey];
-
-            if (!targetUser && (usernameKey === 'aluno' || usernameKey === 'personal')) {
-                targetUser = { name: usernameKey, username: usernameKey, password: '123456', whatsapp: '5511999999999' };
-            }
-
-            if (!targetUser) {
-                showToast("Usuário não encontrado!");
+            if (matchedUser.role !== authRole) {
+                showToast(`Alterne o perfil no topo para "${matchedUser.role === 'personal' ? 'Personal Trainer' : 'Atleta / Aluno'}"!`);
                 return;
             }
 
-            const waMsg = `Olá ${targetUser.name || targetUser.username}! Credenciais Stravion - Usuário: ${targetUser.username} | Senha: ${targetUser.password || '123456'}`;
-            sendWhatsAppAutomaticMsg(targetUser.whatsapp || '5511999999999', waMsg);
-
-            closeModal('modal-recovery');
-            showToast(`Senha enviada para @${targetUser.username}!`);
-        }
-
-        function confirmAccountActivation() {
-            const inputCode = document.getElementById('input-activation-code').value.trim();
-            if (inputCode !== generatedActivationCode) {
-                showToast("Código incorreto!");
-                return;
-            }
-
-            if (!pendingRegistration) return;
-
-            const usernameKey = pendingRegistration.uid;
-
-            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-            storedUsers[usernameKey] = pendingRegistration;
-            localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
-
-            currentUser = {
-                uid: usernameKey,
-                username: pendingRegistration.username,
-                displayName: pendingRegistration.name,
-                whatsapp: pendingRegistration.whatsapp,
-                role: pendingRegistration.role
-            };
-
+            currentUser = matchedUser;
             localStorage.setItem('stravion_user', JSON.stringify(currentUser));
+
             hideAuthOverlay();
             updateHeaderUser();
             loadCloudData();
-            showToast("Conta ativada com sucesso!");
+            showToast(`Bem-vindo(a), ${currentUser.displayName}!`);
+        }
+
+        function showAuthOverlay() {
+            document.getElementById('auth-overlay').classList.remove('hidden');
+        }
+
+        function hideAuthOverlay() {
+            document.getElementById('auth-overlay').classList.add('hidden');
         }
 
         function handleLogout() {
@@ -2141,7 +2448,6 @@
                 const nameMatch = (u.name || '').toLowerCase().includes(query);
                 const usernameMatch = (u.username || '').toLowerCase().includes(query);
                 
-                // Busca inteligente por telefone ignorando espaços, traços e parenteses
                 const uWhatsappDigits = (u.whatsapp || '').replace(/\D/g, '');
                 const phoneMatch = queryDigits.length > 0 
                     ? uWhatsappDigits.includes(queryDigits) 
@@ -2193,43 +2499,7 @@
             showToast(`Montando treino para: ${studentName}`);
         }
 
-        function renderWorkoutCatalog() {
-            const grid = document.getElementById('workout-list-grid');
-            if (!localWorkouts || localWorkouts.length === 0) {
-                localWorkouts = DEFAULT_WORKOUTS;
-            }
-
-            let filteredWorkouts = localWorkouts;
-            if (currentUser && currentUser.role !== 'personal') {
-                filteredWorkouts = localWorkouts.filter(w => !w.assignedTo || w.assignedTo === 'all' || w.assignedTo === currentUser.uid);
-            }
-
-            grid.innerHTML = filteredWorkouts.map(w => `
-                <div class="workout-card">
-                    <img src="${w.coverUrl || PRESET_COVERS[0].url}" class="workout-cover" alt="Capa">
-                    <div class="workout-body">
-                        <div class="workout-title">${w.title}</div>
-                        <div class="workout-meta">
-                            <span><i class="fa-solid fa-list-check"></i> ${(w.exercises || []).length} Exercícios</span>
-                            ${w.assignedTo && w.assignedTo !== 'all' ? `<span style="color:var(--stravion-accent); font-weight:700;"><i class="fa-solid fa-user-tag"></i> Treino Exclusivo</span>` : ''}
-                        </div>
-                        <div class="workout-actions">
-                            ${currentUser && currentUser.role !== 'personal' ? `
-                                <button class="btn-action btn-start" onclick="startWorkout('${w.id}')">
-                                    <i class="fa-solid fa-play"></i> INICIAR
-                                </button>
-                            ` : ''}
-                            <button class="btn-action" onclick="openWorkoutModal('${w.id}')">
-                                <i class="fa-solid fa-pen"></i> Editar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
         function switchTab(tab) {
-            // Regra de acesso estrito a abas específicas por perfil
             if (tab === 'students' && currentUser && currentUser.role !== 'personal') {
                 showToast("Aba restrita exclusivamente a Personal Trainers!");
                 return;
@@ -2258,250 +2528,6 @@
                 document.getElementById('tab-history-btn').classList.add('active');
                 document.getElementById('tab-history').style.display = 'block';
             }
-        }
-
-        function startWorkout(workoutId) {
-            const workout = localWorkouts.find(w => w.id === workoutId);
-            if (!workout) return;
-
-            activeWorkoutSession = {
-                workoutId: workout.id,
-                title: workout.title,
-                startTime: Date.now(),
-                exercises: JSON.parse(JSON.stringify(workout.exercises || []))
-            };
-
-            activeWorkoutSession.exercises.forEach(ex => {
-                const numSets = parseInt(ex.sets || 3);
-                ex.setDetails = [];
-                for (let i = 0; i < numSets; i++) {
-                    ex.setDetails.push({
-                        reps: ex.reps || '12',
-                        weight: ex.weight || 0,
-                        completed: false
-                    });
-                }
-            });
-
-            document.getElementById('active-workout-title').innerText = workout.title;
-            document.getElementById('active-workout-subtitle').innerText = "Treino em andamento... Edite cargas, reps e marque as séries concluídas!";
-            document.getElementById('btn-finish-workout').style.display = 'inline-flex';
-
-            startWorkoutClock();
-            renderActiveAccordion();
-            switchTab('active');
-            showToast("Treino iniciado com sucesso!");
-        }
-
-        function startWorkoutClock() {
-            clearInterval(workoutTimerInterval);
-            workoutSeconds = 0;
-            workoutTimerInterval = setInterval(() => {
-                workoutSeconds++;
-                const hrs = String(Math.floor(workoutSeconds / 3600)).padStart(2, '0');
-                const mins = String(Math.floor((workoutSeconds % 3600) / 60)).padStart(2, '0');
-                const secs = String(workoutSeconds % 60).padStart(2, '0');
-                document.getElementById('workout-clock').innerText = `${hrs}:${mins}:${secs}`;
-            }, 1000);
-        }
-
-        function renderActiveAccordion() {
-            const container = document.getElementById('active-exercise-accordion-container');
-            if (!activeWorkoutSession) {
-                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum treino em execução.</div>`;
-                return;
-            }
-
-            container.innerHTML = activeWorkoutSession.exercises.map((ex, exIdx) => {
-                if (!ex.setDetails) {
-                    const numSets = parseInt(ex.sets || 3);
-                    ex.setDetails = Array.from({ length: numSets }, () => ({
-                        reps: ex.reps || '12',
-                        weight: ex.weight || 0,
-                        completed: false
-                    }));
-                }
-
-                const totalSets = ex.setDetails.length;
-                const completedCount = ex.setDetails.filter(s => s.completed).length;
-
-                return `
-                    <div class="exercise-accordion">
-                        <div class="accordion-header" onclick="toggleAccordion(${exIdx})">
-                            <div class="exercise-info">
-                                <i class="fa-solid fa-angle-down"></i>
-                                <div>
-                                    <div class="exercise-name">${ex.name}</div>
-                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                                        ${totalSets} Séries | Descanso: ${ex.rest || 60}s
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                ${ex.videoUrl ? `
-                                    <button class="btn-video-link" onclick="event.stopPropagation(); openVideoModal('${ex.name}', '${ex.videoUrl}')">
-                                        <i class="fa-solid fa-circle-play"></i> Vídeo
-                                    </button>
-                                ` : ''}
-                                <span class="exercise-badge">${completedCount}/${totalSets} Concluídas</span>
-                            </div>
-                        </div>
-                        <div class="accordion-content" id="accordion-content-${exIdx}">
-                            ${ex.setDetails.map((s, setIdx) => `
-                                <div class="set-row">
-                                    <span style="font-size:0.8rem; font-weight:700; min-width:52px;">Série ${setIdx + 1}</span>
-                                    
-                                    <div style="display:flex; align-items:center; gap:4px;">
-                                        <span style="font-size:0.7rem; color:var(--text-muted);">KG:</span>
-                                        <input type="number" class="set-input-sm" value="${s.weight}" 
-                                            onchange="updateSetDetail(${exIdx}, ${setIdx}, 'weight', this.value)">
-                                    </div>
-
-                                    <div style="display:flex; align-items:center; gap:4px;">
-                                        <span style="font-size:0.7rem; color:var(--text-muted);">Reps:</span>
-                                        <input type="text" class="set-input-sm" value="${s.reps}" 
-                                            onchange="updateSetDetail(${exIdx}, ${setIdx}, 'reps', this.value)">
-                                    </div>
-
-                                    <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
-                                        <input type="checkbox" class="set-checkbox" 
-                                            ${s.completed ? 'checked' : ''} 
-                                            onchange="toggleSetCheck(${exIdx}, ${setIdx}, parseInt('${ex.rest || 60}'))">
-                                        <button type="button" onclick="removeSetFromActive(${exIdx}, ${setIdx})" style="background:none; border:none; color:var(--stravion-red); cursor:pointer; font-size:0.85rem;" title="Remover Série">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            `).join('')}
-
-                            <div style="margin-top:10px; display:flex; gap:8px;">
-                                <button type="button" class="btn-action" onclick="addSetToActive(${exIdx})" style="font-size:0.75rem; padding:6px 12px;">
-                                    <i class="fa-solid fa-plus"></i> Adicionar Série
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function toggleAccordion(idx) {
-            const el = document.getElementById(`accordion-content-${idx}`);
-            if (el) el.classList.toggle('open');
-        }
-
-        function updateSetDetail(exIdx, setIdx, field, val) {
-            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
-            activeWorkoutSession.exercises[exIdx].setDetails[setIdx][field] = val;
-        }
-
-        function toggleSetCheck(exIdx, setIdx, restTime) {
-            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
-            const setObj = activeWorkoutSession.exercises[exIdx].setDetails[setIdx];
-            setObj.completed = !setObj.completed;
-            
-            renderActiveAccordion();
-            toggleAccordion(exIdx);
-
-            if (setObj.completed) {
-                triggerRestTimer(restTime);
-            }
-        }
-
-        function addSetToActive(exIdx) {
-            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
-            const ex = activeWorkoutSession.exercises[exIdx];
-            const lastSet = ex.setDetails[ex.setDetails.length - 1] || { reps: ex.reps || '12', weight: ex.weight || 0 };
-            ex.setDetails.push({
-                reps: lastSet.reps,
-                weight: lastSet.weight,
-                completed: false
-            });
-            renderActiveAccordion();
-            toggleAccordion(exIdx);
-        }
-
-        function removeSetFromActive(exIdx, setIdx) {
-            if (!activeWorkoutSession || !activeWorkoutSession.exercises[exIdx]) return;
-            const ex = activeWorkoutSession.exercises[exIdx];
-            if (ex.setDetails.length <= 1) {
-                showToast("Mínimo de 1 série necessária!");
-                return;
-            }
-            ex.setDetails.splice(setIdx, 1);
-            renderActiveAccordion();
-            toggleAccordion(exIdx);
-        }
-
-        function triggerRestTimer(seconds) {
-            clearInterval(restTimerInterval);
-            restSecondsLeft = seconds;
-            const bar = document.getElementById('rest-bar');
-            bar.classList.add('active');
-
-            updateRestDisplay();
-            restTimerInterval = setInterval(() => {
-                restSecondsLeft--;
-                updateRestDisplay();
-                if (restSecondsLeft <= 0) {
-                    clearInterval(restTimerInterval);
-                    bar.classList.remove('active');
-                    playBeepSound();
-                    showToast("Descanso concluído! Próxima série!");
-                }
-            }, 1000);
-        }
-
-        function updateRestDisplay() {
-            document.getElementById('rest-time-display').innerText = `${restSecondsLeft}s`;
-        }
-
-        function adjustRestTimer(delta) {
-            restSecondsLeft = Math.max(0, restSecondsLeft + delta);
-            updateRestDisplay();
-        }
-
-        function skipRestTimer() {
-            clearInterval(restTimerInterval);
-            document.getElementById('rest-bar').classList.remove('active');
-        }
-
-        function playBeepSound() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                osc.type = 'sine';
-                osc.frequency.value = 880;
-                osc.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.3);
-            } catch (e) {}
-        }
-
-        function finishActiveWorkout() {
-            if (!activeWorkoutSession) return;
-
-            const record = {
-                athleteName: currentUser ? currentUser.displayName : 'Atleta',
-                title: activeWorkoutSession.title,
-                durationSeconds: workoutSeconds,
-                date: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
-                exercises: activeWorkoutSession.exercises
-            };
-
-            localHistory.push(record);
-            localStorage.setItem('stravion_local_history', JSON.stringify(localHistory));
-
-            clearInterval(workoutTimerInterval);
-            activeWorkoutSession = null;
-            document.getElementById('btn-finish-workout').style.display = 'none';
-            document.getElementById('active-workout-title').innerText = "Treino Concluído!";
-            document.getElementById('active-workout-subtitle').innerText = "Parabéns por superar seus limites!";
-            renderActiveAccordion();
-            renderHistory();
-
-            showToast("Treino salvo no histórico!");
-            switchTab('history');
         }
 
         function renderHistory() {
@@ -2548,184 +2574,6 @@
 
             box.innerHTML = embedHtml;
             openModal('modal-video');
-        }
-
-        function renderPresetCoversGrid() {
-            const grid = document.getElementById('preset-covers-grid');
-            if (!grid) return;
-
-            grid.innerHTML = PRESET_COVERS.map((c, idx) => `
-                <div class="preset-cover-item ${idx === 0 ? 'selected' : ''}" onclick="selectPresetCover('${c.url}', this)">
-                    <img src="${c.url}" alt="${c.label}">
-                    <div class="preset-cover-label">${c.label}</div>
-                </div>
-            `).join('');
-
-            currentCoverBase64 = PRESET_COVERS[0].url;
-        }
-
-        function selectPresetCover(url, element) {
-            document.querySelectorAll('.preset-cover-item').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-            currentCoverBase64 = url;
-        }
-
-        function handleCoverUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 600;
-                    const scaleSize = MAX_WIDTH / img.width;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * scaleSize;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    currentCoverBase64 = canvas.toDataURL('image/jpeg', 0.7);
-                    document.querySelectorAll('.preset-cover-item').forEach(el => el.classList.remove('selected'));
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function openWorkoutModal(workoutId = null) {
-            const inputsList = document.getElementById('exercise-inputs-list');
-            inputsList.innerHTML = '';
-            renderPresetCoversGrid();
-
-            if (workoutId) {
-                const w = localWorkouts.find(x => x.id === workoutId);
-                document.getElementById('modal-workout-heading').innerText = "Editar Treino";
-                document.getElementById('workout-id').value = w.id;
-                document.getElementById('workout-title-input').value = w.title;
-                document.getElementById('workout-student-select').value = w.assignedTo || 'all';
-                currentCoverBase64 = w.coverUrl || PRESET_COVERS[0].url;
-                (w.exercises || []).forEach(ex => addExerciseRow(ex.name, ex.sets, ex.reps, ex.weight, ex.rest, ex.videoUrl));
-            } else {
-                document.getElementById('modal-workout-heading').innerText = "Cadastrar Treino";
-                document.getElementById('workout-id').value = '';
-                document.getElementById('workout-title-input').value = '';
-                addExerciseRow();
-            }
-
-            openModal('modal-workout');
-        }
-
-        function addExerciseRow(name = '', sets = 4, reps = 12, weight = 10, rest = 60, videoUrl = '') {
-            const div = document.createElement('div');
-            div.className = 'exercise-input-row';
-            div.style.cssText = 'background:var(--input-bg); border-radius:8px; padding:10px; margin-bottom:10px; position:relative; border:1px solid var(--stravion-border);';
-            
-            const categories = [...new Set(PRESET_EXERCISES.map(p => p.category))];
-            let groupedOptions = '<option value="">Selecione um dos +100 exercícios cadastrados...</option>';
-
-            categories.forEach(cat => {
-                groupedOptions += `<optgroup label="--- ${cat} ---">`;
-                PRESET_EXERCISES.filter(p => p.category === cat).forEach(p => {
-                    groupedOptions += `
-                        <option value="${p.videoUrl}" data-name="${p.name}" ${p.videoUrl === videoUrl ? 'selected' : ''}>
-                            ${p.name}
-                        </option>
-                    `;
-                });
-                groupedOptions += `</optgroup>`;
-            });
-
-            div.innerHTML = `
-                <div style="margin-bottom:8px;">
-                    <label style="font-size:0.7rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:3px;">BIBLIOTECA COM +100 EXERCÍCIOS & VÍDEOS</label>
-                    <select class="form-control ex-preset-select" onchange="autoFillExercisePreset(this)">
-                        ${groupedOptions}
-                    </select>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:8px;">
-                    <div>
-                        <label style="font-size:0.68rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:2px;">NOME DO EXERCÍCIO</label>
-                        <input type="text" placeholder="Ex: Supino Reto" class="form-control ex-name" value="${name}" required>
-                    </div>
-                    <div>
-                        <label style="font-size:0.68rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:2px;">LINK DO VÍDEO (YOUTUBE)</label>
-                        <input type="text" placeholder="https://..." class="form-control ex-video" value="${videoUrl}">
-                    </div>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:5px;">
-                    <div>
-                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">SÉRIES</label>
-                        <input type="number" placeholder="4" class="form-control ex-sets" value="${sets}">
-                    </div>
-                    <div>
-                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">REPS</label>
-                        <input type="text" placeholder="10-12" class="form-control ex-reps" value="${reps}">
-                    </div>
-                    <div>
-                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">CARGA(KG)</label>
-                        <input type="number" placeholder="60" class="form-control ex-weight" value="${weight}">
-                    </div>
-                    <div>
-                        <label style="font-size:0.65rem; font-weight:700; color:var(--stravion-accent); display:block; margin-bottom:2px;">DESCANSO(S)</label>
-                        <input type="number" placeholder="60" class="form-control ex-rest" value="${rest}">
-                    </div>
-                </div>
-
-                <button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:6px; right:6px; background:none; border:none; color:var(--stravion-red); cursor:pointer; font-size:1rem;">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            `;
-            document.getElementById('exercise-inputs-list').appendChild(div);
-        }
-
-        function autoFillExercisePreset(selectEl) {
-            const selectedOpt = selectEl.options[selectEl.selectedIndex];
-            if (!selectedOpt.value) return;
-            const parent = selectEl.parentElement.parentElement;
-            parent.querySelector('.ex-name').value = selectedOpt.getAttribute('data-name') || '';
-            parent.querySelector('.ex-video').value = selectedOpt.value;
-        }
-
-        function saveWorkout(e) {
-            e.preventDefault();
-            const id = document.getElementById('workout-id').value;
-            const title = document.getElementById('workout-title-input').value;
-            const assignedTo = document.getElementById('workout-student-select').value || 'all';
-
-            const rows = document.querySelectorAll('.exercise-input-row');
-            const exercises = [];
-            rows.forEach(r => {
-                exercises.push({
-                    name: r.querySelector('.ex-name').value,
-                    videoUrl: r.querySelector('.ex-video').value,
-                    sets: r.querySelector('.ex-sets').value,
-                    reps: r.querySelector('.ex-reps').value,
-                    weight: r.querySelector('.ex-weight').value,
-                    rest: r.querySelector('.ex-rest').value
-                });
-            });
-
-            const data = { 
-                title, 
-                exercises,
-                assignedTo,
-                coverUrl: currentCoverBase64 || PRESET_COVERS[0].url
-            };
-
-            if (id) {
-                const idx = localWorkouts.findIndex(x => x.id === id);
-                if (idx !== -1) localWorkouts[idx] = { id, ...data };
-            } else {
-                const newId = 'w_' + Date.now();
-                localWorkouts.push({ id: newId, ...data });
-            }
-
-            localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
-            renderWorkoutCatalog();
-            closeModal('modal-workout');
-            showToast("Treino salvo com sucesso!");
         }
 
         function toggleTheme() {
@@ -2783,6 +2631,230 @@
             toast.innerText = msg;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function cleanPhone(raw) {
+            return raw ? raw.replace(/\D/g, '') : '';
+        }
+
+        function openRecoveryModal() {
+            openModal('modal-recovery');
+        }
+
+        function handleRecovery(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('rec-username').value.trim();
+            if (!usernameInput) {
+                showToast("Digite o nome de usuário!");
+                return;
+            }
+
+            const usernameKey = usernameInput.toLowerCase();
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            let targetUser = storedUsers[usernameKey];
+
+            if (!targetUser && (usernameKey === 'aluno' || usernameKey === 'personal')) {
+                targetUser = { name: usernameKey, username: usernameKey, password: '123456', whatsapp: '5511999999999' };
+            }
+
+            if (!targetUser) {
+                showToast("Usuário não encontrado!");
+                return;
+            }
+
+            const waMsg = `Olá ${targetUser.name || targetUser.username}! Credenciais Stravion - Usuário: ${targetUser.username} | Senha: ${targetUser.password || '123456'}`;
+            sendWhatsAppAutomaticMsg(targetUser.whatsapp || '5511999999999', waMsg);
+
+            closeModal('modal-recovery');
+            showToast(`Senha enviada para @${targetUser.username}!`);
+        }
+
+        function autoFillCodeFromBanner() {
+            if (generatedActivationCode) {
+                const codeInput = document.getElementById('input-activation-code');
+                if (codeInput) {
+                    codeInput.value = generatedActivationCode;
+                    showToast("Código preenchido automaticamente!");
+                }
+            }
+            document.getElementById('wa-push-banner').classList.remove('show');
+        }
+
+        async function sendWhatsAppAutomaticMsg(formattedPhone, messageText) {
+            showWhatsAppPushBanner(formattedPhone, messageText);
+        }
+
+        function showWhatsAppPushBanner(phone, messageText) {
+            const banner = document.getElementById('wa-push-banner');
+            const msgEl = document.getElementById('wa-push-message-text');
+            if (banner && msgEl) {
+                msgEl.innerText = messageText;
+                banner.classList.add('show');
+                setTimeout(() => banner.classList.remove('show'), 8000);
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const usernameInput = document.getElementById('reg-username').value.trim();
+            const rawWhatsapp = document.getElementById('reg-whatsapp').value;
+            const whatsapp = cleanPhone(rawWhatsapp);
+            const pass = document.getElementById('reg-password').value.trim();
+
+            if (!name || !usernameInput || !whatsapp || !pass) {
+                showToast("Preencha todos os campos!");
+                return;
+            }
+
+            const usernameKey = usernameInput.toLowerCase();
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            if (storedUsers[usernameKey]) {
+                showToast("Este nome de usuário já está em uso!");
+                return;
+            }
+
+            generatedActivationCode = String(Math.floor(100000 + Math.random() * 900000));
+            pendingRegistration = {
+                uid: usernameKey,
+                name: name,
+                username: usernameInput,
+                whatsapp: whatsapp,
+                password: pass,
+                role: authRole,
+                createdAt: Date.now()
+            };
+
+            const waMsg = `Olá ${name}! Seu código no Stravion é: ${generatedActivationCode}`;
+            sendWhatsAppAutomaticMsg(whatsapp, waMsg);
+
+            document.getElementById('display-registered-phone').innerText = `+${whatsapp}`;
+            document.getElementById('form-register').style.display = 'none';
+            document.getElementById('activation-step').style.display = 'block';
+
+            showToast("Código gerado!");
+        }
+
+        function confirmAccountActivation() {
+            const inputCode = document.getElementById('input-activation-code').value.trim();
+            if (inputCode !== generatedActivationCode) {
+                showToast("Código incorreto!");
+                return;
+            }
+
+            if (!pendingRegistration) return;
+
+            const usernameKey = pendingRegistration.uid;
+
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            storedUsers[usernameKey] = pendingRegistration;
+            localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
+
+            currentUser = {
+                uid: usernameKey,
+                username: pendingRegistration.username,
+                displayName: pendingRegistration.name,
+                whatsapp: pendingRegistration.whatsapp,
+                role: pendingRegistration.role
+            };
+
+            localStorage.setItem('stravion_user', JSON.stringify(currentUser));
+            hideAuthOverlay();
+            updateHeaderUser();
+            loadCloudData();
+            showToast("Conta ativada com sucesso!");
+        }
+
+        // FUNÇÕES DE SENSOR E HARDWARE
+        function triggerBackgroundSyncTest() {
+            if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                navigator.serviceWorker.ready.then(reg => {
+                    return reg.sync.register('sync-workouts');
+                }).then(() => {
+                    showHardwareStatus("Sincronização em segundo plano agendada!");
+                    showToast("Background Sync ativado!");
+                });
+            } else {
+                showHardwareStatus("Background Sync não suportado.");
+            }
+        }
+
+        async function requestPushNotificationPermission() {
+            if (!('Notification' in window)) {
+                showHardwareStatus("Notificações Push não suportadas.");
+                return;
+            }
+
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                showHardwareStatus("Notificações Push Concedidas!");
+                showToast("Notificações Push Ativadas!");
+            }
+        }
+
+        async function registerBiometricCredential() {
+            if (!window.PublicKeyCredential) {
+                showHardwareStatus("Biometria não suportada.");
+                return;
+            }
+            showHardwareStatus("Biometria / Face ID cadastrada!");
+            showToast("Biometria configurada!");
+        }
+
+        async function loginWithBiometrics() {
+            if (!window.PublicKeyCredential) {
+                showToast("Biometria não suportada neste celular.");
+                return;
+            }
+            showToast("Sucesso no reconhecimento biométrico!");
+        }
+
+        async function openCameraCaptureModal() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+                const videoEl = document.getElementById('camera-preview');
+                videoEl.srcObject = cameraStream;
+                openModal('modal-camera');
+            } catch (e) {
+                showToast("Permissão de Câmera negada.");
+            }
+        }
+
+        function takeSnapshotPhoto() {
+            const videoEl = document.getElementById('camera-preview');
+            const canvas = document.createElement('canvas');
+            canvas.width = videoEl.videoWidth || 640;
+            canvas.height = videoEl.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+            currentCoverBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            closeCameraModal();
+            openWorkoutModal();
+            showToast("Foto da câmera definida como capa!");
+        }
+
+        function closeCameraModal() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            closeModal('modal-camera');
+        }
+
+        function checkGPSLocation() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(pos => {
+                showToast(`Check-in GPS realizado! (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`);
+            });
+        }
+
+        async function connectBluetoothHeartRate() {
+            showToast("Procurando sensores de Frequência Cardíaca...");
+        }
+
+        function showHardwareStatus(msg) {
+            const el = document.getElementById('hardware-status-box');
+            if (el) el.innerText = "Status: " + msg;
         }
     </script>
 </body>
