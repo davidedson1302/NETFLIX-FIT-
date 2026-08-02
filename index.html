@@ -202,6 +202,53 @@
             transition: all 0.2s ease;
         }
 
+        .btn-hardware {
+            background: var(--input-bg);
+            border: 1px solid var(--stravion-border);
+            color: var(--text-white);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-hardware:hover {
+            border-color: var(--stravion-accent);
+            color: var(--stravion-accent);
+        }
+
+        .hardware-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .pip-badge-btn {
+            background: linear-gradient(135deg, #FF416C, #FF4B2B);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .pip-badge-btn:active {
+            transform: scale(0.95);
+        }
+
         .btn-logout {
             color: var(--stravion-red);
         }
@@ -1084,6 +1131,10 @@
                     <input type="password" id="login-password" class="form-control" placeholder="Sua senha (mínimo 6 dígitos)" minlength="6" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn-primary" id="btn-login-submit">ENTRAR NA CONTA</button>
+
+                <button type="button" class="btn-hardware" onclick="loginWithBiometrics()" style="width:100%; margin-top:8px; justify-content:center; background:rgba(255,255,255,0.05);">
+                    <i class="fa-solid fa-fingerprint" style="color:var(--stravion-accent); font-size:1.1rem;"></i> Entrar com Biometria / Face ID
+                </button>
                 
                 <div style="margin-top: 12px; text-align: center;">
                     <a href="#" onclick="openRecoveryModal(); return false;" style="color:var(--stravion-accent); font-size:0.78rem; font-weight:700; text-decoration:none;">
@@ -1203,6 +1254,12 @@
                 <div>
                     <h2 id="active-workout-title" class="section-title">Nenhum treino iniciado</h2>
                     <p style="color:var(--text-muted); font-size:0.8rem;" id="active-workout-subtitle">Selecione um treino no catálogo para começar.</p>
+                    <div id="pip-controls-wrap" style="margin-top:8px; display:none;">
+                        <button class="pip-badge-btn" onclick="togglePictureInPicture()">
+                            <i class="fa-solid fa-window-restore"></i> PiP Flutuante (Cronômetro)
+                        </button>
+                        <span id="bpm-display" style="font-size:0.75rem; margin-left:10px; color:#25D366; font-weight:700;"></span>
+                    </div>
                 </div>
                 <div style="text-align: right;">
                     <div class="timer-display" id="workout-clock">00:00:00</div>
@@ -1211,6 +1268,11 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Canvas e Video ocultos utilizados para a renderização do Picture-in-Picture em tempo real -->
+            <canvas id="pip-canvas" width="400" height="240" style="display:none;"></canvas>
+            <video id="pip-video" autoplay muted style="display:none;"></video>
+
             <div id="active-exercise-accordion-container"></div>
         </section>
 
@@ -1296,7 +1358,7 @@
     <div class="modal-backdrop" id="modal-profile">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="font-family:'Teko'; font-size:1.6rem;">Perfil & Configurações</h3>
+                <h3 style="font-family:'Teko'; font-size:1.6rem;">Perfil & Hardware do Dispositivo</h3>
                 <button class="btn-close-modal" onclick="closeModal('modal-profile')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="form-profile" onsubmit="saveProfile(event)">
@@ -1315,6 +1377,37 @@
                         <option value="#FECA57">Pastel Warm Amber</option>
                     </select>
                 </div>
+
+                <div style="margin-top:14px; border-top:1px solid var(--stravion-border); padding-top:10px;">
+                    <label style="font-size:0.75rem; font-weight:700; color:var(--text-white); text-transform:uppercase;">
+                        <i class="fa-solid fa-microchip" style="color:var(--stravion-accent);"></i> Sensores & Hardware do Celular
+                    </label>
+
+                    <div class="hardware-grid">
+                        <button type="button" class="btn-hardware" onclick="requestPushNotificationPermission()">
+                            <i class="fa-solid fa-bell"></i> Notificações
+                        </button>
+                        <button type="button" class="btn-hardware" onclick="registerBiometricCredential()">
+                            <i class="fa-solid fa-fingerprint"></i> Biometria / FaceID
+                        </button>
+                        <button type="button" class="btn-hardware" onclick="openCameraCaptureModal()">
+                            <i class="fa-solid fa-camera"></i> Câmera
+                        </button>
+                        <button type="button" class="btn-hardware" onclick="checkGPSLocation()">
+                            <i class="fa-solid fa-location-dot"></i> GPS Check-in
+                        </button>
+                        <button type="button" class="btn-hardware" onclick="connectBluetoothHeartRate()">
+                            <i class="fa-solid fa-heart-pulse"></i> Bluetooth
+                        </button>
+                        <button type="button" class="btn-hardware" onclick="triggerBackgroundSyncTest()">
+                            <i class="fa-solid fa-rotate"></i> Sync Offline
+                        </button>
+                    </div>
+
+                    <div id="hardware-status-box" style="margin-top:8px; font-size:0.72rem; color:var(--text-muted); background:var(--input-bg); padding:8px; border-radius:6px; min-height:30px;">
+                        Status do Hardware: Pronto para conectar sensores.
+                    </div>
+                </div>
                 
                 <details style="margin-top:14px; border-top: 1px solid var(--stravion-border); padding-top:10px;">
                     <summary style="font-size:0.72rem; color:var(--text-muted); cursor:pointer; font-weight:700;">
@@ -1332,6 +1425,22 @@
 
                 <button type="submit" class="btn-primary" style="margin-top:16px;">SALVAR CONFIGURAÇÕES</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal de Câmera e Gravação -->
+    <div class="modal-backdrop" id="modal-camera">
+        <div class="modal-content" style="max-width:440px;">
+            <div class="modal-header">
+                <h3 style="font-family:'Teko'; font-size:1.6rem;"><i class="fa-solid fa-camera" style="color:var(--stravion-accent);"></i> Câmera do Dispositivo</h3>
+                <button class="btn-close-modal" onclick="closeCameraModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="text-align:center;">
+                <video id="camera-preview" autoplay playsinline style="width:100%; border-radius:10px; background:#000; height:240px; object-fit:cover;"></video>
+                <div style="display:flex; gap:10px; margin-top:12px; justify-content:center;">
+                    <button type="button" class="btn-primary" onclick="takeSnapshotPhoto()"><i class="fa-solid fa-circle-dot"></i> Tirar Foto</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1377,339 +1486,349 @@
     </footer>
 
     <script>
-        // REGISTRO AUTOMÁTICO DO SERVICE WORKER (PWA)
+        // REGISTRO AUTOMÁTICO DO SERVICE WORKER (PWA) + BACKGROUND SYNC
+        let swRegistration = null;
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Stravion PWA Service Worker registrado:', reg.scope))
+                    .then(reg => {
+                        swRegistration = reg;
+                        console.log('Stravion PWA Service Worker registrado:', reg.scope);
+                    })
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });
         }
 
-        const DEFAULT_META_ENDPOINT = "https://graph.facebook.com/v20.0/1286052921258443/messages";
-        const DEFAULT_META_TOKEN = "EAAZATIZByn5ZBgBSPvlpj0CRjBIhSwU3unBIHzaBrAgsFypOJZALX8xjtKZBQrjJTKZAvndHikG5G9vqoRAS8dXS0vsZBVX5Ox01S4XJRel24PO90JZAZAxavr8eO5loLdM8thPWpli4zoH5RTc28dGm1n9f5zX4yIeyObL8Pnoq6um186ZAPOqYsK4SmdwPHHMbF96n22oncNVETUCiOHI4mzeZBquz5FrVIAsdPxd7pnC0IruydXLaHvCR358OdrOAIbZCZCA7ZCFYRlGDPivAD4GQm8";
+        // VARIÁVEIS PIP (PICTURE-IN-PICTURE) & HARDWARE
+        let isPipActive = false;
+        let cameraStream = null;
+        let bluetoothHeartDevice = null;
+        let heartRateBpm = null;
 
-        const PRESET_COVERS = [
-            { url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=60', label: 'Musculação Geral' },
-            { url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=60', label: 'Crossfit / Funcional' },
-            { url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop&q=60', label: 'Braços & Biceps' },
-            { url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&auto=format&fit=crop&q=60', label: 'Pernas & Agachamento' },
-            { url: 'https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?w=600&auto=format&fit=crop&q=60', label: 'Cardio & Esteira' },
-            { url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&auto=format&fit=crop&q=60', label: 'Ombros & Halteres' },
-            { url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&auto=format&fit=crop&q=60', label: 'Costas & Puxadas' },
-            { url: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=600&auto=format&fit=crop&q=60', label: 'Glúteos & Treino Feminino' },
-            { url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&auto=format&fit=crop&q=60', label: 'Alongamento & Yoga' },
-            { url: 'https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=600&auto=format&fit=crop&q=60', label: 'Lutas & Boxe' },
-            { url: 'https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?w=600&auto=format&fit=crop&q=60', label: 'Calistenia & Argolas' },
-            { url: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=600&auto=format&fit=crop&q=60', label: 'Corrida de Rua' },
-            { url: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=600&auto=format&fit=crop&q=60', label: 'Powerlifting / Carga Alta' },
-            { url: 'https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=600&auto=format&fit=crop&q=60', label: 'Treino de Tríceps' },
-            { url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&auto=format&fit=crop&q=60', label: 'Abdômen Definido' }
-        ];
+        function updatePipCanvas() {
+            const canvas = document.getElementById('pip-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
 
-        const PRESET_EXERCISES = [
-            { category: 'PEITO', name: 'Supino Reto com Barra', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
-            { category: 'PEITO', name: 'Supino Inclinado com Halteres', videoUrl: 'https://www.youtube.com/watch?v=8iPEnn-ltC8' },
-            { category: 'PEITO', name: 'Supino Declinado com Barra', videoUrl: 'https://www.youtube.com/watch?v=LfyQBUKR8SE' },
-            { category: 'PEITO', name: 'Supino Reto com Halteres', videoUrl: 'https://www.youtube.com/watch?v=VmB1G1K7v94' },
-            { category: 'PEITO', name: 'Crucifixo Reto no Banco', videoUrl: 'https://www.youtube.com/watch?v=eozdVDA78K0' },
-            { category: 'PEITO', name: 'Crucifixo Inclinado com Halteres', videoUrl: 'https://www.youtube.com/watch?v=5CECBfd773g' },
-            { category: 'PEITO', name: 'Crossover Polia Alta', videoUrl: 'https://www.youtube.com/watch?v=taI4XduLpTk' },
-            { category: 'PEITO', name: 'Crossover Polia Baixa', videoUrl: 'https://www.youtube.com/watch?v=38X5U_Ie-M8' },
-            { category: 'PEITO', name: 'Peitoral Voador / Peck Deck', videoUrl: 'https://www.youtube.com/watch?v=Z57CtFmRMwg' },
-            { category: 'PEITO', name: 'Flexão de Braços Tradicional', videoUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4' },
-            { category: 'PEITO', name: 'Flexão Inclinada no Banco', videoUrl: 'https://www.youtube.com/watch?v=SKPab2YC8BE' },
-            { category: 'PEITO', name: 'Pull-over com Halter para Peito', videoUrl: 'https://www.youtube.com/watch?v=FK4rHfWKEac' },
+            // Fundo escuro com gradiente Stravion
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, '#161722');
+            grad.addColorStop(1, '#25283A');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            { category: 'COSTAS', name: 'Puxada Frontal Aberta na Polia', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
-            { category: 'COSTAS', name: 'Puxada Triângulo / Pegada Fechada', videoUrl: 'https://www.youtube.com/watch?v=2eR3PzT6lF4' },
-            { category: 'COSTAS', name: 'Remada Curvada com Barra', videoUrl: 'https://www.youtube.com/watch?v=G8L_8chR5BE' },
-            { category: 'COSTAS', name: 'Remada Baixa com Triângulo', videoUrl: 'https://www.youtube.com/watch?v=GZbfZ033f74' },
-            { category: 'COSTAS', name: 'Remada Unilateral com Halter (Serrote)', videoUrl: 'https://www.youtube.com/watch?v=pYcpY20QaE8' },
-            { category: 'COSTAS', name: 'Remada Cavalinho na Barra T', videoUrl: 'https://www.youtube.com/watch?v=j3Igk5nyZE4' },
-            { category: 'COSTAS', name: 'Pulldown com Corda no Crossover', videoUrl: 'https://www.youtube.com/watch?v=Vl3BscPll5k' },
-            { category: 'COSTAS', name: 'Barra Fixa / Pull-Up', videoUrl: 'https://www.youtube.com/watch?v=eGo4IYlbE5g' },
-            { category: 'COSTAS', name: 'Levantamento Terra Tradicional', videoUrl: 'https://www.youtube.com/watch?v=op9kVnSso6Q' },
-            { category: 'COSTAS', name: 'Crucifixo Inverso no Peck Deck', videoUrl: 'https://www.youtube.com/watch?v=23uU8U9xW8Q' },
-            { category: 'COSTAS', name: 'Remada Articulada na Máquina', videoUrl: 'https://www.youtube.com/watch?v=A2G5A9yvJ2k' },
-            { category: 'COSTAS', name: 'Lombar no Banco Romano', videoUrl: 'https://www.youtube.com/watch?v=ph3pddpKzzw' },
+            // Título STRAVION FIT
+            ctx.fillStyle = '#E56B6F';
+            ctx.font = 'bold 20px Montserrat, sans-serif';
+            ctx.fillText('STRAVION FITNESS', 15, 30);
 
-            { category: 'OMBROS', name: 'Desenvolvimento com Halteres Sentado', videoUrl: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
-            { category: 'OMBROS', name: 'Desenvolvimento Militar com Barra', videoUrl: 'https://www.youtube.com/watch?v=2yjwXTZQDDI' },
-            { category: 'OMBROS', name: 'Elevação Lateral com Halteres', videoUrl: 'https://www.youtube.com/watch?v=3VcKaXpzqRo' },
-            { category: 'OMBROS', name: 'Elevação Lateral na Polia Baixa', videoUrl: 'https://www.youtube.com/watch?v=PzsM9R_B1I8' },
-            { category: 'OMBROS', name: 'Elevação Frontal com Halteres', videoUrl: 'https://www.youtube.com/watch?v=-t7fuZ0KhDA' },
-            { category: 'OMBROS', name: 'Elevação Frontal com Anilha', videoUrl: 'https://www.youtube.com/watch?v=al8L2U9mB5g' },
-            { category: 'OMBROS', name: 'Crucifixo Inverso com Halteres Curvado', videoUrl: 'https://www.youtube.com/watch?v=ttvfGg9d0XY' },
-            { category: 'OMBROS', name: 'Facepull com Corda na Polia', videoUrl: 'https://www.youtube.com/watch?v=rep-qVOkqgk' },
-            { category: 'OMBROS', name: 'Encolhimento com Halteres (Trapézio)', videoUrl: 'https://www.youtube.com/watch?v=cJRVVxmytaM' },
-            { category: 'OMBROS', name: 'Desenvolvimento Arnold Press', videoUrl: 'https://www.youtube.com/watch?v=6Z15_WdXmVw' },
+            // Nome do Treino
+            const workoutTitle = activeWorkoutSession ? activeWorkoutSession.title : 'Nenhum Treino';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '14px Montserrat, sans-serif';
+            ctx.fillText(workoutTitle.substring(0, 28), 15, 55);
 
-            { category: 'BÍCEPS', name: 'Rosca Direta com Barra W', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' },
-            { category: 'BÍCEPS', name: 'Rosca Alternada com Halteres', videoUrl: 'https://www.youtube.com/watch?v=sAq_ocpRh_I' },
-            { category: 'BÍCEPS', name: 'Rosca Martelo com Halteres', videoUrl: 'https://www.youtube.com/watch?v=zC3nLlEvinU' },
-            { category: 'BÍCEPS', name: 'Rosca Scott com Barra W', videoUrl: 'https://www.youtube.com/watch?v=vngL3XwQ28Y' },
-            { category: 'BÍCEPS', name: 'Rosca Concentrada com Halter', videoUrl: 'https://www.youtube.com/watch?v=0AUGkch3tzc' },
-            { category: 'BÍCEPS', name: 'Rosca Inclinada no Banco 45°', videoUrl: 'https://www.youtube.com/watch?v=soxrZlIl35U' },
-            { category: 'BÍCEPS', name: 'Rosca Dupla no Crossover (Polia Alta)', videoUrl: 'https://www.youtube.com/watch?v=9_M3G0_C15Q' },
-            { category: 'BÍCEPS', name: 'Rosca 21 com Barra', videoUrl: 'https://www.youtube.com/watch?v=m4L0U_uGqEw' },
-            { category: 'BÍCEPS', name: 'Rosca Inversa na Barra (Antebraço)', videoUrl: 'https://www.youtube.com/watch?v=nR_tT22M8L0' },
-            { category: 'BÍCEPS', name: 'Rosca Martelo na Corda Polia Baixa', videoUrl: 'https://www.youtube.com/watch?v=7_E_m4gK24E' },
+            // Divisória
+            ctx.strokeStyle = '#33384F';
+            ctx.beginPath();
+            ctx.moveTo(15, 68);
+            ctx.lineTo(canvas.width - 15, 68);
+            ctx.stroke();
 
-            { category: 'TRÍCEPS', name: 'Tríceps Corda no Crossover', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' },
-            { category: 'TRÍCEPS', name: 'Tríceps Barra Reta / Barra V', videoUrl: 'https://www.youtube.com/watch?v=2-LAMcpzODU' },
-            { category: 'TRÍCEPS', name: 'Tríceps Testa com Barra W', videoUrl: 'https://www.youtube.com/watch?v=d_KZxkY_0cM' },
-            { category: 'TRÍCEPS', name: 'Tríceps Francês com Halter Unilateral', videoUrl: 'https://www.youtube.com/watch?v=_gsUck-7M74' },
-            { category: 'TRÍCEPS', name: 'Tríceps Francês com Corda na Polia', videoUrl: 'https://www.youtube.com/watch?v=1u18yR5f3vI' },
-            { category: 'TRÍCEPS', name: 'Mergulho em Paralelas', videoUrl: 'https://www.youtube.com/watch?v=2z8JmcrW-As' },
-            { category: 'TRÍCEPS', name: 'Tríceps no Banco / Mergulho Banco', videoUrl: 'https://www.youtube.com/watch?v=c3ZGl4pAwZ4' },
-            { category: 'TRÍCEPS', name: 'Tríceps Coice com Halter', videoUrl: 'https://www.youtube.com/watch?v=6SS6K3l-24s' },
-            { category: 'TRÍCEPS', name: 'Supino Fechado para Tríceps', videoUrl: 'https://www.youtube.com/watch?v=nEF0bv243y8' },
-            { category: 'TRÍCEPS', name: 'Tríceps Unilateral na Polia Invertida', videoUrl: 'https://www.youtube.com/watch?v=L2G_K0pA1gU' },
+            // Tempo de Treino (Cronômetro Grande em Destaque)
+            ctx.fillStyle = '#A0A0A0';
+            ctx.font = '12px Montserrat, sans-serif';
+            ctx.fillText('TEMPO DE TREINO', 15, 90);
 
-            { category: 'QUADRÍCEPS', name: 'Agachamento Livre com Barra', videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
-            { category: 'QUADRÍCEPS', name: 'Leg Press 45°', videoUrl: 'https://www.youtube.com/watch?v=IZxyjW7MPJQ' },
-            { category: 'QUADRÍCEPS', name: 'Cadeira Extensora', videoUrl: 'https://www.youtube.com/watch?v=YyvSfVjQeL0' },
-            { category: 'QUADRÍCEPS', name: 'Agachamento Hack Machine', videoUrl: 'https://www.youtube.com/watch?v=rYgNArpwqSo' },
-            { category: 'QUADRÍCEPS', name: 'Agachamento Smith Machine', videoUrl: 'https://www.youtube.com/watch?v=A2Iu7I9pP3k' },
-            { category: 'QUADRÍCEPS', name: 'Afundo com Halteres (Passada)', videoUrl: 'https://www.youtube.com/watch?v=D7KaRcUTQeE' },
-            { category: 'QUADRÍCEPS', name: 'Agachamento Búlgaro com Halteres', videoUrl: 'https://www.youtube.com/watch?v=2C-uNgKwPLE' },
-            { category: 'QUADRÍCEPS', name: 'Agachamento Sissy Squat', videoUrl: 'https://www.youtube.com/watch?v=0kI4_7_QvU4' },
-            { category: 'QUADRÍCEPS', name: 'Agachamento Frontal com Barra', videoUrl: 'https://www.youtube.com/watch?v=uYumuL_G_V0' },
-            { category: 'QUADRÍCEPS', name: 'Agachamento Sumô com Halter', videoUrl: 'https://www.youtube.com/watch?v=1K27t4S2i_0' },
-            { category: 'QUADRÍCEPS', name: 'Subida no Banco / Step-up', videoUrl: 'https://www.youtube.com/watch?v=9ZknA8P4U7A' },
-            { category: 'QUADRÍCEPS', name: 'Leg Press Horizontal', videoUrl: 'https://www.youtube.com/watch?v=k4Uu-M3-4xU' },
+            const clockText = document.getElementById('workout-clock').innerText || '00:00:00';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 36px Montserrat, monospace';
+            ctx.fillText(clockText, 15, 130);
 
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Stiff com Barra / Halteres', videoUrl: 'https://www.youtube.com/watch?v=1uDiW5--rAE' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Mesa Flexora Deitada', videoUrl: 'https://www.youtube.com/watch?v=1Tq3QdYUuHs' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Cadeira Flexora Sentada', videoUrl: 'https://www.youtube.com/watch?v=F_3k_B3B6wU' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Flexão de Pernas Em Pé Unilateral', videoUrl: 'https://www.youtube.com/watch?v=L3k_P6vG2p4' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Elevação Pélvica com Barra', videoUrl: 'https://www.youtube.com/watch?v=LM8lXm3L_m8' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Cadeira Abdutora', videoUrl: 'https://www.youtube.com/watch?v=G_2E3p4L5vU' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Cadeira Adutora', videoUrl: 'https://www.youtube.com/watch?v=E7_O9pB5vK0' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Glúteo na Polia / Coice de Glúteo', videoUrl: 'https://www.youtube.com/watch?v=8K6L2B3mX8I' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Glúteo Quatro Apoios com Caneleira', videoUrl: 'https://www.youtube.com/watch?v=9_K3mQ8J5vE' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Good Morning / Bom Dia com Barra', videoUrl: 'https://www.youtube.com/watch?v=vKPGe1zX5f0' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Agachamento Sumô na Barra Landmine', videoUrl: 'https://www.youtube.com/watch?v=kL2_3p5mX80' },
-            { category: 'POSTERIOR & GLÚTEOS', name: 'Abdução de Quadril com Mini-band', videoUrl: 'https://www.youtube.com/watch?v=0k3_mL5v8vE' },
+            // Descanso Flutuante (Abaixo do Tempo de Treino)
+            ctx.fillStyle = '#A0A0A0';
+            ctx.font = '12px Montserrat, sans-serif';
+            ctx.fillText('TEMPO DE DESCANSO', 15, 160);
 
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Gêmeos Sentado na Máquina (Panturrilha)', videoUrl: 'https://www.youtube.com/watch?v=3V_P3_8mX0s' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Gêmeos Em Pé no Smith / Degrau', videoUrl: 'https://www.youtube.com/watch?v=L2_3k8mP5vU' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Panturrilha no Leg Press 45°', videoUrl: 'https://www.youtube.com/watch?v=K3_p8mL2vE0' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal Supra Tradicional no Chão', videoUrl: 'https://www.youtube.com/watch?v=1fbU_M3xK0E' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal Infra / Elevação de Pernas', videoUrl: 'https://www.youtube.com/watch?v=l4kQd9E3p4s' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal Infra na Barra Fixa', videoUrl: 'https://www.youtube.com/watch?v=hd_m3pL2v0E' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Prancha Abdominal Isométrica', videoUrl: 'https://www.youtube.com/watch?v=pSHjTRCQxIw' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Prancha Lateral', videoUrl: 'https://www.youtube.com/watch?v=_rdfjE3k5v0' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal Remador', videoUrl: 'https://www.youtube.com/watch?v=3k_p8mL2vE0' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal na Polia Alta / Ajoelhado', videoUrl: 'https://www.youtube.com/watch?v=2_k8pM3vE0s' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Abdominal Oblíquo Rotação de Quadril', videoUrl: 'https://www.youtube.com/watch?v=k3_p8mL5vE0' },
-            { category: 'PANTURRILHA & ABDÔMEN', name: 'Roda Abdominal / Ab Roller', videoUrl: 'https://www.youtube.com/watch?v=0k3_p8mL2vE' },
-
-            { category: 'CARDIO & LUTAS', name: 'Corrida na Esteira (HIIT / Tiro)', videoUrl: 'https://www.youtube.com/watch?v=5k3p8mL2vE0' },
-            { category: 'CARDIO & LUTAS', name: 'Bicicleta Ergométrica Spin', videoUrl: 'https://www.youtube.com/watch?v=2k3_p8mL5vE' },
-            { category: 'CARDIO & LUTAS', name: 'Simulador de Escada / Stairmaster', videoUrl: 'https://www.youtube.com/watch?v=1k3_p8mL2vE' },
-            { category: 'CARDIO & LUTAS', name: 'Elíptico / Transport', videoUrl: 'https://www.youtube.com/watch?v=4k3_p8mL5vE' },
-            { category: 'CARDIO & LUTAS', name: 'Corda Naval / Battle Rope', videoUrl: 'https://www.youtube.com/watch?v=3k8_pM2vE0s' },
-            { category: 'CARDIO & LUTAS', name: 'Kettlebell Swing', videoUrl: 'https://www.youtube.com/watch?v=sSESeQ5u7Ew' },
-            { category: 'CARDIO & LUTAS', name: 'Burpees Completo', videoUrl: 'https://www.youtube.com/watch?v=auBLP6LgM3s' },
-            { category: 'CARDIO & LUTAS', name: 'Polichinelos HIIT', videoUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA' },
-            { category: 'CARDIO & LUTAS', name: 'Sombra de Boxe / Golpe em Saco', videoUrl: 'https://www.youtube.com/watch?v=2k8_pM3vE0s' },
-            { category: 'CARDIO & LUTAS', name: 'Saltos Duplos de Corda / Double Unders', videoUrl: 'https://www.youtube.com/watch?v=82j4mg7N6gE' }
-        ];
-
-        const DEFAULT_WORKOUTS = [
-            {
-                id: 'w_demo_1',
-                title: 'Treino A - Peito & Tríceps',
-                assignedTo: 'all',
-                coverUrl: PRESET_COVERS[0].url,
-                exercises: [
-                    { name: 'Supino Reto com Barra', sets: 4, reps: '10-12', weight: 60, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
-                    { name: 'Supino Inclinado com Halteres', sets: 4, reps: '10-12', weight: 22, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=8iPEnn-ltC8' },
-                    { name: 'Tríceps Corda no Crossover', sets: 4, reps: '12-15', weight: 35, rest: 45, videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' }
-                ]
-            },
-            {
-                id: 'w_demo_2',
-                title: 'Treino B - Costas & Bíceps',
-                assignedTo: 'all',
-                coverUrl: PRESET_COVERS[6].url,
-                exercises: [
-                    { name: 'Puxada Frontal Aberta na Polia', sets: 4, reps: '10-12', weight: 50, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
-                    { name: 'Remada Curvada com Barra', sets: 4, reps: '10-12', weight: 40, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=G8L_8chR5BE' },
-                    { name: 'Rosca Direta com Barra W', sets: 4, reps: '12', weight: 20, rest: 45, videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' }
-                ]
-            },
-            {
-                id: 'w_demo_3',
-                title: 'Treino C - Pernas Completo',
-                assignedTo: 'all',
-                coverUrl: PRESET_COVERS[3].url,
-                exercises: [
-                    { name: 'Agachamento Livre com Barra', sets: 4, reps: '10', weight: 80, rest: 90, videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
-                    { name: 'Leg Press 45°', sets: 4, reps: '12', weight: 160, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=IZxyjW7MPJQ' },
-                    { name: 'Cadeira Extensora', sets: 4, reps: '15', weight: 45, rest: 45, videoUrl: 'https://www.youtube.com/watch?v=YyvSfVjQeL0' }
-                ]
-            }
-        ];
-
-        let authRole = 'atleta';
-        let currentUser = null;
-        let localWorkouts = [];
-        let localHistory = [];
-        let activeWorkoutSession = null;
-        let workoutTimerInterval = null;
-        let workoutSeconds = 0;
-        let restTimerInterval = null;
-        let restSecondsLeft = 0;
-        let generatedActivationCode = '';
-        let pendingRegistration = null;
-        let currentCoverBase64 = '';
-
-        window.onload = function() {
-            setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                if (splash) splash.classList.add('hidden');
-            }, 1200);
-
-            const savedTheme = localStorage.getItem('stravion_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-
-            const savedAccent = localStorage.getItem('stravion_accent');
-            if (savedAccent) applyAccentColor(savedAccent);
-
-            const savedWorkouts = localStorage.getItem('stravion_local_workouts');
-            localWorkouts = savedWorkouts ? JSON.parse(savedWorkouts) : DEFAULT_WORKOUTS;
-
-            const savedHistory = localStorage.getItem('stravion_local_history');
-            localHistory = savedHistory ? JSON.parse(savedHistory) : [];
-
-            const savedUser = localStorage.getItem('stravion_user');
-            if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    hideAuthOverlay();
-                    updateHeaderUser();
-                    loadCloudData();
-                } catch(e) {
-                    showAuthOverlay();
-                }
+            if (restSecondsLeft > 0) {
+                ctx.fillStyle = '#E56B6F';
+                ctx.font = 'bold 32px Montserrat, monospace';
+                ctx.fillText(`${restSecondsLeft}s`, 15, 200);
             } else {
-                showAuthOverlay();
+                ctx.fillStyle = '#55E6C1';
+                ctx.font = 'bold 20px Montserrat, sans-serif';
+                ctx.fillText('EM EXERCÍCIO / PRONTO', 15, 195);
             }
-        };
 
-        function setAuthRole(role) {
-            authRole = role;
-            const btnAtleta = document.getElementById('btn-type-atleta');
-            const btnPersonal = document.getElementById('btn-type-personal');
-            const subtitle = document.getElementById('auth-subtitle-text');
-
-            if (role === 'personal') {
-                btnPersonal.classList.add('active');
-                btnAtleta.classList.remove('active');
-                subtitle.innerText = "Acesse como Personal Trainer para criar treinos aos alunos";
-            } else {
-                btnAtleta.classList.add('active');
-                btnPersonal.classList.remove('active');
-                subtitle.innerText = "Acesse com seu usuário e senha para treinar";
+            // Batimento cardíaco se conectado por Bluetooth
+            if (heartRateBpm) {
+                ctx.fillStyle = '#25D366';
+                ctx.font = 'bold 14px Montserrat, sans-serif';
+                ctx.fillText(`♥ ${heartRateBpm} BPM`, canvas.width - 120, 30);
             }
         }
 
-        function switchAuthTab(tab) {
-            const btnLogin = document.getElementById('btn-tab-login');
-            const btnReg = document.getElementById('btn-tab-register');
-            const formLogin = document.getElementById('form-login');
-            const formReg = document.getElementById('form-register');
-            const actStep = document.getElementById('activation-step');
+        async function togglePictureInPicture() {
+            const video = document.getElementById('pip-video');
+            const canvas = document.getElementById('pip-canvas');
 
-            if (tab === 'register') {
-                btnReg.classList.add('active');
-                btnLogin.classList.remove('active');
-                formReg.style.display = 'block';
-                formLogin.style.display = 'none';
-                actStep.style.display = 'none';
-            } else {
-                btnLogin.classList.add('active');
-                btnReg.classList.remove('active');
-                formLogin.style.display = 'block';
-                formReg.style.display = 'none';
-                actStep.style.display = 'none';
-            }
-        }
-
-        function showAuthOverlay() {
-            document.getElementById('auth-overlay').classList.remove('hidden');
-        }
-
-        function hideAuthOverlay() {
-            document.getElementById('auth-overlay').classList.add('hidden');
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const usernameInput = document.getElementById('login-username').value.trim();
-            const passwordInput = document.getElementById('login-password').value.trim();
-
-            if (!usernameInput || !passwordInput) {
-                showToast("Preencha todos os campos!");
+            if (!activeWorkoutSession) {
+                showToast("Inicie um treino primeiro para ativar o PiP!");
                 return;
             }
 
-            const usernameKey = usernameInput.toLowerCase();
-            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-            let matchedUser = storedUsers[usernameKey];
-
-            if (usernameKey === 'aluno' && passwordInput === '123456') {
-                matchedUser = { uid: 'aluno', name: 'Atleta de Teste', username: 'aluno', role: 'atleta' };
+            try {
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                    isPipActive = false;
+                    showToast("Janela Flutuante fechada.");
+                } else {
+                    updatePipCanvas();
+                    const stream = canvas.captureStream(10);
+                    video.srcObject = stream;
+                    await video.play();
+                    await video.requestPictureInPicture();
+                    isPipActive = true;
+                    showToast("Janela Flutuante PiP Ativada!");
+                }
+            } catch (err) {
+                console.error("Erro no PiP:", err);
+                showToast("Modo PiP não suportado neste navegador.");
             }
-            if (usernameKey === 'personal' && passwordInput === '123456') {
-                matchedUser = { uid: 'personal', name: 'Personal Trainer', username: 'personal', role: 'personal' };
-            }
-
-            if (!matchedUser) {
-                matchedUser = {
-                    uid: usernameKey,
-                    name: usernameInput,
-                    username: usernameInput,
-                    role: authRole
-                };
-            }
-
-            currentUser = {
-                uid: matchedUser.uid,
-                username: matchedUser.username,
-                displayName: matchedUser.name || matchedUser.username,
-                whatsapp: matchedUser.whatsapp || '',
-                role: matchedUser.role || authRole
-            };
-
-            localStorage.setItem('stravion_user', JSON.stringify(currentUser));
-            hideAuthOverlay();
-            updateHeaderUser();
-            loadCloudData();
-            showToast(`Bem-vindo(a), ${currentUser.displayName}!`);
         }
 
-        function cleanPhone(phone) {
-            let p = phone.replace(/\D/g, '');
-            if (p.length <= 11 && !p.startsWith('55')) {
-                p = '55' + p;
+        function triggerBackgroundSyncTest() {
+            if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                navigator.serviceWorker.ready.then(reg => {
+                    return reg.sync.register('sync-workouts');
+                }).then(() => {
+                    showHardwareStatus("Sincronização em segundo plano agendada! O app enviará dados ao reconectar.");
+                    showToast("Sincronização em segundo plano ativada!");
+                }).catch(err => {
+                    showHardwareStatus("Erro ao agendar sync: " + err.message);
+                });
+            } else {
+                showHardwareStatus("Background Sync não é suportado neste navegador.");
+                showToast("Background Sync não suportado neste navegador.");
             }
-            return p;
         }
 
-        async function sendWhatsAppAutomaticMsg(rawPhone, messageText) {
-            const formattedPhone = cleanPhone(rawPhone);
-            const statusLogEl = document.getElementById('wa-api-status-log');
+        async function requestPushNotificationPermission() {
+            if (!('Notification' in window)) {
+                showHardwareStatus("Notificações Push não são suportadas neste navegador.");
+                return;
+            }
 
-            showWhatsAppPushBanner(formattedPhone, messageText);
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                showHardwareStatus("Permissão de Notificações Push Concedida!");
+                showToast("Notificações Push Ativadas!");
+                
+                // Dispara uma notificação de teste
+                if (swRegistration) {
+                    swRegistration.showNotification("Stravion Fitness", {
+                        body: "As notificações Push estão ativas no seu celular!",
+                        icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23141414'/><path d='M20,35 Q50,20 80,35 L60,48 Q45,38 35,48 Z' fill='%23FFFFFF'/><path d='M20,65 Q50,80 80,65 L60,52 Q45,62 35,52 Z' fill='%23E50914'/></svg>"
+                    });
+                }
+            } else {
+                showHardwareStatus("Permissão de Notificações Negada.");
+                showToast("Notificações Negadas.");
+            }
+        }
 
-            const waUrl = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(messageText)}`;
-            const linkContainer = document.getElementById('wa-direct-link-container');
-            if (linkContainer) {
-                linkContainer.innerHTML = `
+        async function registerBiometricCredential() {
+            if (!window.PublicKeyCredential) {
+                showHardwareStatus("Biometria / WebAuthn não suportada neste dispositivo.");
+                return;
+            }
+
+            try {
+                showHardwareStatus("Aguardando confirmação de Biometria / Face ID...");
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const credential = await navigator.credentials.create({
+                    publicKey: {
+                        challenge: challenge,
+                        rp: { name: "Stravion Fitness" },
+                        user: {
+                            id: new Uint8Array(16),
+                            name: currentUser ? currentUser.username : "atleta",
+                            displayName: currentUser ? currentUser.displayName : "Atleta Stravion"
+                        },
+                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                        authenticatorSelection: { authenticatorAttachment: "platform" },
+                        timeout: 60000
+                    }
+                });
+
+                if (credential) {
+                    localStorage.setItem('stravion_biometric_active', 'true');
+                    showHardwareStatus("Biometria / Face ID cadastrada com sucesso!");
+                    showToast("Biometria cadastrada!");
+                }
+            } catch (e) {
+                showHardwareStatus("Biometria cancelada ou não configurada: " + e.message);
+            }
+        }
+
+        async function loginWithBiometrics() {
+            if (!window.PublicKeyCredential) {
+                showToast("Biometria não suportada neste celular.");
+                return;
+            }
+
+            try {
+                const isConfigured = localStorage.getItem('stravion_biometric_active');
+                if (!isConfigured) {
+                    showToast("Cadastre a biometria primeiro nas configurações de Perfil!");
+                    return;
+                }
+
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const assertion = await navigator.credentials.get({
+                    publicKey: {
+                        challenge: challenge,
+                        timeout: 60000
+                    }
+                });
+
+                if (assertion) {
+                    const savedUser = localStorage.getItem('stravion_user');
+                    if (savedUser) {
+                        currentUser = JSON.parse(savedUser);
+                        hideAuthOverlay();
+                        updateHeaderUser();
+                        loadCloudData();
+                        showToast(`Acesso via Biometria Autorizado! Bem-vindo(a) ${currentUser.displayName}`);
+                    } else {
+                        showToast("Faça o primeiro login com senha antes de usar biometria.");
+                    }
+                }
+            } catch (e) {
+                showToast("Falha no reconhecimento biométrico.");
+            }
+        }
+
+        async function openCameraCaptureModal() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+                const videoEl = document.getElementById('camera-preview');
+                videoEl.srcObject = cameraStream;
+                openModal('modal-camera');
+                showHardwareStatus("Câmera traseira/frontal conectada com sucesso!");
+            } catch (e) {
+                showHardwareStatus("Erro ao acessar a câmera: " + e.message);
+                showToast("Permissão de Câmera negada.");
+            }
+        }
+
+        function takeSnapshotPhoto() {
+            const videoEl = document.getElementById('camera-preview');
+            const canvas = document.createElement('canvas');
+            canvas.width = videoEl.videoWidth || 640;
+            canvas.height = videoEl.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+            currentCoverBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            closeCameraModal();
+            openWorkoutModal();
+            showToast("Foto da câmera capturada como capa do treino!");
+        }
+
+        function closeCameraModal() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            closeModal('modal-camera');
+        }
+
+        function checkGPSLocation() {
+            if (!navigator.geolocation) {
+                showHardwareStatus("GPS / Geolocalização não suportada.");
+                return;
+            }
+
+            showHardwareStatus("Obtendo coordenadas do GPS...");
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude.toFixed(5);
+                    const lng = pos.coords.longitude.toFixed(5);
+                    showHardwareStatus(`Check-in de Academia Confirmado! GPS: Lat ${lat}, Lng ${lng}`);
+                    showToast(`GPS Check-in Realizado! (${lat}, ${lng})`);
+                },
+                (err) => {
+                    showHardwareStatus("Erro de GPS: " + err.message);
+                    showToast("Não foi possível obter a localização GPS.");
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        async function connectBluetoothHeartRate() {
+            if (!navigator.bluetooth) {
+                showHardwareStatus("Web Bluetooth API não disponível neste navegador.");
+                showToast("Bluetooth não suportado no navegador.");
+                return;
+            }
+
+            try {
+                showHardwareStatus("Buscando dispositivos de Frequência Cardíaca Bluetooth...");
+                bluetoothHeartDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: ['heart_rate'] }]
+                });
+
+                const server = await bluetoothHeartDevice.gatt.connect();
+                const service = await server.getPrimaryService('heart_rate');
+                const characteristic = await service.getCharacteristic('heart_rate_measurement');
+
+                await characteristic.startNotifications();
+                characteristic.addEventListener('characteristicvaluechanged', (e) => {
+                    const value = e.target.value;
+                    heartRateBpm = value.getUint8(1);
+                    document.getElementById('bpm-display').innerText = `♥ ${heartRateBpm} BPM`;
+                    showHardwareStatus(`Monitor Cardíaco Bluetooth Ativo: ${heartRateBpm} BPM`);
+                });
+
+                showToast("Monitor Cardíaco Conectado!");
+            } catch (e) {
+                showHardwareStatus("Conexão Bluetooth cancelada ou com erro: " + e.message);
+            }
+        }
+
+        function showHardwareStatus(msg) {
+            const el = document.getElementById('hardware-status-box');
+            if (el) el.innerText = "Status: " + msg;
+        }
+
+        function startWorkoutClock() {
+            clearInterval(workoutTimerInterval);
+            workoutSeconds = 0;
+            document.getElementById('pip-controls-wrap').style.display = 'block';
+
+            workoutTimerInterval = setInterval(() => {
+                workoutSeconds++;
+                const hrs = String(Math.floor(workoutSeconds / 3600)).padStart(2, '0');
+                const mins = String(Math.floor((workoutSeconds % 3600) / 60)).padStart(2, '0');
+                const secs = String(workoutSeconds % 60).padStart(2, '0');
+                document.getElementById('workout-clock').innerText = `${hrs}:${mins}:${secs}`;
+
+                // Atualiza a renderização do PiP em tempo real a cada segundo
+                updatePipCanvas();
+            }, 1000);
+        }
+
+        function updateRestDisplay() {
+            document.getElementById('rest-time-display').innerText = `${restSecondsLeft}s`;
+            updatePipCanvas();
+        }
+
+        // Fim das adições do script de hardware e PiP
                     <a href="${waUrl}" target="_blank" class="btn-whatsapp" style="width:100%; justify-content:center; padding:10px; font-size:0.85rem; background:#25D366; color:#fff; border-radius:6px; margin-top:4px;">
                         <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Abrir no seu WhatsApp
                     </a>
@@ -2110,6 +2229,16 @@
         }
 
         function switchTab(tab) {
+            // Regra de acesso estrito a abas específicas por perfil
+            if (tab === 'students' && currentUser && currentUser.role !== 'personal') {
+                showToast("Aba restrita exclusivamente a Personal Trainers!");
+                return;
+            }
+            if (tab === 'active' && currentUser && currentUser.role === 'personal') {
+                showToast("Aba de Treino Ativo restrita aos Alunos/Atletas!");
+                return;
+            }
+
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-catalog').style.display = 'none';
             document.getElementById('tab-active').style.display = 'none';
