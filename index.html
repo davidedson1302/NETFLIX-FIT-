@@ -5,20 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stravion Fitness - Personal Trainer & Atletas</title>
     
-    <!-- Meta tags PWA & Favicon -->
+    <!-- 
+      ==========================================================================
+      1. CONFIGURAÇÕES PWA, FAVICON E FONTES
+      ==========================================================================
+      - Para alterar as fontes padrão do app, modifique os links do Google Fonts abaixo.
+      - O favicon utiliza SVG inline com a paleta de cores principal do Stravion.
+    -->
     <meta name="theme-color" content="#E50914">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23141414'/><path d='M20,35 Q50,20 80,35 L60,48 Q45,38 35,48 Z' fill='%23FFFFFF'/><path d='M20,65 Q50,80 80,65 L60,52 Q45,62 35,52 Z' fill='%23E50914'/></svg>">
 
-    <!-- Fonts e FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,900;1,700;1,900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- 
+      ==========================================================================
+      2. ESTILOS CSS E VARIÁVEIS DE TEMA (MODO ESCURO / MODO CLARO)
+      ==========================================================================
+      COMO FAZER ALTERAÇÕES DE COR OU VISUAL:
+      - Para adicionar uma nova cor pastel: inclua a opção no <select id="profile-accent-color">
+        e chame a função applyAccentColor('#SUA_COR').
+      - As variáveis em :root definem as cores do modo escuro por padrão.
+      - [data-theme="light"] define as substituições para o modo claro.
+    -->
     <style>
         :root {
+            /* Cores padrão em tom pastel / escuro */
             --stravion-red: #E56B6F;
             --stravion-accent: #E56B6F;
             --stravion-black: #161722;
@@ -34,38 +50,7 @@
             --input-bg: #2B2F45;
         }
 
-        [data-theme="light"] {
-            --stravion-black: #F4F5F9;
-            --stravion-dark: #FFFFFF;
-            --stravion-card-bg: #FFFFFF;
-            --stravion-border: #E2E8F0;
-            --text-white: #2D3748;
-            --text-muted: #718096;
-            --logo-text-color: #2D3748;
-            --logo-sub-color: #2D3748;
-            --body-bg: #F4F5F9;
-            --modal-bg: #FFFFFF;
-            --input-bg: #EDF2F7;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Montserrat', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--body-bg);
-            color: var(--text-white);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            transition: background-color 0.4s ease, color 0.4s ease;
-        }
-
+        /* Tema Claro (Light Mode) */
         [data-theme="light"] {
             --stravion-black: #F5F5F7;
             --stravion-dark: #FFFFFF;
@@ -98,7 +83,10 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* SPLASH SCREEN FIX */
+        /* 
+          SPLASH SCREEN (TELA DE INÍCIO)
+          Para alterar o tempo de exibição, altere o milissegundos no window.onload em JS.
+        */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -160,6 +148,7 @@
             50% { transform: scale(1.04); }
         }
 
+        /* CABEÇALHO COMPACTO */
         header {
             background-color: var(--stravion-dark);
             border-bottom: 1px solid var(--stravion-border);
@@ -303,7 +292,7 @@
             flex: 1;
         }
 
-        /* BANNER DE NOTIFICAÇÃO SIMULADA DE WHATSAPP */
+        /* BANNER DE NOTIFICAÇÃO SIMULADA DO WHATSAPP */
         .wa-push-banner {
             position: fixed;
             top: 15px;
@@ -371,6 +360,7 @@
             line-height: 1.35;
         }
 
+        /* MODAL DE AUTENTICAÇÃO DUPLA */
         #auth-overlay {
             position: fixed;
             top: 0;
@@ -775,6 +765,10 @@
             padding-top: 12px;
         }
 
+        /* 
+          EDIÇÃO INDIVIDUAL DE SÉRIES NO TREINO ATIVO 
+          Permite mudar carga, reps e marcar checkbox por série
+        */
         .set-row {
             display: flex;
             align-items: center;
@@ -938,6 +932,7 @@
             text-decoration: none;
         }
 
+        /* RODAPÉ SEM ESPAÇO PERDIDO */
         footer {
             background-color: var(--stravion-dark);
             border-top: 1px solid var(--stravion-border);
@@ -1031,6 +1026,11 @@
 </head>
 <body>
 
+    <!-- 
+      ==========================================================================
+      3. ESTRUTURA HTML - TELA DE INÍCIO (SPLASH SCREEN)
+      ==========================================================================
+    -->
     <div id="splash-screen">
         <div class="splash-logo-container">
             <svg class="splash-s-logo" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
@@ -1053,7 +1053,7 @@
         </div>
     </div>
 
-    <!-- BANNER PUSH DE MENSAGEM RECEBIDA DO WHATSAPP -->
+    <!-- BANNER PUSH SIMULADO DE WHATSAPP -->
     <div class="wa-push-banner" id="wa-push-banner" onclick="autoFillCodeFromBanner()">
         <div class="wa-icon-box">
             <i class="fa-brands fa-whatsapp"></i>
@@ -1069,7 +1069,11 @@
         </div>
     </div>
 
-    <!-- TELA DE AUTENTICAÇÃO DUPLA -->
+    <!-- 
+      ==========================================================================
+      4. TELA DE AUTENTICAÇÃO DUPLA (LOGIN & CADASTRO ATLETA / PERSONAL)
+      ==========================================================================
+    -->
     <div id="auth-overlay">
         <div class="auth-card">
             
@@ -1094,6 +1098,7 @@
                 <div style="font-size:0.6rem; color:var(--text-muted); letter-spacing:2.5px; margin-top:2px;">TRAIN BEYOND LIMITS</div>
             </div>
 
+            <!-- Seleção do tipo de perfil: Atleta ou Personal -->
             <div class="auth-type-selector">
                 <button type="button" class="auth-type-btn active" id="btn-type-atleta" onclick="setAuthRole('atleta')">
                     <i class="fa-solid fa-user-ninja"></i> Atleta / Aluno
@@ -1132,7 +1137,7 @@
                 </div>
             </form>
 
-            <!-- FORMULÁRIO DE CADASTRO -->
+            <!-- FORMULÁRIO DE CADASTRO DA CONTA -->
             <form id="form-register" style="display: none;" onsubmit="handleRegister(event)">
                 <div class="form-group">
                     <label id="label-reg-name">Nome Completo</label>
@@ -1153,7 +1158,7 @@
                 <button type="submit" class="btn-primary">GERAR CÓDIGO DE ATIVAÇÃO</button>
             </form>
 
-            <!-- TELA DE VALIDAÇÃO DE CÓDIGO WHATSAPP -->
+            <!-- VALIDAÇÃO DO CÓDIGO WHATSAPP -->
             <div id="activation-step" style="display: none; margin-top: 12px;">
                 <div style="background:var(--input-bg); border-radius:10px; padding:14px; margin-bottom:12px; text-align:center; border: 1px solid #25D366;">
                     <div style="color:#25D366; font-weight:800; font-size:1rem; margin-bottom:6px;">
@@ -1228,8 +1233,10 @@
         </button>
     </nav>
 
+    <!-- CONTEÚDO PRINCIPAL (ABAS DE NAVEGAÇÃO) -->
     <main class="content-container">
 
+        <!-- ABA 1: CATÁLOGO DE TREINOS -->
         <section id="tab-catalog">
             <div class="section-header">
                 <div class="section-title" id="catalog-section-heading">
@@ -1242,7 +1249,7 @@
             <div class="workout-grid" id="workout-list-grid"></div>
         </section>
 
-        <!-- ABA TREINO ATIVO -->
+        <!-- ABA 2: TREINO ATIVO / EM EXECUÇÃO -->
         <section id="tab-active" style="display: none;">
             <div class="active-workout-header">
                 <div>
@@ -1260,6 +1267,7 @@
             <div id="active-exercise-accordion-container"></div>
         </section>
 
+        <!-- ABA 3: GESTÃO DE ALUNOS (EXCLUSIVA PARA PERSONAL TRAINER) -->
         <section id="tab-students" style="display: none;">
             <div class="section-header">
                 <div class="section-title">
@@ -1272,6 +1280,7 @@
             <div id="students-list-container"></div>
         </section>
 
+        <!-- ABA 4: HISTÓRICO GERAL -->
         <section id="tab-history" style="display: none;">
             <div class="section-header">
                 <div class="section-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--stravion-accent)"></i> Histórico Geral</div>
@@ -1281,6 +1290,7 @@
 
     </main>
 
+    <!-- MODAL DE DEMONSTRAÇÃO EM VÍDEO (YOUTUBE EMBED) -->
     <div class="modal-backdrop" id="modal-video">
         <div class="modal-content">
             <div class="modal-header">
@@ -1313,6 +1323,7 @@
                     <input type="text" id="workout-title-input" class="form-control" placeholder="Ex: Treino A - Peito e Tríceps" required>
                 </div>
 
+                <!-- SELETOR DE CAPAS TEMÁTICAS DA GALERIA -->
                 <div class="form-group">
                     <label>Escolher Capa da Galeria (+15 Capas Temáticas)</label>
                     <div class="preset-covers-grid" id="preset-covers-grid"></div>
@@ -1335,7 +1346,10 @@
         </div>
     </div>
 
-    <!-- MODAL PERFIL -->
+    <!-- 
+      MODAL DE PERFIL & CONFIGURAÇÕES 
+      Nota: As credenciais da API Meta do WhatsApp estão recolhidas dentro de <details> (OCULTO)
+    -->
     <div class="modal-backdrop" id="modal-profile">
         <div class="modal-content">
             <div class="modal-header">
@@ -1347,6 +1361,7 @@
                     <label>Seu Nome</label>
                     <input type="text" id="profile-name" class="form-control" required>
                 </div>
+                <!-- PALETA DE CORES PASTEL E DINÂMICA -->
                 <div class="form-group">
                     <label>Paleta de Cores Pastel & Dinâmica</label>
                     <select id="profile-accent-color" class="form-control" onchange="applyAccentColor(this.value)">
@@ -1379,6 +1394,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE RECUPERAÇÃO DE SENHA -->
     <div class="modal-backdrop" id="modal-recovery">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-header">
@@ -1398,6 +1414,7 @@
         </div>
     </div>
 
+    <!-- BARRA FLUTUANTE DO CRONÔMETRO DE DESCANSO -->
     <div class="rest-bar" id="rest-bar">
         <div class="rest-time-text" id="rest-time-display">00s</div>
         <button class="btn-rest-action" onclick="adjustRestTimer(15)">+15s</button>
@@ -1405,9 +1422,10 @@
         <button class="btn-rest-action" onclick="skipRestTimer()">Pular</button>
     </div>
 
+    <!-- NOTIFICAÇÃO TOAST -->
     <div id="toast-notification">Notificação</div>
 
-    <!-- RODAPÉ COMPACTO E SEM ESPAÇO PERDIDO -->
+    <!-- RODAPÉ COMPACTO -->
     <footer>
         <div class="footer-logo-wrap">
             <svg class="stravion-icon-svg" viewBox="0 0 100 100" style="width:20px; height:20px;">
@@ -1421,11 +1439,21 @@
         </div>
     </footer>
 
+    <!-- 
+      ==========================================================================
+      5. LÓGICA JAVASCRIP E BANCO DE DADOS LOCAL
+      ==========================================================================
+      INSTRUÇÕES DE ALTERAÇÕES FUTURAS:
+      - Para adicionar novos exercícios: inclua um novo objeto na lista PRESET_EXERCISES.
+      - Para adicionar novas capas: inclua um novo objeto na lista PRESET_COVERS.
+      - Para ajustar credenciais default do Meta WhatsApp API: altere DEFAULT_META_ENDPOINT e DEFAULT_META_TOKEN.
+    -->
     <script>
+        // CREDENCIAIS PADRÃO META WHATSAPP CLOUD API
         const DEFAULT_META_ENDPOINT = "https://graph.facebook.com/v20.0/1286052921258443/messages";
         const DEFAULT_META_TOKEN = "EAAZATIZByn5ZBgBSPvlpj0CRjBIhSwU3unBIHzaBrAgsFypOJZALX8xjtKZBQrjJTKZAvndHikG5G9vqoRAS8dXS0vsZBVX5Ox01S4XJRel24PO90JZAZAxavr8eO5loLdM8thPWpli4zoH5RTc28dGm1n9f5zX4yIeyObL8Pnoq6um186ZAPOqYsK4SmdwPHHMbF96n22oncNVETUCiOHI4mzeZBquz5FrVIAsdPxd7pnC0IruydXLaHvCR358OdrOAIbZCZCA7ZCFYRlGDPivAD4GQm8";
 
-        // GALERIA DE CAPAS AMPLIADA (+15 CAPAS)
+        // GALERIA DE CAPAS (+15 CAPAS TEMÁTICAS)
         const PRESET_COVERS = [
             { url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=60', label: 'Musculação Geral' },
             { url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=60', label: 'Crossfit / Funcional' },
@@ -1444,7 +1472,7 @@
             { url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&auto=format&fit=crop&q=60', label: 'Abdômen Definido' }
         ];
 
-        // BANCO DE DADOS DE 100 EXERCÍCIOS DIVIDIDOS POR GRUPO MUSCULAR
+        // BANCO DE DADOS COM +100 EXERCÍCIOS DIVIDIDOS POR GRUPO MUSCULAR
         const PRESET_EXERCISES = [
             // PEITO (12)
             { category: 'PEITO', name: 'Supino Reto com Barra', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
@@ -1565,6 +1593,7 @@
             { category: 'CARDIO & LUTAS', name: 'Saltos Duplos de Corda / Double Unders', videoUrl: 'https://www.youtube.com/watch?v=82j4mg7N6gE' }
         ];
 
+        // TREINOS DEMONSTRATIVOS PADRÃO
         const DEFAULT_WORKOUTS = [
             {
                 id: 'w_demo_1',
@@ -1601,6 +1630,7 @@
             }
         ];
 
+        // VARIÁVEIS DE ESTADO DA APLICAÇÃO
         let authRole = 'atleta';
         let currentUser = null;
         let localWorkouts = [];
@@ -1614,6 +1644,10 @@
         let pendingRegistration = null;
         let currentCoverBase64 = '';
 
+        /* 
+          INICIALIZAÇÃO DO APP (WINDOW.ONLOAD)
+          Controla o fechamento do Splash Screen e o carregamento de configurações do usuário.
+        */
         window.onload = function() {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
@@ -1647,6 +1681,7 @@
             }
         };
 
+        // ALTERAR SELEÇÃO DE PERFIL (ATLETA OU PERSONAL)
         function setAuthRole(role) {
             authRole = role;
             const btnAtleta = document.getElementById('btn-type-atleta');
@@ -1747,6 +1782,10 @@
             return p;
         }
 
+        /* 
+          ENVIO AUTOMÁTICO DE WHATSAPP VIA API DA META
+          Faz fallback gracioso para a interface web caso haja restrição da conta de testes.
+        */
         async function sendWhatsAppAutomaticMsg(rawPhone, messageText) {
             const formattedPhone = cleanPhone(rawPhone);
             const statusLogEl = document.getElementById('wa-api-status-log');
@@ -2157,6 +2196,9 @@
             }
         }
 
+        /* 
+          INICIAR TREINO E EDIÇÃO DE SÉRIES INDIVIDUAIS
+        */
         function startWorkout(workoutId) {
             const workout = localWorkouts.find(w => w.id === workoutId);
             if (!workout) return;
@@ -2202,6 +2244,10 @@
             }, 1000);
         }
 
+        /* 
+          RENDERIZAÇÃO DOS EXERCÍCIOS EM EXECUÇÃO
+          Suporta edição individual de KG e Repetições por série.
+        */
         function renderActiveAccordion() {
             const container = document.getElementById('active-exercise-accordion-container');
             if (!activeWorkoutSession) {
@@ -2512,12 +2558,14 @@
             openModal('modal-workout');
         }
 
+        /* 
+          ADICIONAR LINHA DE EXERCÍCIO COM SELETOR COMPLETO (+100 EXERCÍCIOS)
+        */
         function addExerciseRow(name = '', sets = 4, reps = 12, weight = 10, rest = 60, videoUrl = '') {
             const div = document.createElement('div');
             div.className = 'exercise-input-row';
             div.style.cssText = 'background:var(--input-bg); border-radius:8px; padding:10px; margin-bottom:10px; position:relative; border:1px solid var(--stravion-border);';
             
-            // Agrupar 100+ exercícios por categoria (<optgroup>)
             const categories = [...new Set(PRESET_EXERCISES.map(p => p.category))];
             let groupedOptions = '<option value="">Selecione um dos +100 exercícios cadastrados...</option>';
 
