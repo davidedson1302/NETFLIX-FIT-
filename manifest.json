@@ -1,0 +1,22 @@
+{
+"short_name": "Stravion",
+"name": "Stravion Fitness - Personal & Atletas",
+"description": "Aplicativo de treinos de musculação e acompanhamento para personal trainers e alunos.",
+"icons": [
+{
+"src": "data:image/svg+xml,",
+"sizes": "192x192",
+"type": "image/svg+xml"
+},
+{
+"src": "data:image/svg+xml,",
+"sizes": "512x512",
+"type": "image/svg+xml"
+}
+],
+"start_url": "./index.html",
+"background_color": "#161722",
+"theme_color": "#E50914",
+"display": "standalone",
+"orientation": "portrait"
+}
