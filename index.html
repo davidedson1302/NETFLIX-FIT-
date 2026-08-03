@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Stravion Fit">
     <link rel="manifest" href="manifest.json">
-    <link id="favicon" rel="icon" type="image/png" href="icone preto.png">
+    <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'><defs><linearGradient id='sg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23FFFFFF'/><stop offset='50%' stop-color='%23CCCCCC'/><stop offset='100%' stop-color='%23888888'/></linearGradient><linearGradient id='rg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23FF1E27'/><stop offset='100%' stop-color='%23B30009'/></linearGradient></defs><path d='M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z' fill='url(%23sg)'/><path d='M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z' fill='url(%23rg)'/></svg>">
 
     <!-- FONTS & FONTAWESOME -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -100,11 +100,10 @@
             align-items: center;
         }
 
-        .splash-img {
+        .stravion-logo-svg {
             width: 100%;
-            max-width: 240px;
+            max-width: 220px;
             height: auto;
-            object-fit: contain;
         }
 
         @keyframes pulseSplash {
@@ -133,13 +132,12 @@
             cursor: pointer;
         }
 
-        .header-logo-img {
+        .header-logo-svg {
             height: 38px;
             width: auto;
-            object-fit: contain;
         }
 
-        /* Alternância dinâmica das logos PNG no Header/Footer */
+        /* Responsive display for header logos based on theme */
         [data-theme="dark"] .logo-light-theme { display: none !important; }
         [data-theme="dark"] .logo-dark-theme { display: block !important; }
 
@@ -281,13 +279,6 @@
             flex-direction: column;
             align-items: center;
             margin-bottom: 16px;
-        }
-
-        .auth-logo-img {
-            max-width: 220px;
-            height: auto;
-            margin-bottom: 8px;
-            object-fit: contain;
         }
 
         .auth-type-selector {
@@ -861,18 +852,50 @@
 </head>
 <body>
 
-    <!-- Splash Screen (Usa o arquivo logo tela inicia tema escuro .png) -->
+    <!-- Splash Screen -->
     <div id="splash-screen">
         <div class="splash-logo-container">
-            <img src="logo tela inicia tema escuro .png" alt="Stravion Fitness" class="splash-img">
+            <svg class="stravion-logo-svg" viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFFFFF" />
+                        <stop offset="50%" stop-color="#CCCCCC" />
+                        <stop offset="100%" stop-color="#888888" />
+                    </linearGradient>
+                    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FF1E27" />
+                        <stop offset="100%" stop-color="#B30009" />
+                    </linearGradient>
+                </defs>
+                <path d="M 90 20 L 210 20 L 245 52 L 140 52 L 110 82 L 215 82 L 190 105 L 105 105 L 70 72 Z" fill="url(#silverGrad)" />
+                <path d="M 210 160 L 90 160 L 55 128 L 160 128 L 190 98 L 85 98 L 110 75 L 195 75 L 230 108 Z" fill="url(#redGrad)" />
+                <text x="150" y="185" font-family="'Teko', sans-serif" font-size="28" font-weight="bold" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">STRAVION</text>
+                <text x="150" y="202" font-family="'Montserrat', sans-serif" font-size="10" font-weight="900" fill="#FF1E27" text-anchor="middle" letter-spacing="4">— FITNESS —</text>
+            </svg>
         </div>
     </div>
 
-    <!-- Auth Overlay Modal (Usa o arquivo logo tela inicia tema escuro .png) -->
+    <!-- Auth Overlay Modal -->
     <div id="auth-overlay">
         <div class="auth-card">
             <div class="auth-logo-vertical">
-                <img src="logo tela inicia tema escuro .png" alt="Stravion Fitness" class="auth-logo-img">
+                <svg class="stravion-logo-svg" viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="silverGradAuth" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFFFFF" />
+                            <stop offset="50%" stop-color="#CCCCCC" />
+                            <stop offset="100%" stop-color="#888888" />
+                        </linearGradient>
+                        <linearGradient id="redGradAuth" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FF1E27" />
+                            <stop offset="100%" stop-color="#B30009" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M 90 20 L 210 20 L 245 52 L 140 52 L 110 82 L 215 82 L 190 105 L 105 105 L 70 72 Z" fill="url(#silverGradAuth)" />
+                    <path d="M 210 160 L 90 160 L 55 128 L 160 128 L 190 98 L 85 98 L 110 75 L 195 75 L 230 108 Z" fill="url(#redGradAuth)" />
+                    <text x="150" y="185" font-family="'Teko', sans-serif" font-size="28" font-weight="bold" fill="var(--logo-text-color)" text-anchor="middle" letter-spacing="2">STRAVION</text>
+                    <text x="150" y="202" font-family="'Montserrat', sans-serif" font-size="10" font-weight="900" fill="#FF1E27" text-anchor="middle" letter-spacing="4">— FITNESS —</text>
+                </svg>
             </div>
 
             <div class="auth-type-selector">
@@ -963,11 +986,26 @@
         </div>
     </div>
 
-    <!-- Header (Usa logo tema preto horizontal.png para tema escuro e logo tema claro horizontal.png para tema claro) -->
+    <!-- Header -->
     <header>
         <div class="brand-logo-wrap" onclick="switchTab('catalog')">
-            <img src="logo tema preto horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-dark-theme">
-            <img src="logo tema claro horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-light-theme">
+            <svg class="header-logo-svg" viewBox="0 0 280 50" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="silverHeader" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFFFFF" />
+                        <stop offset="50%" stop-color="#CCCCCC" />
+                        <stop offset="100%" stop-color="#888888" />
+                    </linearGradient>
+                    <linearGradient id="redHeader" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FF1E27" />
+                        <stop offset="100%" stop-color="#B30009" />
+                    </linearGradient>
+                </defs>
+                <path d="M 15 5 L 45 5 L 55 13 L 28 13 L 20 22 L 48 22 L 40 28 L 18 28 L 10 18 Z" fill="url(#silverHeader)" />
+                <path d="M 45 42 L 15 42 L 8 34 L 32 34 L 38 26 L 12 26 L 16 20 L 35 20 L 42 28 Z" fill="url(#redHeader)" />
+                <text x="65" y="30" font-family="'Teko', sans-serif" font-size="28" font-weight="bold" fill="var(--logo-text-color)">STRAVION</text>
+                <text x="180" y="30" font-family="'Teko', sans-serif" font-size="28" font-weight="bold" fill="#E50914">FITNESS</text>
+            </svg>
         </div>
 
         <div class="header-actions">
@@ -1198,8 +1236,23 @@
     <!-- Footer -->
     <footer>
         <div class="footer-logo-wrap">
-            <img src="logo tema preto horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-dark-theme" style="height:28px;">
-            <img src="logo tema claro horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-light-theme" style="height:28px;">
+            <svg class="header-logo-svg" viewBox="0 0 280 50" xmlns="http://www.w3.org/2000/svg" style="height:28px;">
+                <defs>
+                    <linearGradient id="silverFooter" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFFFFF" />
+                        <stop offset="50%" stop-color="#CCCCCC" />
+                        <stop offset="100%" stop-color="#888888" />
+                    </linearGradient>
+                    <linearGradient id="redFooter" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FF1E27" />
+                        <stop offset="100%" stop-color="#B30009" />
+                    </linearGradient>
+                </defs>
+                <path d="M 15 5 L 45 5 L 55 13 L 28 13 L 20 22 L 48 22 L 40 28 L 18 28 L 10 18 Z" fill="url(#silverFooter)" />
+                <path d="M 45 42 L 15 42 L 8 34 L 32 34 L 38 26 L 12 26 L 16 20 L 35 20 L 42 28 Z" fill="url(#redFooter)" />
+                <text x="65" y="30" font-family="'Teko', sans-serif" font-size="28" font-weight="bold" fill="var(--logo-text-color)">STRAVION</text>
+                <text x="180" y="30" font-family="'Teko', sans-serif" font-size="28" font-weight="bold" fill="#E50914">FITNESS</text>
+            </svg>
         </div>
         <div class="footer-credits">
             © 2026 DAVID E. SOUZA - TODOS OS DIREITOS RESERVADOS
