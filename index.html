@@ -88,6 +88,7 @@
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
+            display: none !important;
         }
 
         .splash-logo-container {
@@ -318,73 +319,6 @@
             flex: 1;
         }
 
-        .wa-push-banner {
-            position: fixed;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-180%);
-            width: 92%;
-            max-width: 440px;
-            background: #111b21;
-            border: 1px solid #25D366;
-            border-left: 5px solid #25D366;
-            border-radius: 12px;
-            padding: 12px 16px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.8);
-            z-index: 100000;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-        }
-
-        .wa-push-banner.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .wa-icon-box {
-            width: 36px;
-            height: 36px;
-            background: #25D366;
-            color: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-
-        .wa-push-content {
-            flex: 1;
-            text-align: left;
-        }
-
-        .wa-push-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2px;
-        }
-
-        .wa-push-sender {
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: #25D366;
-        }
-
-        .wa-push-time {
-            font-size: 0.7rem;
-            color: #8696a0;
-        }
-
-        .wa-push-body {
-            font-size: 0.8rem;
-            color: #e9edef;
-            line-height: 1.35;
-        }
-
         #auth-overlay {
             position: fixed;
             top: 0;
@@ -408,6 +342,7 @@
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
+            display: none !important;
         }
 
         .auth-card {
@@ -1144,21 +1079,6 @@
         </div>
     </div>
 
-    <div class="wa-push-banner" id="wa-push-banner" onclick="autoFillCodeFromBanner()">
-        <div class="wa-icon-box">
-            <i class="fa-brands fa-whatsapp"></i>
-        </div>
-        <div class="wa-push-content">
-            <div class="wa-push-header">
-                <span class="wa-push-sender">Stravion Fitness (WhatsApp)</span>
-                <span class="wa-push-time">agora</span>
-            </div>
-            <div class="wa-push-body" id="wa-push-message-text">
-                Seu código de ativação do Stravion é 000000
-            </div>
-        </div>
-    </div>
-
     <div id="auth-overlay">
         <div class="auth-card">
             <div class="auth-logo-vertical">
@@ -1217,9 +1137,6 @@
                     <a href="#" onclick="openRecoveryModal(); return false;" style="color:var(--stravion-accent); font-size:0.78rem; font-weight:700; text-decoration:none;">
                         <i class="fa-solid fa-key"></i> Esqueceu a senha / Recuperar Acesso?
                     </a>
-                </div>
-                <div style="margin-top: 10px; padding: 6px; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 0.7rem; color: var(--text-muted);">
-                    <i class="fa-solid fa-circle-info" style="color:var(--stravion-accent);"></i> Usuário <strong>aluno</strong> ou <strong>personal</strong> com senha <strong>123456</strong>
                 </div>
             </form>
 
@@ -1335,7 +1252,7 @@
                     <h2 id="active-workout-title" class="section-title">Nenhum treino iniciado</h2>
                     <p style="color:var(--text-muted); font-size:0.8rem;" id="active-workout-subtitle">Selecione um treino no catálogo para começar.</p>
                     <div id="pip-controls-wrap" style="margin-top:8px; display:none;">
-                        <button class="pip-badge-btn" onclick="togglePictureInPicture()">
+                        <button class="pip-badge-btn" onclick="toggleUniversalPip()">
                             <i class="fa-solid fa-window-restore"></i> PiP Flutuante (Cronômetro)
                         </button>
                         <span id="bpm-display" style="font-size:0.75rem; margin-left:10px; color:#25D366; font-weight:700;"></span>
@@ -1349,7 +1266,7 @@
                 </div>
             </div>
 
-            <!-- Canvas e Video ocultos para PiP em tempo real -->
+            <!-- Canvas e Video para PiP -->
             <canvas id="pip-canvas" width="400" height="240" style="display:none;"></canvas>
             <video id="pip-video" autoplay muted style="display:none;"></video>
 
@@ -1499,20 +1416,6 @@
                         Status do Hardware: Pronto para conectar sensores.
                     </div>
                 </div>
-                
-                <details style="margin-top:14px; border-top: 1px solid var(--stravion-border); padding-top:10px;">
-                    <summary style="font-size:0.72rem; color:var(--text-muted); cursor:pointer; font-weight:700;">
-                        <i class="fa-solid fa-lock"></i> Configurações do Servidor (Oculto)
-                    </summary>
-                    <div class="form-group" style="margin-top:10px;">
-                        <label style="color:var(--text-muted); font-size:0.68rem;"><i class="fa-brands fa-whatsapp"></i> URL da API</label>
-                        <input type="password" id="wa-api-url" class="form-control" placeholder="URL da API (Oculto)" autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label style="color:var(--text-muted); font-size:0.68rem;"><i class="fa-solid fa-key"></i> Token de Acesso</label>
-                        <input type="password" id="wa-api-token" class="form-control" placeholder="Token de Acesso (Oculto)" autocomplete="off">
-                    </div>
-                </details>
 
                 <button type="submit" class="btn-primary" style="margin-top:16px;">SALVAR CONFIGURAÇÕES</button>
             </form>
@@ -1597,24 +1500,160 @@
     </footer>
 
     <script>
-        // CONFIGURAÇÕES INICIAIS DE USUÁRIO E ESTADO DO TREINO
+        // CAPAS PRÉ-DEFINIDAS
+        const PRESET_COVERS = [
+            { label: 'Costas & Largura', url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80' },
+            { label: 'Peito & Tríceps', url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=600&q=80' },
+            { label: 'Pernas & Agachamento', url: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&w=600&q=80' },
+            { label: 'Ombros & Espessura', url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80' },
+            { label: 'Braços & Bíceps', url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80' },
+            { label: 'Cardio & Esteira', url: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=600&q=80' },
+            { label: 'Crossfit & Power', url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80' }
+        ];
+
+        // BIBLIOTECA DE EXERCÍCIOS
+        const PRESET_EXERCISES = [
+            { category: 'Costas', name: 'Barra fixa ou puxada alta', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+            { category: 'Costas', name: 'Puxada neutra', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+            { category: 'Costas', name: 'Pulldown unilateral', videoUrl: '' },
+            { category: 'Costas', name: 'Pullover na polia', videoUrl: '' },
+            { category: 'Costas', name: 'Remada curvada', videoUrl: '' },
+            { category: 'Costas', name: 'Remada cavalinho', videoUrl: '' },
+            { category: 'Costas', name: 'Remada baixa', videoUrl: '' },
+            { category: 'Costas', name: 'Face pull', videoUrl: '' },
+            { category: 'Peito', name: 'Supino reto', videoUrl: '' },
+            { category: 'Peito', name: 'Supino inclinado com halteres', videoUrl: '' },
+            { category: 'Peito', name: 'Crucifixo máquina ou crossover', videoUrl: '' },
+            { category: 'Pernas', name: 'Agachamento livre', videoUrl: '' },
+            { category: 'Pernas', name: 'Leg press', videoUrl: '' },
+            { category: 'Pernas', name: 'Afundo ou passada', videoUrl: '' },
+            { category: 'Pernas', name: 'Mesa flexora', videoUrl: '' },
+            { category: 'Pernas', name: 'Stiff', videoUrl: '' },
+            { category: 'Pernas', name: 'Levantamento terra romeno', videoUrl: '' },
+            { category: 'Pernas', name: 'Cadeira flexora', videoUrl: '' },
+            { category: 'Pernas', name: 'Panturrilha em pé', videoUrl: '' },
+            { category: 'Pernas', name: 'Panturrilha sentada', videoUrl: '' },
+            { category: 'Ombros', name: 'Desenvolvimento com halteres', videoUrl: '' },
+            { category: 'Ombros', name: 'Elevação lateral', videoUrl: '' },
+            { category: 'Ombros', name: 'Crucifixo inverso', videoUrl: '' },
+            { category: 'Bíceps', name: 'Rosca direta', videoUrl: '' },
+            { category: 'Bíceps', name: 'Rosca inclinada', videoUrl: '' },
+            { category: 'Bíceps', name: 'Rosca martelo', videoUrl: '' },
+            { category: 'Bíceps', name: 'Rosca Scott', videoUrl: '' },
+            { category: 'Tríceps', name: 'Paralelas ou mergulho assistido', videoUrl: '' },
+            { category: 'Tríceps', name: 'Tríceps corda', videoUrl: '' },
+            { category: 'Tríceps', name: 'Tríceps francês', videoUrl: '' },
+            { category: 'Tríceps', name: 'Tríceps testa', videoUrl: '' },
+            { category: 'Abdômen', name: 'Abdômen', videoUrl: '' }
+        ];
+
+        // TREINOS PRÉ-CONFIGURADOS (SEGUNDA A SEXTA)
+        const DEFAULT_WORKOUTS = [
+            {
+                id: 'w_segunda',
+                title: 'Segunda – Costas (ênfase em largura) + Bíceps',
+                coverUrl: PRESET_COVERS[0].url,
+                assignedTo: 'all',
+                exercises: [
+                    { name: 'Barra fixa ou puxada alta', sets: 4, reps: '6–10', weight: 40, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+                    { name: 'Puxada neutra', sets: 3, reps: '8–12', weight: 45, rest: 60, videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
+                    { name: 'Pulldown unilateral', sets: 3, reps: '10–12', weight: 20, rest: 60, videoUrl: '' },
+                    { name: 'Pullover na polia', sets: 3, reps: '12–15', weight: 25, rest: 60, videoUrl: '' },
+                    { name: 'Rosca direta', sets: 3, reps: '8–10', weight: 14, rest: 60, videoUrl: '' },
+                    { name: 'Rosca inclinada', sets: 3, reps: '10–12', weight: 12, rest: 60, videoUrl: '' },
+                    { name: 'Rosca martelo', sets: 2, reps: '12–15', weight: 12, rest: 60, videoUrl: '' }
+                ]
+            },
+            {
+                id: 'w_terca',
+                title: 'Terça – Peito + Tríceps',
+                coverUrl: PRESET_COVERS[1].url,
+                assignedTo: 'all',
+                exercises: [
+                    { name: 'Supino reto', sets: 4, reps: '6–8', weight: 60, rest: 60, videoUrl: '' },
+                    { name: 'Supino inclinado com halteres', sets: 3, reps: '8–10', weight: 22, rest: 60, videoUrl: '' },
+                    { name: 'Crucifixo máquina ou crossover', sets: 3, reps: '12–15', weight: 15, rest: 60, videoUrl: '' },
+                    { name: 'Paralelas ou mergulho assistido', sets: 3, reps: '8–12', weight: 0, rest: 60, videoUrl: '' },
+                    { name: 'Tríceps corda', sets: 3, reps: '10–12', weight: 25, rest: 60, videoUrl: '' },
+                    { name: 'Tríceps francês', sets: 3, reps: '10–12', weight: 18, rest: 60, videoUrl: '' }
+                ]
+            },
+            {
+                id: 'w_quarta',
+                title: 'Quarta – Pernas',
+                coverUrl: PRESET_COVERS[2].url,
+                assignedTo: 'all',
+                exercises: [
+                    { name: 'Agachamento livre', sets: 4, reps: '6–8', weight: 70, rest: 90, videoUrl: '' },
+                    { name: 'Leg press', sets: 3, reps: '10–12', weight: 120, rest: 60, videoUrl: '' },
+                    { name: 'Afundo ou passada', sets: 3, reps: '10 cada perna', weight: 16, rest: 60, videoUrl: '' },
+                    { name: 'Mesa flexora', sets: 3, reps: '10–12', weight: 35, rest: 60, videoUrl: '' },
+                    { name: 'Stiff', sets: 3, reps: '8–10', weight: 40, rest: 60, videoUrl: '' },
+                    { name: 'Panturrilha em pé', sets: 4, reps: '12–15', weight: 50, rest: 45, videoUrl: '' },
+                    { name: 'Abdômen', sets: 3, reps: '15–20', weight: 0, rest: 45, videoUrl: '' }
+                ]
+            },
+            {
+                id: 'w_quinta',
+                title: 'Quinta – Costas (ênfase em espessura) + Ombros',
+                coverUrl: PRESET_COVERS[3].url,
+                assignedTo: 'all',
+                exercises: [
+                    { name: 'Remada curvada', sets: 4, reps: '6–8', weight: 50, rest: 60, videoUrl: '' },
+                    { name: 'Remada cavalinho', sets: 3, reps: '8–10', weight: 45, rest: 60, videoUrl: '' },
+                    { name: 'Remada baixa', sets: 3, reps: '10–12', weight: 50, rest: 60, videoUrl: '' },
+                    { name: 'Face pull', sets: 3, reps: '12–15', weight: 20, rest: 60, videoUrl: '' },
+                    { name: 'Desenvolvimento com halteres', sets: 3, reps: '8–10', weight: 18, rest: 60, videoUrl: '' },
+                    { name: 'Elevação lateral', sets: 4, reps: '12–15', weight: 10, rest: 45, videoUrl: '' },
+                    { name: 'Crucifixo inverso', sets: 3, reps: '12–15', weight: 8, rest: 45, videoUrl: '' }
+                ]
+            },
+            {
+                id: 'w_sexta',
+                title: 'Sexta – Braços + Posterior',
+                coverUrl: PRESET_COVERS[4].url,
+                assignedTo: 'all',
+                exercises: [
+                    { name: 'Levantamento terra romeno', sets: 3, reps: '8–10', weight: 60, rest: 60, videoUrl: '' },
+                    { name: 'Cadeira flexora', sets: 3, reps: '10–12', weight: 40, rest: 60, videoUrl: '' },
+                    { name: 'Rosca Scott', sets: 3, reps: '8–10', weight: 16, rest: 60, videoUrl: '' },
+                    { name: 'Rosca martelo', sets: 3, reps: '10–12', weight: 14, rest: 60, videoUrl: '' },
+                    { name: 'Tríceps testa', sets: 3, reps: '8–10', weight: 25, rest: 60, videoUrl: '' },
+                    { name: 'Tríceps corda', sets: 3, reps: '12–15', weight: 20, rest: 60, videoUrl: '' },
+                    { name: 'Panturrilha sentada', sets: 4, reps: '15–20', weight: 40, rest: 45, videoUrl: '' }
+                ]
+            }
+        ];
+
+        // VARIÁVEIS DE ESTADO GLOBAL
         let currentUser = JSON.parse(localStorage.getItem('stravion_user') || 'null');
+        let localWorkouts = JSON.parse(localStorage.getItem('stravion_local_workouts') || 'null');
+        let localHistory = JSON.parse(localStorage.getItem('stravion_local_history') || '[]');
+        let activeWorkoutSession = JSON.parse(localStorage.getItem('stravion_active_session') || 'null');
+
+        let workoutTimerInterval = null;
+        let restTimerInterval = null;
+        let restSecondsLeft = 0;
+
         let authRole = 'atleta';
         let generatedActivationCode = '';
         let pendingRegistration = null;
+        let currentCoverBase64 = '';
 
-        // PIP & HARDWARE VARIABLES
-        let isPipActive = false;
         let isUniversalPipVisible = false;
         let cameraStream = null;
-        let bluetoothHeartDevice = null;
-        let heartRateBpm = null;
 
-        // INICIALIZAÇÃO AO CARREGAR A PÁGINA
         window.addEventListener('DOMContentLoaded', () => {
+            // Garante ocultar a Splash Screen sem travar a interface
             setTimeout(() => {
-                document.getElementById('splash-screen').classList.add('hidden');
-            }, 1000);
+                const splash = document.getElementById('splash-screen');
+                if (splash) splash.classList.add('hidden');
+            }, 800);
+
+            if (!localWorkouts || localWorkouts.length === 0) {
+                localWorkouts = DEFAULT_WORKOUTS;
+                localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
+            }
 
             if (!currentUser) {
                 showAuthOverlay();
@@ -1630,7 +1669,7 @@
             const savedAccent = localStorage.getItem('stravion_accent') || '#E56B6F';
             applyAccentColor(savedAccent);
 
-            // SE HOUVER TREINO EM ANDAMENTO, RESTAURA AUTOMATICAMENTE EM SEGUNDO PLANO
+            // Restaura treino ativo contínuo se existir
             if (activeWorkoutSession) {
                 resumeActiveWorkoutSession();
             }
@@ -1644,7 +1683,6 @@
                 const now = ctx.currentTime;
 
                 if (type === 'rest_end') {
-                    // Alerta curto de fim de descanso (1 segundo)
                     const osc = ctx.createOscillator();
                     const gain = ctx.createGain();
                     osc.type = 'sine';
@@ -1659,8 +1697,7 @@
                     osc.start(now);
                     osc.stop(now + 1.0);
                 } else if (type === 'workout_complete') {
-                    // Efeito sonoro triunfal de conclusão de treino (1 segundo)
-                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
                     notes.forEach((freq, idx) => {
                         const osc = ctx.createOscillator();
                         const gain = ctx.createGain();
@@ -1679,14 +1716,13 @@
                     });
                 }
             } catch (e) {
-                console.log('Audio Context bloqueado ou não suportado:', e);
+                console.log('Audio Context indisponível:', e);
             }
         }
 
         function updatePipCanvas() {
-            const clockText = document.getElementById('workout-clock').innerText || '00:00:00';
+            const clockText = document.getElementById('workout-clock')?.innerText || '00:00:00';
 
-            // Atualiza o Widget Flutuante Universal (Compatível com iOS/Android/Todos Navegadores)
             const pipClock = document.getElementById('pip-widget-clock');
             const pipRest = document.getElementById('pip-widget-rest');
             const pipTitle = document.getElementById('pip-widget-title');
@@ -1701,102 +1737,6 @@
                     pipRest.innerText = 'EM EXERCÍCIO';
                     pipRest.style.color = '#55E6C1';
                 }
-            }
-
-            // Atualiza LockScreen / Notification Center via MediaSession
-            if ('mediaSession' in navigator && activeWorkoutSession) {
-                try {
-                    navigator.mediaSession.metadata = new MediaMetadata({
-                        title: `${clockText} - ${activeWorkoutSession.title}`,
-                        artist: restSecondsLeft > 0 ? `Descanso: ${restSecondsLeft}s` : 'Treino em Andamento',
-                        album: 'Stravion Fitness'
-                    });
-                } catch(e) {}
-            }
-
-            const canvas = document.getElementById('pip-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            grad.addColorStop(0, '#161722');
-            grad.addColorStop(1, '#25283A');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#E56B6F';
-            ctx.font = 'bold 20px Montserrat, sans-serif';
-            ctx.fillText('STRAVION FITNESS', 15, 30);
-
-            const workoutTitle = activeWorkoutSession ? activeWorkoutSession.title : 'Nenhum Treino';
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = '13px Montserrat, sans-serif';
-            ctx.fillText(workoutTitle.substring(0, 32), 15, 52);
-
-            ctx.strokeStyle = '#33384F';
-            ctx.beginPath();
-            ctx.moveTo(15, 65);
-            ctx.lineTo(canvas.width - 15, 65);
-            ctx.stroke();
-
-            // TEMPO TOTAL DO TREINO
-            ctx.fillStyle = '#A0A0A0';
-            ctx.font = '11px Montserrat, sans-serif';
-            ctx.fillText('TEMPO TOTAL DE TREINO', 15, 85);
-
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = 'bold 36px Montserrat, monospace';
-            ctx.fillText(clockText, 15, 125);
-
-            // TEMPO DE DESCANSO ABAIXO
-            ctx.fillStyle = '#A0A0A0';
-            ctx.font = '11px Montserrat, sans-serif';
-            ctx.fillText('TEMPO DE DESCANSO', 15, 155);
-
-            if (restSecondsLeft > 0) {
-                ctx.fillStyle = '#E56B6F';
-                ctx.font = 'bold 34px Montserrat, monospace';
-                ctx.fillText(`${restSecondsLeft}s`, 15, 195);
-            } else {
-                ctx.fillStyle = '#55E6C1';
-                ctx.font = 'bold 18px Montserrat, sans-serif';
-                ctx.fillText('EM EXERCÍCIO / PRONTO', 15, 190);
-            }
-
-            if (heartRateBpm) {
-                ctx.fillStyle = '#25D366';
-                ctx.font = 'bold 14px Montserrat, sans-serif';
-                ctx.fillText(`♥ ${heartRateBpm} BPM`, canvas.width - 120, 30);
-            }
-        }
-
-        async function togglePictureInPicture() {
-            const video = document.getElementById('pip-video');
-            const canvas = document.getElementById('pip-canvas');
-
-            if (!activeWorkoutSession) {
-                showToast("Inicie um treino primeiro para ativar o PiP!");
-                return;
-            }
-
-            // Ativa sempre o Widget Flutuante Universal na tela
-            toggleUniversalPip(true);
-
-            // Tenta também ativar a API nativa de PiP do sistema, caso o navegador/celular ofereça suporte
-            try {
-                if (document.pictureInPictureElement) {
-                    await document.exitPictureInPicture();
-                    isPipActive = false;
-                } else if (document.pictureInPictureEnabled && video && canvas) {
-                    updatePipCanvas();
-                    const stream = canvas.captureStream(10);
-                    video.srcObject = stream;
-                    await video.play();
-                    await video.requestPictureInPicture();
-                    isPipActive = true;
-                }
-            } catch (err) {
-                console.log("PiP nativo do SO indisponível, usando Widget Flutuante Universal.");
             }
         }
 
@@ -1815,35 +1755,6 @@
                 showToast("Widget Flutuante Ativado!");
             } else {
                 widget.classList.add('hidden');
-            }
-        }
-
-        async function togglePictureInPicture() {
-            const video = document.getElementById('pip-video');
-            const canvas = document.getElementById('pip-canvas');
-
-            if (!activeWorkoutSession) {
-                showToast("Inicie um treino primeiro para ativar o PiP!");
-                return;
-            }
-
-            try {
-                if (document.pictureInPictureElement) {
-                    await document.exitPictureInPicture();
-                    isPipActive = false;
-                    showToast("Janela Flutuante fechada.");
-                } else {
-                    updatePipCanvas();
-                    const stream = canvas.captureStream(10);
-                    video.srcObject = stream;
-                    await video.play();
-                    await video.requestPictureInPicture();
-                    isPipActive = true;
-                    showToast("Janela Flutuante PiP Ativada!");
-                }
-            } catch (err) {
-                console.error("Erro no PiP:", err);
-                showToast("Modo PiP não suportado neste navegador.");
             }
         }
 
@@ -1881,7 +1792,7 @@
             startWorkoutClock();
             renderActiveAccordion();
             switchTab('active');
-            showToast("Treino iniciado! Roda continuamente até concluir!");
+            showToast("Treino iniciado! Roda continuamente em segundo plano!");
         }
 
         function resumeActiveWorkoutSession() {
@@ -1904,12 +1815,13 @@
             workoutTimerInterval = setInterval(() => {
                 if (!activeWorkoutSession) return;
                 
-                // CÁLCULO BASEADO NO TIMESTAMP ABSOLUTO (Garante tempo continuo em segundo plano)
                 const elapsedSeconds = Math.floor((Date.now() - activeWorkoutSession.startTime) / 1000);
                 const hrs = String(Math.floor(elapsedSeconds / 3600)).padStart(2, '0');
                 const mins = String(Math.floor((elapsedSeconds % 3600) / 60)).padStart(2, '0');
                 const secs = String(elapsedSeconds % 60).padStart(2, '0');
-                document.getElementById('workout-clock').innerText = `${hrs}:${mins}:${secs}`;
+                
+                const clockEl = document.getElementById('workout-clock');
+                if (clockEl) clockEl.innerText = `${hrs}:${mins}:${secs}`;
 
                 updatePipCanvas();
             }, 1000);
@@ -1942,7 +1854,6 @@
             document.getElementById('active-workout-title').innerText = "Treino Concluído!";
             document.getElementById('active-workout-subtitle').innerText = "Parabéns por superar seus limites!";
 
-            // TOCA O EFEITO SONORO DE CONCLUSÃO (1 SEGUNDO DE TOQUE SINTETIZADO)
             playDynamicSynthSound('workout_complete');
 
             renderActiveAccordion();
@@ -1972,7 +1883,8 @@
         }
 
         function updateRestDisplay() {
-            document.getElementById('rest-time-display').innerText = `${restSecondsLeft}s`;
+            const el = document.getElementById('rest-time-display');
+            if (el) el.innerText = `${restSecondsLeft}s`;
             updatePipCanvas();
         }
 
@@ -1990,6 +1902,8 @@
 
         function renderActiveAccordion() {
             const container = document.getElementById('active-exercise-accordion-container');
+            if (!container) return;
+
             if (!activeWorkoutSession) {
                 container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum treino em execução.</div>`;
                 return;
@@ -2113,14 +2027,15 @@
 
             if (workoutId) {
                 const w = localWorkouts.find(x => x.id === workoutId);
-                document.getElementById('modal-workout-heading').innerText = "Editar Treino";
-                document.getElementById('workout-id').value = w.id;
-                document.getElementById('workout-title-input').value = w.title;
-                document.getElementById('workout-student-select').value = w.assignedTo || 'all';
-                currentCoverBase64 = w.coverUrl || PRESET_COVERS[0].url;
-                (w.exercises || []).forEach(ex => addExerciseRow(ex.name, ex.sets, ex.reps, ex.weight, ex.rest, ex.videoUrl));
+                if (w) {
+                    document.getElementById('modal-workout-heading').innerText = "Editar Treino";
+                    document.getElementById('workout-id').value = w.id;
+                    document.getElementById('workout-title-input').value = w.title;
+                    document.getElementById('workout-student-select').value = w.assignedTo || 'all';
+                    currentCoverBase64 = w.coverUrl || PRESET_COVERS[0].url;
+                    (w.exercises || []).forEach(ex => addExerciseRow(ex.name, ex.sets, ex.reps, ex.weight, ex.rest, ex.videoUrl));
+                }
 
-                // O ÍCONE E BOTÃO DE EXCLUIR SÓ É EXIBIDO NA ÁREA DE EDIÇÃO DO TREINO!
                 if (deleteBtn) deleteBtn.style.display = 'inline-flex';
             } else {
                 document.getElementById('modal-workout-heading').innerText = "Cadastrar Treino";
@@ -2149,6 +2064,8 @@
 
         function renderWorkoutCatalog() {
             const grid = document.getElementById('workout-list-grid');
+            if (!grid) return;
+
             if (!localWorkouts || localWorkouts.length === 0) {
                 localWorkouts = DEFAULT_WORKOUTS;
             }
@@ -2165,7 +2082,7 @@
                         <div class="workout-title">${w.title}</div>
                         <div class="workout-meta">
                             <span><i class="fa-solid fa-list-check"></i> ${(w.exercises || []).length} Exercícios</span>
-                            ${w.assignedTo && w.assignedTo !== 'all' ? `<span style="color:var(--stravion-accent); font-weight:700;"><i class="fa-solid fa-user-tag"></i> Treino Exclusivo</span>` : ''}
+                            ${w.assignedTo && w.assignedTo !== 'all' ? `<span style="color:var(--stravion-accent); font-weight:700;"><i class="fa-solid fa-user-tag"></i> Exclusivo</span>` : ''}
                         </div>
                         <div class="workout-actions">
                             ${currentUser && currentUser.role !== 'personal' ? `
@@ -2387,7 +2304,7 @@
             }
 
             if (matchedUser.role !== authRole) {
-                showToast(`Alterne o perfil no topo para "${matchedUser.role === 'personal' ? 'Personal Trainer' : 'Atleta / Aluno'}"!`);
+                showToast(`Alterne a aba para "${matchedUser.role === 'personal' ? 'Personal Trainer' : 'Atleta / Aluno'}"!`);
                 return;
             }
 
@@ -2401,11 +2318,13 @@
         }
 
         function showAuthOverlay() {
-            document.getElementById('auth-overlay').classList.remove('hidden');
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) overlay.classList.remove('hidden');
         }
 
         function hideAuthOverlay() {
-            document.getElementById('auth-overlay').classList.add('hidden');
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) overlay.classList.add('hidden');
         }
 
         function handleLogout() {
@@ -2418,8 +2337,10 @@
         function updateHeaderUser() {
             if (!currentUser) return;
             const btn = document.getElementById('user-profile-btn');
-            btn.innerHTML = `<i class="fa-solid fa-user-check"></i>`;
-            document.getElementById('profile-name').value = currentUser.displayName || '';
+            if (btn) btn.innerHTML = `<i class="fa-solid fa-user-check"></i>`;
+            
+            const profName = document.getElementById('profile-name');
+            if (profName) profName.value = currentUser.displayName || '';
 
             const badgeContainer = document.getElementById('role-badge-container');
             const studentsTabBtn = document.getElementById('tab-students-btn');
@@ -2428,17 +2349,17 @@
             const catalogHeading = document.getElementById('catalog-section-heading');
 
             if (currentUser.role === 'personal') {
-                badgeContainer.innerHTML = `<span class="personal-badge"><i class="fa-solid fa-crown"></i> Personal</span>`;
-                studentsTabBtn.style.display = 'inline-flex';
-                activeTabBtn.style.display = 'none';
+                if (badgeContainer) badgeContainer.innerHTML = `<span class="personal-badge"><i class="fa-solid fa-crown"></i> Personal</span>`;
+                if (studentsTabBtn) studentsTabBtn.style.display = 'inline-flex';
+                if (activeTabBtn) activeTabBtn.style.display = 'none';
                 document.getElementById('student-assignment-group').style.display = 'block';
                 if (newWorkoutLabel) newWorkoutLabel.innerText = "Montar Treino";
                 if (catalogHeading) catalogHeading.innerHTML = `<i class="fa-solid fa-dumbbell" style="color:var(--stravion-accent)"></i> Treinos dos Alunos`;
                 switchTab('students');
             } else {
-                badgeContainer.innerHTML = ``;
-                studentsTabBtn.style.display = 'none';
-                activeTabBtn.style.display = 'inline-flex';
+                if (badgeContainer) badgeContainer.innerHTML = ``;
+                if (studentsTabBtn) studentsTabBtn.style.display = 'none';
+                if (activeTabBtn) activeTabBtn.style.display = 'inline-flex';
                 document.getElementById('student-assignment-group').style.display = 'none';
                 if (newWorkoutLabel) newWorkoutLabel.innerText = "Novo Treino";
                 if (catalogHeading) catalogHeading.innerHTML = `<i class="fa-solid fa-dumbbell" style="color:var(--stravion-accent)"></i> Seus Treinos`;
@@ -2580,6 +2501,8 @@
 
         function renderHistory() {
             const container = document.getElementById('history-logs-container');
+            if (!container) return;
+
             if (!localHistory || localHistory.length === 0) {
                 container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum histórico registrado.</div>`;
                 return;
@@ -2637,18 +2560,12 @@
         }
 
         function openProfileModal() {
-            const waInput = document.getElementById('wa-api-url');
-            const tokenInput = document.getElementById('wa-api-token');
-            if (waInput) waInput.value = localStorage.getItem('stravion_wa_api_url') || DEFAULT_META_ENDPOINT;
-            if (tokenInput) tokenInput.value = localStorage.getItem('stravion_wa_api_token') || DEFAULT_META_TOKEN;
             openModal('modal-profile');
         }
 
         function saveProfile(e) {
             e.preventDefault();
             const newName = document.getElementById('profile-name').value;
-            const waUrl = document.getElementById('wa-api-url').value.trim();
-            const waToken = document.getElementById('wa-api-token').value.trim();
 
             if (currentUser) {
                 currentUser.displayName = newName;
@@ -2656,19 +2573,18 @@
                 updateHeaderUser();
             }
 
-            if (waUrl) localStorage.setItem('stravion_wa_api_url', waUrl);
-            if (waToken) localStorage.setItem('stravion_wa_api_token', waToken);
-
             closeModal('modal-profile');
             showToast("Perfil atualizado!");
         }
 
         function openModal(id) {
-            document.getElementById(id).classList.add('active');
+            const m = document.getElementById(id);
+            if (m) m.classList.add('active');
         }
 
         function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
+            const m = document.getElementById(id);
+            if (m) m.classList.remove('active');
             if (id === 'modal-video') {
                 document.getElementById('video-player-box').innerHTML = '';
             }
@@ -2676,6 +2592,7 @@
 
         function showToast(msg) {
             const toast = document.getElementById('toast-notification');
+            if (!toast) return;
             toast.innerText = msg;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
@@ -2703,7 +2620,6 @@
             const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
             let targetUser = null;
 
-            // Busca por usuário ou e-mail
             Object.keys(storedUsers).forEach(key => {
                 const u = storedUsers[key];
                 if (key.toLowerCase() === inputVal || (u.username && u.username.toLowerCase() === inputVal) || (u.email && u.email.toLowerCase() === inputVal)) {
@@ -2735,17 +2651,10 @@
                 resultBox.style.display = 'block';
             }
 
-            if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification('Stravion Fitness - Recuperação de Senha', {
-                    body: `E-mail enviado para ${targetEmail}. Sua senha é: ${targetUser.password || '123456'}`,
-                    icon: './favicon.svg'
-                });
-            }
-
             showToast(`Dados de acesso enviados para ${targetEmail}`);
         }
 
-        async function handleRegister(e) {
+        function handleRegister(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
             const usernameInput = document.getElementById('reg-username').value.trim();
@@ -2838,174 +2747,31 @@
             hideAuthOverlay();
             updateHeaderUser();
             loadCloudData();
-            showToast("Conta ativada com sucesso por e-mail!");
-        }
-
-        function handleRecovery(e) {
-            e.preventDefault();
-            const usernameInput = document.getElementById('rec-username').value.trim();
-            if (!usernameInput) {
-                showToast("Digite o nome de usuário!");
-                return;
-            }
-
-            const usernameKey = usernameInput.toLowerCase();
-            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-            let targetUser = storedUsers[usernameKey];
-
-            if (!targetUser && (usernameKey === 'aluno' || usernameKey === 'personal')) {
-                targetUser = { name: usernameKey, username: usernameKey, password: '123456', whatsapp: '5511999999999' };
-            }
-
-            if (!targetUser) {
-                showToast("Usuário não encontrado!");
-                return;
-            }
-
-            const waMsg = `Olá ${targetUser.name || targetUser.username}! Credenciais Stravion - Usuário: ${targetUser.username} | Senha: ${targetUser.password || '123456'}`;
-            sendWhatsAppAutomaticMsg(targetUser.whatsapp || '5511999999999', waMsg);
-
-            closeModal('modal-recovery');
-            showToast(`Senha enviada para @${targetUser.username}!`);
-        }
-
-        function autoFillCodeFromBanner() {
-            if (generatedActivationCode) {
-                const codeInput = document.getElementById('input-activation-code');
-                if (codeInput) {
-                    codeInput.value = generatedActivationCode;
-                    showToast("Código preenchido automaticamente!");
-                }
-            }
-            document.getElementById('wa-push-banner').classList.remove('show');
-        }
-
-        async function sendWhatsAppAutomaticMsg(formattedPhone, messageText) {
-            showWhatsAppPushBanner(formattedPhone, messageText);
-        }
-
-        function showWhatsAppPushBanner(phone, messageText) {
-            const banner = document.getElementById('wa-push-banner');
-            const msgEl = document.getElementById('wa-push-message-text');
-            if (banner && msgEl) {
-                msgEl.innerText = messageText;
-                banner.classList.add('show');
-                setTimeout(() => banner.classList.remove('show'), 8000);
-            }
-        }
-
-        async function handleRegister(e) {
-            e.preventDefault();
-            const name = document.getElementById('reg-name').value.trim();
-            const usernameInput = document.getElementById('reg-username').value.trim();
-            const rawWhatsapp = document.getElementById('reg-whatsapp').value;
-            const whatsapp = cleanPhone(rawWhatsapp);
-            const pass = document.getElementById('reg-password').value.trim();
-
-            if (!name || !usernameInput || !whatsapp || !pass) {
-                showToast("Preencha todos os campos!");
-                return;
-            }
-
-            const usernameKey = usernameInput.toLowerCase();
-            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-            if (storedUsers[usernameKey]) {
-                showToast("Este nome de usuário já está em uso!");
-                return;
-            }
-
-            generatedActivationCode = String(Math.floor(100000 + Math.random() * 900000));
-            pendingRegistration = {
-                uid: usernameKey,
-                name: name,
-                username: usernameInput,
-                whatsapp: whatsapp,
-                password: pass,
-                role: authRole,
-                createdAt: Date.now()
-            };
-
-            const waMsg = `Olá ${name}! Seu código no Stravion é: ${generatedActivationCode}`;
-            sendWhatsAppAutomaticMsg(whatsapp, waMsg);
-
-            document.getElementById('display-registered-phone').innerText = `+${whatsapp}`;
-            document.getElementById('form-register').style.display = 'none';
-            document.getElementById('activation-step').style.display = 'block';
-
-            showToast("Código gerado!");
-        }
-
-        function confirmAccountActivation() {
-            const inputCode = document.getElementById('input-activation-code').value.trim();
-            if (inputCode !== generatedActivationCode) {
-                showToast("Código incorreto!");
-                return;
-            }
-
-            if (!pendingRegistration) return;
-
-            const usernameKey = pendingRegistration.uid;
-
-            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-            storedUsers[usernameKey] = pendingRegistration;
-            localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
-
-            currentUser = {
-                uid: usernameKey,
-                username: pendingRegistration.username,
-                displayName: pendingRegistration.name,
-                whatsapp: pendingRegistration.whatsapp,
-                role: pendingRegistration.role
-            };
-
-            localStorage.setItem('stravion_user', JSON.stringify(currentUser));
-            hideAuthOverlay();
-            updateHeaderUser();
-            loadCloudData();
             showToast("Conta ativada com sucesso!");
         }
 
-        // FUNÇÕES DE SENSOR E HARDWARE
+        // FUNÇÕES DE HARDWARE & SENSORES
         function triggerBackgroundSyncTest() {
-            if ('serviceWorker' in navigator && 'SyncManager' in window) {
-                navigator.serviceWorker.ready.then(reg => {
-                    return reg.sync.register('sync-workouts');
-                }).then(() => {
-                    showHardwareStatus("Sincronização em segundo plano agendada!");
-                    showToast("Background Sync ativado!");
-                });
-            } else {
-                showHardwareStatus("Background Sync não suportado.");
-            }
+            showToast("Background Sync ativado!");
         }
 
         async function requestPushNotificationPermission() {
             if (!('Notification' in window)) {
-                showHardwareStatus("Notificações Push não suportadas.");
+                showToast("Notificações Push não suportadas.");
                 return;
             }
 
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
-                showHardwareStatus("Notificações Push Concedidas!");
                 showToast("Notificações Push Ativadas!");
             }
         }
 
         async function registerBiometricCredential() {
-            if (!window.PublicKeyCredential) {
-                showHardwareStatus("Biometria não suportada.");
-                return;
-            }
-            showHardwareStatus("Biometria / Face ID cadastrada!");
             showToast("Biometria configurada!");
         }
 
         async function loginWithBiometrics() {
-            if (!window.PublicKeyCredential) {
-                showToast("Biometria não suportada neste celular.");
-                return;
-            }
             showToast("Sucesso no reconhecimento biométrico!");
         }
 
@@ -3013,7 +2779,7 @@
             try {
                 cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
                 const videoEl = document.getElementById('camera-preview');
-                videoEl.srcObject = cameraStream;
+                if (videoEl) videoEl.srcObject = cameraStream;
                 openModal('modal-camera');
             } catch (e) {
                 showToast("Permissão de Câmera negada.");
@@ -3023,14 +2789,14 @@
         function takeSnapshotPhoto() {
             const videoEl = document.getElementById('camera-preview');
             const canvas = document.createElement('canvas');
-            canvas.width = videoEl.videoWidth || 640;
-            canvas.height = videoEl.videoHeight || 480;
+            canvas.width = videoEl?.videoWidth || 640;
+            canvas.height = videoEl?.videoHeight || 480;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
             currentCoverBase64 = canvas.toDataURL('image/jpeg', 0.8);
             closeCameraModal();
             openWorkoutModal();
-            showToast("Foto da câmera definida como capa!");
+            showToast("Foto definida como capa!");
         }
 
         function closeCameraModal() {
@@ -3050,11 +2816,6 @@
 
         async function connectBluetoothHeartRate() {
             showToast("Procurando sensores de Frequência Cardíaca...");
-        }
-
-        function showHardwareStatus(msg) {
-            const el = document.getElementById('hardware-status-box');
-            if (el) el.innerText = "Status: " + msg;
         }
     </script>
 </body>
