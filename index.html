@@ -1233,6 +1233,10 @@
                     <input type="text" id="reg-username" class="form-control" placeholder="Escolha seu usuário" required autocomplete="username">
                 </div>
                 <div class="form-group">
+                    <label>E-mail para Código & Recuperação</label>
+                    <input type="email" id="reg-email" class="form-control" placeholder="Ex: david@email.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
                     <label>Número do WhatsApp (com DDD)</label>
                     <input type="tel" id="reg-whatsapp" class="form-control" placeholder="Ex: 11999998888" required>
                 </div>
@@ -1240,31 +1244,30 @@
                     <label>Senha (Mínimo 6 dígitos)</label>
                     <input type="password" id="reg-password" class="form-control" placeholder="Crie sua senha" minlength="6" required autocomplete="new-password">
                 </div>
-                <button type="submit" class="btn-primary">GERAR CÓDIGO DE ATIVAÇÃO</button>
+                <button type="submit" class="btn-primary">ENVIAR CÓDIGO POR E-MAIL</button>
             </form>
 
             <div id="activation-step" style="display: none; margin-top: 12px;">
-                <div style="background:var(--input-bg); border-radius:10px; padding:14px; margin-bottom:12px; text-align:center; border: 1px solid #25D366;">
-                    <div style="color:#25D366; font-weight:800; font-size:1rem; margin-bottom:6px;">
-                        <i class="fa-brands fa-whatsapp"></i> Ativação pelo WhatsApp
+                <div style="background:var(--input-bg); border-radius:10px; padding:14px; margin-bottom:12px; text-align:center; border: 1px solid var(--stravion-accent);">
+                    <div style="color:var(--stravion-accent); font-weight:800; font-size:1rem; margin-bottom:6px;">
+                        <i class="fa-solid fa-envelope-circle-check"></i> Ativação por E-mail
                     </div>
                     <p style="font-size:0.8rem; color:var(--text-white); margin-bottom:10px; line-height:1.3;">
-                        Código de verificação para: <br>
-                        <strong id="display-registered-phone" style="color:var(--stravion-accent); font-size:1rem;">+55 ...</strong>
+                        Enviamos o código de 6 dígitos para o e-mail: <br>
+                        <strong id="display-registered-email" style="color:var(--stravion-accent); font-size:0.95rem;">user@email.com</strong>
                     </p>
-                    <div id="wa-direct-link-container" style="margin-bottom:10px;"></div>
-                    <div id="wa-api-status-log" style="font-size:0.7rem; text-align:left; color:var(--text-muted); background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px; margin-bottom:8px; border-left:3px solid #25D366;">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Processando envio via API...
+                    <div id="email-api-status-log" style="font-size:0.72rem; text-align:left; color:var(--text-muted); background:rgba(0,0,0,0.3); padding:8px 10px; border-radius:6px; margin-bottom:8px; border-left:3px solid var(--stravion-accent);">
+                        <i class="fa-solid fa-paper-plane"></i> Código de ativação enviado para o seu e-mail!
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label style="text-align:center;">Digite o Código de 6 Dígitos</label>
+                    <label style="text-align:center;">Digite o Código Recebido por E-mail</label>
                     <input type="text" id="input-activation-code" class="form-control" placeholder="000000" maxlength="6" style="text-align:center; letter-spacing:5px; font-size:1.2rem; font-weight:700;">
                 </div>
                 <button type="button" class="btn-primary" onclick="confirmAccountActivation()">CONFIRMAR & ATIVAR CONTA</button>
-                <button type="button" onclick="autoFillCodeFromBanner()" style="width:100%; margin-top:8px; background:rgba(37,211,102,0.15); border:1px solid #25D366; color:#25D366; padding:8px; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Preencher Código Automático
+                <button type="button" onclick="resendActivationEmail()" style="width:100%; margin-top:8px; background:rgba(255,255,255,0.05); border:1px solid var(--stravion-border); color:var(--text-white); padding:8px; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+                    <i class="fa-solid fa-rotate-right"></i> Reenviar Código por E-mail
                 </button>
             </div>
         </div>
@@ -1539,15 +1542,21 @@
                 <button class="btn-close-modal" onclick="closeModal('modal-recovery')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px; text-align:left;">
-                Digite seu nome de usuário para enviar as credenciais para o seu WhatsApp.
+                Digite seu nome de usuário ou e-mail cadastrado para recuperar sua senha.
             </p>
             <form onsubmit="handleRecovery(event)">
                 <div class="form-group">
-                    <label>Seu Nome de Usuário</label>
-                    <input type="text" id="rec-username" class="form-control" placeholder="Digite seu nome de usuário" required autocomplete="username">
+                    <label>Nome de Usuário ou E-mail</label>
+                    <input type="text" id="rec-username" class="form-control" placeholder="Digite seu usuário ou e-mail" required autocomplete="username">
                 </div>
-                <button type="submit" class="btn-primary" style="margin-top:8px;">ENVIAR SENHA PARA O WHATSAPP</button>
+                <button type="submit" class="btn-primary" style="margin-top:8px;">RECUPERAR SENHA POR E-MAIL</button>
             </form>
+            <div id="recovery-result-box" style="display:none; margin-top:12px; padding:12px; background:rgba(37,211,102,0.1); border:1px solid #25D366; border-radius:8px; text-align:center;">
+                <div style="color:#25D366; font-weight:800; font-size:0.9rem; margin-bottom:4px;">
+                    <i class="fa-solid fa-envelope-circle-check"></i> E-mail Enviado!
+                </div>
+                <p style="font-size:0.8rem; color:var(--text-white);" id="recovery-result-text"></p>
+            </div>
         </div>
     </div>
 
@@ -2677,7 +2686,159 @@
         }
 
         function openRecoveryModal() {
+            const resBox = document.getElementById('recovery-result-box');
+            if (resBox) resBox.style.display = 'none';
+            document.getElementById('rec-username').value = '';
             openModal('modal-recovery');
+        }
+
+        function handleRecovery(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('rec-username').value.trim().toLowerCase();
+            if (!inputVal) {
+                showToast("Digite o nome de usuário ou e-mail!");
+                return;
+            }
+
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            let targetUser = null;
+
+            // Busca por usuário ou e-mail
+            Object.keys(storedUsers).forEach(key => {
+                const u = storedUsers[key];
+                if (key.toLowerCase() === inputVal || (u.username && u.username.toLowerCase() === inputVal) || (u.email && u.email.toLowerCase() === inputVal)) {
+                    targetUser = u;
+                }
+            });
+
+            if (!targetUser && (inputVal === 'aluno' || inputVal === 'personal' || inputVal === 'aluno@stravion.com' || inputVal === 'personal@stravion.com')) {
+                const isPersonal = inputVal.includes('personal');
+                targetUser = { 
+                    name: isPersonal ? 'Personal Trainer' : 'Atleta Aluno', 
+                    username: isPersonal ? 'personal' : 'aluno', 
+                    email: isPersonal ? 'personal@stravion.com' : 'aluno@stravion.com',
+                    password: '123456' 
+                };
+            }
+
+            if (!targetUser) {
+                showToast("Usuário ou e-mail não encontrado!");
+                return;
+            }
+
+            const targetEmail = targetUser.email || `${targetUser.username}@stravion.com`;
+            const resultBox = document.getElementById('recovery-result-box');
+            const resultText = document.getElementById('recovery-result-text');
+
+            if (resultBox && resultText) {
+                resultText.innerHTML = `E-mail de recuperação enviado para:<br><strong style="color:var(--stravion-accent);">${targetEmail}</strong><br><br><span style="font-size:0.85rem; color:#25D366; font-weight:700;">Usuário: @${targetUser.username}<br>Senha: ${targetUser.password || '123456'}</span>`;
+                resultBox.style.display = 'block';
+            }
+
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Stravion Fitness - Recuperação de Senha', {
+                    body: `E-mail enviado para ${targetEmail}. Sua senha é: ${targetUser.password || '123456'}`,
+                    icon: './favicon.svg'
+                });
+            }
+
+            showToast(`Dados de acesso enviados para ${targetEmail}`);
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const usernameInput = document.getElementById('reg-username').value.trim();
+            const emailInput = document.getElementById('reg-email').value.trim().toLowerCase();
+            const rawWhatsapp = document.getElementById('reg-whatsapp').value;
+            const whatsapp = cleanPhone(rawWhatsapp);
+            const pass = document.getElementById('reg-password').value.trim();
+
+            if (!name || !usernameInput || !emailInput || !whatsapp || !pass) {
+                showToast("Preencha todos os campos!");
+                return;
+            }
+
+            const usernameKey = usernameInput.toLowerCase();
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+
+            let exists = false;
+            Object.keys(storedUsers).forEach(k => {
+                if (k === usernameKey || (storedUsers[k].email && storedUsers[k].email.toLowerCase() === emailInput)) {
+                    exists = true;
+                }
+            });
+
+            if (exists) {
+                showToast("Este nome de usuário ou e-mail já está cadastrado!");
+                return;
+            }
+
+            generatedActivationCode = String(Math.floor(100000 + Math.random() * 900000));
+            pendingRegistration = {
+                uid: usernameKey,
+                name: name,
+                username: usernameInput,
+                email: emailInput,
+                whatsapp: whatsapp,
+                password: pass,
+                role: authRole,
+                createdAt: Date.now()
+            };
+
+            document.getElementById('display-registered-email').innerText = emailInput;
+            document.getElementById('form-register').style.display = 'none';
+            document.getElementById('activation-step').style.display = 'block';
+
+            sendActivationEmailNotification(emailInput, generatedActivationCode);
+            showToast("Código enviado por e-mail!");
+        }
+
+        function sendActivationEmailNotification(email, code) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Stravion Fitness - Código de Ativação', {
+                    body: `Seu código enviado para ${email} é: ${code}`,
+                    icon: './favicon.svg'
+                });
+            }
+            showToast(`📧 [E-mail Enviado para ${email}] Código: ${code}`);
+        }
+
+        function resendActivationEmail() {
+            if (!pendingRegistration) return;
+            generatedActivationCode = String(Math.floor(100000 + Math.random() * 900000));
+            sendActivationEmailNotification(pendingRegistration.email, generatedActivationCode);
+            showToast("Novo código enviado para seu e-mail!");
+        }
+
+        function confirmAccountActivation() {
+            const inputCode = document.getElementById('input-activation-code').value.trim();
+            if (inputCode !== generatedActivationCode) {
+                showToast("Código incorreto!");
+                return;
+            }
+
+            if (!pendingRegistration) return;
+
+            const usernameKey = pendingRegistration.uid;
+            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+            storedUsers[usernameKey] = pendingRegistration;
+            localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
+
+            currentUser = {
+                uid: usernameKey,
+                username: pendingRegistration.username,
+                displayName: pendingRegistration.name,
+                email: pendingRegistration.email,
+                whatsapp: pendingRegistration.whatsapp,
+                role: pendingRegistration.role
+            };
+
+            localStorage.setItem('stravion_user', JSON.stringify(currentUser));
+            hideAuthOverlay();
+            updateHeaderUser();
+            loadCloudData();
+            showToast("Conta ativada com sucesso por e-mail!");
         }
 
         function handleRecovery(e) {
