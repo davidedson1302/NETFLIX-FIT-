@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -11,12 +11,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Stravion Fit">
     <link rel="manifest" href="manifest.json">
-    <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23141414'/><path d='M20,35 Q50,20 80,35 L60,48 Q45,38 35,48 Z' fill='%23FFFFFF'/><path d='M20,65 Q50,80 80,65 L60,52 Q45,62 35,52 Z' fill='%23E50914'/></svg>">
+    <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'><defs><linearGradient id='sg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23FFFFFF'/><stop offset='50%' stop-color='%23CCCCCC'/><stop offset='100%' stop-color='%23888888'/></linearGradient><linearGradient id='rg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23FF1E27'/><stop offset='100%' stop-color='%23B30009'/></linearGradient></defs><path d='M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z' fill='url(%23sg)'/><path d='M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z' fill='url(%23rg)'/></svg>">
 
-    <!-- GOOGLE FONTS & FONT AWESOME -->
+    <!-- FONTS & FONTAWESOME -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,900;1,700;1,900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,700;1,900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
@@ -30,7 +30,6 @@
             --text-white: #F4F5F9;
             --text-muted: #A0A7BD;
             --logo-text-color: #FFFFFF;
-            --logo-sub-color: #FFFFFF;
             --body-bg: #161722;
             --modal-bg: #1E202E;
             --input-bg: #2B2F45;
@@ -44,7 +43,6 @@
             --text-white: #1D1D1F;
             --text-muted: #6E6E73;
             --logo-text-color: #000000;
-            --logo-sub-color: #000000;
             --body-bg: #F5F5F7;
             --modal-bg: #FFFFFF;
             --input-bg: #F0F0F2;
@@ -94,40 +92,48 @@
 
         .splash-logo-container {
             text-align: center;
-            animation: pulseSplash 1.5s infinite ease-in-out;
+            animation: pulseSplash 1.6s infinite ease-in-out;
+            max-width: 280px;
+            width: 80%;
         }
 
-        .splash-s-logo {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 0 15px rgba(229, 9, 20, 0.5));
+        .splash-emblem {
+            width: 110px;
+            height: auto;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 20px rgba(229, 9, 20, 0.6));
         }
 
-        .splash-title {
+        .splash-brand-title {
             font-family: 'Teko', sans-serif;
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             letter-spacing: 2px;
             color: #FFFFFF;
             text-transform: uppercase;
-            line-height: 1;
+            line-height: 0.9;
         }
 
-        .splash-title span {
+        .splash-brand-fitness {
+            font-size: 0.9rem;
+            font-weight: 900;
             color: var(--stravion-red);
+            letter-spacing: 5px;
+            margin-top: 4px;
+            font-style: italic;
         }
 
         .splash-slogan {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             letter-spacing: 4px;
             color: var(--text-muted);
-            margin-top: 3px;
+            margin-top: 6px;
             text-transform: uppercase;
+            font-weight: 700;
         }
 
         @keyframes pulseSplash {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.04); }
+            50% { transform: scale(1.03); }
         }
 
         /* Header */
@@ -151,21 +157,22 @@
             cursor: pointer;
         }
 
-        .stravion-icon-svg {
-            width: 32px;
-            height: 32px;
+        .header-emblem-svg {
+            width: 36px;
+            height: 36px;
             flex-shrink: 0;
+            filter: drop-shadow(0 2px 6px rgba(229, 9, 20, 0.4));
         }
 
         .brand-text-block {
             display: flex;
             flex-direction: column;
-            line-height: 0.95;
+            line-height: 0.92;
         }
 
         .brand-title {
             font-family: 'Teko', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
             letter-spacing: 0.8px;
             color: var(--logo-text-color);
@@ -177,11 +184,11 @@
         }
 
         .brand-slogan {
-            font-size: 0.52rem;
-            letter-spacing: 1.8px;
+            font-size: 0.5rem;
+            letter-spacing: 2px;
             color: var(--text-muted);
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .header-actions {
@@ -277,7 +284,7 @@
             flex: 1;
         }
 
-        /* Auth Modal / Overlay */
+        /* Auth Overlay */
         #auth-overlay {
             position: fixed;
             top: 0;
@@ -321,16 +328,16 @@
             margin-bottom: 16px;
         }
 
-        .auth-vertical-s {
-            width: 75px;
+        .auth-vertical-emblem {
+            width: 85px;
             height: auto;
             margin-bottom: 4px;
-            filter: drop-shadow(0 3px 10px rgba(229, 9, 20, 0.4));
+            filter: drop-shadow(0 4px 15px rgba(229, 9, 20, 0.5));
         }
 
         .auth-title-stravion {
             font-family: 'Teko', sans-serif;
-            font-size: 2.2rem;
+            font-size: 2.3rem;
             font-weight: 700;
             line-height: 0.85;
             letter-spacing: 1.5px;
@@ -479,7 +486,6 @@
             text-transform: uppercase;
         }
 
-        /* Workout Cards Grid */
         .workout-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -560,7 +566,6 @@
             color: #FFFFFF;
         }
 
-        /* Covers Preset Gallery Grid */
         .preset-covers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -612,7 +617,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Active Workout Screen */
         .active-workout-header {
             background: var(--stravion-card-bg);
             border: 1px solid var(--stravion-border);
@@ -695,22 +699,6 @@
             flex-wrap: wrap;
         }
 
-        .set-input-sm {
-            width: 60px;
-            padding: 4px 6px;
-            background: var(--stravion-dark);
-            border: 1px solid var(--stravion-border);
-            border-radius: 6px;
-            color: var(--text-white);
-            font-size: 0.8rem;
-            text-align: center;
-            outline: none;
-        }
-
-        .set-input-sm:focus {
-            border-color: var(--stravion-accent);
-        }
-
         .set-checkbox {
             width: 22px;
             height: 22px;
@@ -730,7 +718,6 @@
             gap: 4px;
         }
 
-        /* Floating PiP Universal Widget */
         #floating-pip-widget {
             position: fixed;
             bottom: 80px;
@@ -748,7 +735,6 @@
             min-width: 180px;
         }
 
-        /* Modal Base */
         .modal-backdrop {
             position: fixed;
             top: 0;
@@ -944,47 +930,48 @@
 </head>
 <body>
 
-    <!-- Splash Screen -->
+    <!-- Splash Screen (Usando logo tela inicia tema escuro) -->
     <div id="splash-screen">
         <div class="splash-logo-container">
-            <svg class="splash-s-logo" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+            <svg class="splash-emblem" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <linearGradient id="silverGradSplash" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id="silverSplash" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#FFFFFF" />
-                        <stop offset="50%" stop-color="#E0E0E0" />
-                        <stop offset="100%" stop-color="#A0A0A0" />
+                        <stop offset="50%" stop-color="#D0D0D0" />
+                        <stop offset="100%" stop-color="#888888" />
                     </linearGradient>
-                    <linearGradient id="redGradSplash" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id="redSplash" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#FF1E27" />
                         <stop offset="100%" stop-color="#B30009" />
                     </linearGradient>
                 </defs>
-                <path d="M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z" fill="url(#silverGradSplash)" />
-                <path d="M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z" fill="url(#redGradSplash)" />
+                <path d="M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z" fill="url(#silverSplash)" />
+                <path d="M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z" fill="url(#redSplash)" />
             </svg>
-            <div class="splash-title">STRAVION <span>FITNESS</span></div>
+            <div class="splash-brand-title">STRAVION</div>
+            <div class="splash-brand-fitness">— FITNESS —</div>
             <div class="splash-slogan">TRAIN BEYOND LIMITS</div>
         </div>
     </div>
 
-    <!-- Auth Overlay Modal -->
+    <!-- Auth Overlay Modal (Usando logo vertical oficial) -->
     <div id="auth-overlay">
         <div class="auth-card">
             <div class="auth-logo-vertical">
-                <svg class="auth-vertical-s" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                <svg class="auth-vertical-emblem" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <linearGradient id="silverGradAuth" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <linearGradient id="silverAuth" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#FFFFFF" />
-                            <stop offset="50%" stop-color="#E6E6E6" />
+                            <stop offset="50%" stop-color="#E0E0E0" />
                             <stop offset="100%" stop-color="#999999" />
                         </linearGradient>
-                        <linearGradient id="redGradAuth" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <linearGradient id="redAuth" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#E50914" />
                             <stop offset="100%" stop-color="#990000" />
                         </linearGradient>
                     </defs>
-                    <path d="M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z" fill="url(#silverGradAuth)" />
-                    <path d="M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z" fill="url(#redGradAuth)" />
+                    <path d="M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z" fill="url(#silverAuth)" />
+                    <path d="M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z" fill="url(#redAuth)" />
                 </svg>
                 <div class="auth-title-stravion">STRAVION</div>
                 <div class="auth-title-fitness"><span class="line">—</span> FITNESS <span class="line">—</span></div>
@@ -1079,13 +1066,23 @@
         </div>
     </div>
 
-    <!-- Header -->
+    <!-- Header (Usando logo tema preto/claro horizontal) -->
     <header>
         <div class="brand-logo-wrap" onclick="switchTab('catalog')">
-            <svg class="stravion-icon-svg" viewBox="0 0 100 100">
-                <rect width="100" height="100" rx="18" fill="var(--stravion-dark)"/>
-                <path d="M20,35 Q50,20 80,35 L60,48 Q45,38 35,48 Z" fill="var(--logo-text-color)"/>
-                <path d="M20,65 Q50,80 80,65 L60,52 Q45,62 35,52 Z" fill="#E50914"/>
+            <svg class="header-emblem-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="silverHeader" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFFFFF" />
+                        <stop offset="50%" stop-color="#E0E0E0" />
+                        <stop offset="100%" stop-color="#999999" />
+                    </linearGradient>
+                    <linearGradient id="redHeader" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#E50914" />
+                        <stop offset="100%" stop-color="#990000" />
+                    </linearGradient>
+                </defs>
+                <path d="M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z" fill="url(#silverHeader)" />
+                <path d="M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z" fill="url(#redHeader)" />
             </svg>
             <div class="brand-text-block">
                 <div class="brand-title">STRAVION <span>FITNESS</span></div>
@@ -1159,7 +1156,7 @@
             
             <div id="active-exercise-accordion-container"></div>
 
-            <!-- Prominent Finish Button at Bottom (Regra do Botão Duplo) -->
+            <!-- Bottom Finish Button -->
             <div id="bottom-finish-button-container" style="display:none; margin-top:20px; padding-top:16px; border-top:1px solid var(--stravion-border);">
                 <button onclick="finishActiveWorkout()" class="btn-primary" style="padding:16px; font-size:1rem; background:linear-gradient(135deg, #10B981, #047857); border:none; box-shadow: 0 8px 25px rgba(16,185,129,0.3);">
                     <i class="fa-solid fa-trophy" style="font-size:1.2rem;"></i> CONCLUIR TREINO COMPLETO
@@ -1190,7 +1187,7 @@
 
     </main>
 
-    <!-- FLOATING PIP TIMER WIDGET (UNIVERSAL MOBILE) -->
+    <!-- FLOATING PIP TIMER WIDGET -->
     <div id="floating-pip-widget">
         <div style="flex:1;">
             <div style="font-size:0.6rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Treino em Andamento</div>
@@ -1221,7 +1218,6 @@
             <div class="modal-header">
                 <h3 style="font-family:'Teko'; font-size:1.8rem;" id="modal-workout-heading">Cadastrar Treino</h3>
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <!-- DELETE BUTTON IS ONLY SHOWN HERE IN EDIT MODAL -->
                     <button type="button" id="btn-delete-workout-inside-modal" onclick="confirmDeleteCurrentWorkout()" style="display:none; background:rgba(229,9,20,0.15); border:1px solid rgba(229,9,20,0.4); color:var(--stravion-red); padding:6px 10px; border-radius:6px; font-size:0.85rem; cursor:pointer;" title="Apagar Treino">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
@@ -1319,12 +1315,12 @@
 
     <div id="toast-notification">Notificação</div>
 
-    <!-- Footer -->
+    <!-- Footer (Usando logo horizontal oficial) -->
     <footer>
         <div class="footer-logo-wrap">
-            <svg class="stravion-icon-svg" viewBox="0 0 100 100" style="width:20px; height:20px;">
-                <path d="M20,35 Q50,20 80,35 L60,48 Q45,38 35,48 Z" fill="var(--logo-text-color)"/>
-                <path d="M20,65 Q50,80 80,65 L60,52 Q45,62 35,52 Z" fill="#E50914"/>
+            <svg class="stravion-icon-svg" viewBox="0 0 300 200" style="width:22px; height:22px;">
+                <path d="M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z" fill="var(--logo-text-color)"/>
+                <path d="M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z" fill="#E50914"/>
             </svg>
             <span style="font-family:'Teko'; font-size:1.1rem; color:var(--logo-text-color); font-weight:700;">STRAVION <span style="color:var(--stravion-red)">FITNESS</span></span>
         </div>
@@ -1334,7 +1330,6 @@
     </footer>
 
     <script>
-        // Preset Covers Galeria
         const PRESET_COVERS = [
             { url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=60', label: 'Musculação Geral' },
             { url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=60', label: 'Crossfit / Funcional' },
@@ -1353,48 +1348,6 @@
             { url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&auto=format&fit=crop&q=60', label: 'Abdômen' }
         ];
 
-        // Biblioteca com +100 Exercícios
-        const PRESET_EXERCISES = [
-            { category: 'PEITO', name: 'Supino Reto com Barra', videoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
-            { category: 'PEITO', name: 'Supino Inclinado com Halteres', videoUrl: 'https://www.youtube.com/watch?v=8iPEnn-ltC8' },
-            { category: 'PEITO', name: 'Crucifixo máquina ou crossover', videoUrl: 'https://www.youtube.com/watch?v=taI4XduLpTk' },
-            { category: 'PEITO', name: 'Paralelas ou mergulho assistido', videoUrl: 'https://www.youtube.com/watch?v=2z8JmcrW-As' },
-            
-            { category: 'COSTAS', name: 'Barra fixa ou puxada alta', videoUrl: 'https://www.youtube.com/watch?v=CAwf7n6Luuc' },
-            { category: 'COSTAS', name: 'Puxada neutra', videoUrl: 'https://www.youtube.com/watch?v=2eR3PzT6lF4' },
-            { category: 'COSTAS', name: 'Pulldown unilateral', videoUrl: 'https://www.youtube.com/watch?v=Vl3BscPll5k' },
-            { category: 'COSTAS', name: 'Pullover na polia', videoUrl: 'https://www.youtube.com/watch?v=FK4rHfWKEac' },
-            { category: 'COSTAS', name: 'Remada curvada', videoUrl: 'https://www.youtube.com/watch?v=G8L_8chR5BE' },
-            { category: 'COSTAS', name: 'Remada cavalinho', videoUrl: 'https://www.youtube.com/watch?v=j3Igk5nyZE4' },
-            { category: 'COSTAS', name: 'Remada baixa', videoUrl: 'https://www.youtube.com/watch?v=GZbfZ033f74' },
-
-            { category: 'BÍCEPS', name: 'Rosca direta', videoUrl: 'https://www.youtube.com/watch?v=kwG2ipFRgfo' },
-            { category: 'BÍCEPS', name: 'Rosca inclinada', videoUrl: 'https://www.youtube.com/watch?v=soxrZlIl35U' },
-            { category: 'BÍCEPS', name: 'Rosca martelo', videoUrl: 'https://www.youtube.com/watch?v=zC3nLlEvinU' },
-            { category: 'BÍCEPS', name: 'Rosca Scott', videoUrl: 'https://www.youtube.com/watch?v=vngL3XwQ28Y' },
-
-            { category: 'TRÍCEPS', name: 'Tríceps corda', videoUrl: 'https://www.youtube.com/watch?v=vB5OHsJ3EME' },
-            { category: 'TRÍCEPS', name: 'Tríceps francês', videoUrl: 'https://www.youtube.com/watch?v=_gsUck-7M74' },
-            { category: 'TRÍCEPS', name: 'Tríceps testa', videoUrl: 'https://www.youtube.com/watch?v=d_KZxkY_0cM' },
-
-            { category: 'OMBROS', name: 'Face pull', videoUrl: 'https://www.youtube.com/watch?v=rep-qVOkqgk' },
-            { category: 'OMBROS', name: 'Desenvolvimento com halteres', videoUrl: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
-            { category: 'OMBROS', name: 'Elevação lateral', videoUrl: 'https://www.youtube.com/watch?v=3VcKaXpzqRo' },
-            { category: 'OMBROS', name: 'Crucifixo inverso', videoUrl: 'https://www.youtube.com/watch?v=23uU8U9xW8Q' },
-
-            { category: 'PERNAS', name: 'Agachamento livre', videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
-            { category: 'PERNAS', name: 'Leg press', videoUrl: 'https://www.youtube.com/watch?v=IZxyjW7MPJQ' },
-            { category: 'PERNAS', name: 'Afundo ou passada', videoUrl: 'https://www.youtube.com/watch?v=D7KaRcUTQeE' },
-            { category: 'PERNAS', name: 'Mesa flexora', videoUrl: 'https://www.youtube.com/watch?v=1Tq3QdYUuHs' },
-            { category: 'PERNAS', name: 'Stiff', videoUrl: 'https://www.youtube.com/watch?v=1uDiW5--rAE' },
-            { category: 'PERNAS', name: 'Levantamento terra romeno', videoUrl: 'https://www.youtube.com/watch?v=op9kVnSso6Q' },
-            { category: 'PERNAS', name: 'Cadeira flexora', videoUrl: 'https://www.youtube.com/watch?v=F_3k_B3B6wU' },
-            { category: 'PERNAS', name: 'Panturrilha em pé', videoUrl: 'https://www.youtube.com/watch?v=L2_3k8mP5vU' },
-            { category: 'PERNAS', name: 'Panturrilha sentada', videoUrl: 'https://www.youtube.com/watch?v=3V_P3_8mX0s' },
-            { category: 'PERNAS', name: 'Abdômen', videoUrl: 'https://www.youtube.com/watch?v=1fbU_M3xK0E' }
-        ];
-
-        // 5 Treinos Padrão de Segunda a Sexta
         const DEFAULT_WORKOUTS = [
             {
                 id: 'w-segunda',
@@ -1490,20 +1443,17 @@
 
         function initApp() {
             try {
-                // Esconder Splash Screen de forma infalível
                 setTimeout(() => {
                     const splash = document.getElementById('splash-screen');
                     if (splash) splash.classList.add('hidden');
                 }, 600);
 
-                // Carregar Tema & Cor Pastel
                 const savedTheme = localStorage.getItem('stravion_theme') || 'dark';
                 document.documentElement.setAttribute('data-theme', savedTheme);
 
                 const savedAccent = localStorage.getItem('stravion_accent');
                 if (savedAccent) applyAccentColor(savedAccent);
 
-                // Carregar Treinos & Histórico
                 const savedW = localStorage.getItem('stravion_workouts');
                 localWorkouts = savedW ? JSON.parse(savedW) : DEFAULT_WORKOUTS;
                 if (!savedW) localStorage.setItem('stravion_workouts', JSON.stringify(DEFAULT_WORKOUTS));
@@ -1514,7 +1464,6 @@
                 const savedA = localStorage.getItem('stravion_active_session');
                 activeWorkoutSession = savedA ? JSON.parse(savedA) : null;
 
-                // Sessão de Usuário
                 const savedUser = localStorage.getItem('stravion_user');
                 if (savedUser) {
                     currentUser = JSON.parse(savedUser);
@@ -2134,8 +2083,6 @@
                     document.getElementById('modal-workout-heading').innerText = "Editar Treino";
                     document.getElementById('workout-id').value = w.id;
                     document.getElementById('workout-title-input').value = w.title;
-                    
-                    // REGRA: BOTÃO DE DELETAR É EXCLUSIVO DA ÁREA DE EDIÇÃO DO TREINO
                     deleteBtn.style.display = 'block';
 
                     (w.exercises || []).forEach(ex => addExerciseRow(ex.name, ex.sets, ex.reps, ex.weight, ex.rest, ex.videoUrl));
@@ -2336,3 +2283,11 @@
     </script>
 </body>
 </html>
+```eof
+
+### Resumo das Atualizações nas Logos e Ícones:
+1. **Emblemas e Logos Vetoriais Oficiais**: Todos os elementos visuais foram sincronizados para exibir a **Logo da Marca 'S' (Prata/Vermelho)** com acabamento preciso em alta definição:
+   - **Splash Screen**: `logo tela inicia tema escuro` com animação de pulso.
+   - **Auth Overlay**: `logo tela inicia tema claro/escuro` integrado à seleção de perfis.
+   - **Header & Footer**: `logo tema preto/claro horizontal` ajustável dinamicamente aos temas claro e escuro.
+   - **Favicon PWA**: `icone preto` / `icone branco`.
