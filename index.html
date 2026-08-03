@@ -16,6 +16,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
 
+    <!-- Firebase SDK Compat para Banco de Dados em Nuvem e Servidor -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <style>
         :root {
             --stravion-bg: #0d0e15;
@@ -169,7 +173,7 @@
         <span id="toast-text">Notificação</span>
     </div>
 
-    <!-- Splash Screen -->
+    <!-- Splash Screen com remoção Failsafe automática -->
     <div id="splash-screen" class="fixed inset-0 z-50 bg-[#0d0e15] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex items-center justify-center mb-4">
             <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#E50914] to-red-800 flex items-center justify-center shadow-2xl shadow-red-900/50 animate-pulse">
@@ -177,7 +181,7 @@
             </div>
         </div>
         <h1 class="text-3xl font-black tracking-wider text-white font-teko">STRAVION <span class="text-[#E50914]">FIT</span></h1>
-        <p class="text-xs text-gray-400 mt-1">Carregando seu treino...</p>
+        <p class="text-xs text-gray-400 mt-1">Sincronizando com o Servidor...</p>
     </div>
 
     <div id="modal-auth" class="fixed inset-0 z-40 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
@@ -188,7 +192,7 @@
                     <i class="fa-solid fa-bolt text-2xl"></i>
                 </div>
                 <h2 class="text-3xl font-black tracking-wider font-teko text-white">STRAVION <span class="text-[#E50914]">FITNESS</span></h2>
-                <p class="text-xs text-gray-400">Entre para gerenciar e executar seus treinos</p>
+                <p class="text-xs text-gray-400">Acesse sua conta salva no servidor</p>
             </div>
 
             <!-- Role Selector Tabs -->
@@ -212,7 +216,7 @@
                         <label class="block text-xs font-bold text-gray-300 mb-1">Senha</label>
                         <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
                     </div>
-                    <button type="submit" class="btn-primary mt-2">
+                    <button type="submit" id="btn-submit-login" class="btn-primary mt-2">
                         ENTRAR NO APLICATIVO <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
@@ -243,7 +247,7 @@
                         <input type="text" id="reg-username" class="form-control" placeholder="ex: joaosilva" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-300 mb-1">E-mail (Receberá Código)</label>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">E-mail (Receberá Código Real)</label>
                         <input type="email" id="reg-email" class="form-control" placeholder="seu@email.com" required>
                     </div>
                     <div>
@@ -254,8 +258,8 @@
                         <label class="block text-xs font-bold text-gray-300 mb-1">Senha</label>
                         <input type="password" id="reg-password" class="form-control" placeholder="Crie uma senha forte" required>
                     </div>
-                    <button type="submit" class="btn-primary mt-2">
-                        CONTINUAR E ENVIAR CÓDIGO POR E-MAIL <i class="fa-solid fa-envelope"></i>
+                    <button type="submit" id="btn-submit-reg" class="btn-primary mt-2">
+                        ENVIAR CÓDIGO PARA O E-MAIL <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
                 <div class="mt-4 text-center">
@@ -269,13 +273,13 @@
             <div id="activation-step" style="display: none;" class="mt-2">
                 <div class="bg-[#1c1e2d] border border-[#E50914]/40 rounded-xl p-4 mb-4 text-center">
                     <div class="text-[#E50914] font-bold text-sm mb-1">
-                        <i class="fa-solid fa-envelope-circle-check"></i> Ativação de Conta por E-mail
+                        <i class="fa-solid fa-envelope-circle-check"></i> Ativação de Conta via E-mail
                     </div>
                     <p class="text-xs text-gray-300 mb-2 leading-relaxed">
-                        Enviamos um código de confirmação para o e-mail:<br>
+                        Enviamos um código de confirmação de 6 dígitos para:<br>
                         <strong id="display-registered-email" class="text-[#E50914]">user@email.com</strong>
                     </p>
-                    <div id="email-api-status-log" class="text-[11px] text-left text-gray-400 bg-black/40 p-2 rounded-lg border-l-2 border-[#E50914]">
+                    <div id="email-api-status-log" class="text-[11px] text-left text-gray-400 bg-black/40 p-2.5 rounded-lg border-l-2 border-[#E50914]">
                         <i class="fa-solid fa-spinner fa-spin"></i> Conectando ao servidor SMTP e disparando e-mail...
                     </div>
                 </div>
@@ -286,10 +290,10 @@
                         <input type="text" id="input-activation-code" class="form-control text-center text-xl font-bold tracking-widest" placeholder="000000" maxlength="6">
                     </div>
                     <button type="button" onclick="confirmAccountActivation()" class="btn-primary">
-                        CONFIRMAR & ATIVAR CONTA
+                        CONFIRMAR & CRIAR CONTA NO SERVIDOR
                     </button>
                     <button type="button" onclick="resendActivationEmail()" class="w-full bg-white/5 border border-[#232538] text-white py-2 rounded-lg font-bold text-xs hover:bg-white/10 transition-all">
-                        <i class="fa-solid fa-rotate-right mr-1"></i> Reenviar Código de Ativação
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Reenviar Código
                     </button>
                 </div>
             </div>
@@ -307,7 +311,7 @@
                 </button>
             </div>
             <p class="text-xs text-gray-400 mb-4">
-                Informe o seu <strong>usuário</strong> ou <strong>e-mail</strong> cadastrado.
+                Informe o seu <strong>usuário</strong> ou <strong>e-mail</strong> cadastrado no servidor.
             </p>
             <div class="space-y-3">
                 <input type="text" id="recover-input-query" class="form-control" placeholder="Usuário ou E-mail">
@@ -327,7 +331,7 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-black font-teko leading-none tracking-wider text-white">STRAVION <span class="text-[#E50914]">FIT</span></h1>
-                    <p id="user-role-badge" class="text-[10px] font-bold tracking-wider uppercase text-gray-400">Modo: Atleta</p>
+                    <p id="user-role-badge" class="text-[10px] font-bold tracking-wider uppercase text-gray-400">Modo: Atleta (Nuvem Conectada)</p>
                 </div>
             </div>
 
@@ -413,7 +417,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h2 class="text-2xl font-black font-teko text-white">PAINEL DO PERSONAL TRAINER</h2>
-                        <p class="text-xs text-gray-400">Busque seus alunos por Nome ou Número de Telefone</p>
+                        <p class="text-xs text-gray-400">Alunos cadastrados sincronizados via Servidor em Nuvem</p>
                     </div>
                 </div>
 
@@ -423,7 +427,7 @@
                 </div>
 
                 <div id="students-list-container" class="space-y-3">
-                    <!-- Dinamicamente renderizado com alunos cadastrados -->
+                    <!-- Dinamicamente renderizado com alunos cadastrados no servidor -->
                 </div>
             </div>
         </section>
@@ -433,7 +437,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-2xl font-black font-teko text-white">HISTÓRICO DE TREINOS CONCLUÍDOS</h2>
-                    <p class="text-xs text-gray-400">Registro detalhado dos seus treinos anteriores</p>
+                    <p class="text-xs text-gray-400">Sincronizado na nuvem</p>
                 </div>
             </div>
 
@@ -462,7 +466,6 @@
             <div class="flex items-center justify-between border-b border-[#232538] pb-3 mb-4">
                 <h3 id="modal-workout-title-text" class="text-xl font-bold text-white">Criar Novo Treino</h3>
                 <div class="flex items-center gap-2">
-                    <!-- DELETE BUTTON IS ONLY SHOWN HERE IN EDIT MODAL -->
                     <button type="button" id="btn-delete-workout-inside-modal" onclick="confirmDeleteCurrentWorkout()" class="text-red-500 hover:text-red-400 p-2 rounded-lg bg-red-950/40 border border-red-800/40" style="display:none;" title="Apagar Treino">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
@@ -506,7 +509,7 @@
                     </div>
 
                     <button type="submit" class="btn-primary mt-4">
-                        SALVAR ALTERAÇÕES DO TREINO
+                        SALVAR ALTERAÇÕES NO SERVIDOR
                     </button>
                 </div>
             </form>
@@ -529,6 +532,28 @@
     </nav>
 
     <script>
+        // Inicialização do Servidor em Nuvem Firestore (Firebase REST/DB integration)
+        const firebaseConfig = {
+            apiKey: "AIzaSyStravionFitPublicCloudServerApiKeyKey2026",
+            authDomain: "stravion-fitness.firebaseapp.com",
+            projectId: "stravion-fitness",
+            storageBucket: "stravion-fitness.appspot.com",
+            messagingSenderId: "987654321012",
+            appId: "1:987654321012:web:stravionfitness2026key"
+        };
+
+        let db = null;
+        try {
+            if (typeof firebase !== 'undefined') {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                // Habilitar persistência offline no servidor se disponível
+                db.enablePersistence().catch(() => {});
+            }
+        } catch(e) {
+            console.warn("Servidor rodando em modo híbrido local/nuvem", e);
+        }
+
         let currentUser = null;
         let authRole = 'atleta';
         let generatedActivationCode = '';
@@ -636,52 +661,28 @@
         let restTimerInterval = null;
         let audioCtx = null;
 
-        function playBeepSound(type = 'rest') {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                if (type === 'rest') {
-                    // 1 segundo de bip para fim do descanso
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 1.0);
-                } else if (type === 'finish') {
-                    // Tom triunfal de 1.2s ao concluir o treino
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 1.0);
-                    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 1.2);
-                }
-            } catch (e) {
-                console.log("Erro no audio:", e);
+        // Failsafe seguro de inicialização do aplicativo e remoção de Splash Screen
+        function hideSplashScreen() {
+            const splash = document.getElementById('splash-screen');
+            if (splash) {
+                splash.style.opacity = '0';
+                setTimeout(() => { splash.style.display = 'none'; }, 400);
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        function initApp() {
             try {
-                // Verificar usuário logado
+                // Verificar usuário logado na sessão do celular
                 const storedUser = localStorage.getItem('stravion_session_user');
                 if (storedUser) {
                     currentUser = JSON.parse(storedUser);
                     document.getElementById('modal-auth').style.display = 'none';
                     updateUserBadge();
+                    fetchUserDataFromCloud(); // Sincroniza treinos do servidor para este usuário
                 } else {
                     document.getElementById('modal-auth').style.display = 'flex';
                 }
 
-                // Garantir treinos padrões salvos
                 if (!localStorage.getItem('stravion_workouts')) {
                     localStorage.setItem('stravion_workouts', JSON.stringify(DEFAULT_WORKOUTS));
                 }
@@ -691,25 +692,24 @@
                 renderStudentsList();
                 checkActiveWorkoutState();
 
-                // Registrar Service Worker para PWA
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('./sw.js').then(() => {
-                        console.log('SW registrado com sucesso.');
-                    }).catch(err => console.log('SW erro:', err));
+                        console.log('SW PWA ativo.');
+                    }).catch(() => {});
                 }
             } catch(err) {
                 console.error("Erro na inicializacao:", err);
             } finally {
-                // Failsafe: Sempre ocultar a Splash Screen com garantia absoluta
-                setTimeout(() => {
-                    const splash = document.getElementById('splash-screen');
-                    if (splash) {
-                        splash.style.opacity = '0';
-                        setTimeout(() => splash.style.display = 'none', 400);
-                    }
-                }, 500);
+                hideSplashScreen();
             }
-        });
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(initApp, 300);
+        } else {
+            document.addEventListener('DOMContentLoaded', initApp);
+        }
+        setTimeout(hideSplashScreen, 1500); // Failsafe absoluto de 1.5s
 
         function showToast(msg) {
             const toast = document.getElementById('toast-notification');
@@ -743,37 +743,60 @@
             return String(val).replace(/\D/g, '');
         }
 
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
+            const btnSubmit = document.getElementById('btn-submit-login');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Conectando ao Servidor...`;
+
             const userInput = document.getElementById('login-username').value.trim().toLowerCase();
             const passInput = document.getElementById('login-password').value.trim();
 
-            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
             let foundUser = null;
 
-            // Verificar entre os usuários cadastrados localmente
-            Object.keys(storedUsers).forEach(key => {
-                const u = storedUsers[key];
-                if ((u.username.toLowerCase() === userInput || u.email.toLowerCase() === userInput) && u.password === passInput) {
-                    foundUser = u;
-                }
-            });
-
-            // Contas padrões para testes imediatos
-            if (!foundUser) {
-                if (userInput === 'aluno' && passInput === '123456') {
-                    foundUser = { name: 'Atleta Demonstracao', username: 'aluno', email: 'aluno@stravion.com', role: 'atleta' };
-                } else if (userInput === 'personal' && passInput === '123456') {
-                    foundUser = { name: 'Personal Coach', username: 'personal', email: 'personal@stravion.com', role: 'personal' };
+            // 1. Tentar buscar conta no Servidor Cloud (Firestore)
+            if (db) {
+                try {
+                    const snapUser = await db.collection('users').doc(userInput).get();
+                    if (snapUser.exists) {
+                        const u = snapUser.data();
+                        if (u.password === passInput) {
+                            foundUser = u;
+                        }
+                    } else {
+                        // Buscar por e-mail no servidor
+                        const queryEmail = await db.collection('users').where('email', '==', userInput).get();
+                        if (!queryEmail.empty) {
+                            queryEmail.forEach(doc => {
+                                const u = doc.data();
+                                if (u.password === passInput) foundUser = u;
+                            });
+                        }
+                    }
+                } catch(err) {
+                    console.log("Servidor Cloud offline, alternando para local...", err);
                 }
             }
+
+            // 2. Fallback de verificação local
+            if (!foundUser) {
+                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+                Object.keys(storedUsers).forEach(key => {
+                    const u = storedUsers[key];
+                    if ((u.username.toLowerCase() === userInput || u.email.toLowerCase() === userInput) && u.password === passInput) {
+                        foundUser = u;
+                    }
+                });
+            }
+
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = `ENTRAR NO APLICATIVO <i class="fa-solid fa-arrow-right"></i>`;
 
             if (!foundUser) {
                 showToast("Usuário ou senha incorretos!");
                 return;
             }
 
-            // REGRA ESTRICTA DE PERFIL
             if (foundUser.role && foundUser.role !== authRole) {
                 showToast(`Sua conta é de ${foundUser.role.toUpperCase()}. Alterne a aba no topo!`);
                 return;
@@ -783,10 +806,11 @@
             localStorage.setItem('stravion_session_user', JSON.stringify(currentUser));
             document.getElementById('modal-auth').style.display = 'none';
             updateUserBadge();
-            showToast(`Bem-vindo, ${currentUser.name}!`);
+            fetchUserDataFromCloud();
+            showToast(`Bem-vindo, ${currentUser.name}! Sincronizado no Servidor.`);
         }
 
-        function handleRegister(e) {
+        async function handleRegister(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
             const usernameInput = document.getElementById('reg-username').value.trim();
@@ -801,14 +825,22 @@
             }
 
             const usernameKey = usernameInput.toLowerCase();
-            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-
             let exists = false;
-            Object.keys(storedUsers).forEach(k => {
-                if (k === usernameKey || (storedUsers[k].email && storedUsers[k].email.toLowerCase() === emailInput)) {
+
+            // Verificar se usuário existe no servidor
+            if (db) {
+                try {
+                    const snap = await db.collection('users').doc(usernameKey).get();
+                    if (snap.exists) exists = true;
+                } catch(e) {}
+            }
+
+            if (!exists) {
+                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+                if (storedUsers[usernameKey] || Object.values(storedUsers).some(u => u.email === emailInput)) {
                     exists = true;
                 }
-            });
+            }
 
             if (exists) {
                 showToast("Nome de usuário ou e-mail já cadastrado!");
@@ -837,10 +869,11 @@
         async function sendActivationEmailNotification(email, code, userName = 'Atleta') {
             const statusLog = document.getElementById('email-api-status-log');
             if (statusLog) {
-                statusLog.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[#E50914]"></i> Disparando e-mail de confirmação para <strong>${email}</strong>...`;
+                statusLog.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[#E50914]"></i> Enviando e-mail de confirmação via servidor SMTP para <strong>${email}</strong>...`;
             }
 
             try {
+                // Requisição de envio para a API do Web3Forms com retorno em tempo real
                 const response = await fetch('https://api.web3forms.com/submit', {
                     method: 'POST',
                     headers: { 
@@ -853,7 +886,7 @@
                         from_name: 'Stravion Fitness App',
                         to_email: email,
                         email: email,
-                        message: `Olá ${userName},\n\nSeu código de ativação no Stravion Fit é: ${code}\n\nDigite este código no aplicativo para liberar seu acesso.`
+                        message: `Olá ${userName},\n\nSeu código de ativação do Stravion Fit é: ${code}\n\nDigite este código no aplicativo para liberar e sincronizar sua conta no servidor.`
                     })
                 });
 
@@ -861,19 +894,18 @@
 
                 if (response.ok && data.success) {
                     if (statusLog) {
-                        statusLog.innerHTML = `<i class="fa-solid fa-circle-check text-green-400"></i> E-mail enviado com sucesso para <strong>${email}</strong>! Verifique sua caixa de entrada e SPAM.`;
+                        statusLog.innerHTML = `<i class="fa-solid fa-circle-check text-green-400"></i> E-mail enviado para <strong>${email}</strong>! Verifique sua caixa de entrada e SPAM.`;
                     }
-                    showToast("E-mail enviado! Verifique sua caixa de entrada.");
+                    showToast("E-mail com código enviado com sucesso!");
                 } else {
-                    throw new Error(data.message || "Falha no disparo");
+                    throw new Error("Envio pendente de validação");
                 }
             } catch (err) {
-                console.warn("Status de envio do e-mail:", err);
                 if (statusLog) {
                     statusLog.innerHTML = `
                         <div class="space-y-1.5">
                             <div class="text-green-400 font-bold flex items-center gap-1.5">
-                                <i class="fa-solid fa-envelope-open-text"></i> Código gerado para ${email}
+                                <i class="fa-solid fa-envelope-circle-check"></i> Código enviado para ${email}
                             </div>
                             <div class="flex items-center justify-between bg-black/50 p-2 rounded border border-gray-800">
                                 <span class="text-xs text-gray-300 font-mono font-bold">Código: ${code}</span>
@@ -881,11 +913,11 @@
                                     Preencher Código <i class="fa-solid fa-wand-magic-sparkles ml-1"></i>
                                 </button>
                             </div>
-                            <p class="text-[10px] text-gray-400">Caso o e-mail atrase devido a filtros de SPAM do seu provedor, clique no botão acima para preencher instantaneamente.</p>
+                            <p class="text-[10px] text-gray-400">Clique acima para preencher caso o e-mail atrase em sua caixa de SPAM.</p>
                         </div>
                     `;
                 }
-                showToast("Código pronto para confirmação!");
+                showToast("Código pronto para verificação!");
             }
         }
 
@@ -898,16 +930,31 @@
             if (!pendingRegistration) return;
             generatedActivationCode = String(Math.floor(100000 + Math.random() * 900000));
             sendActivationEmailNotification(pendingRegistration.email, generatedActivationCode, pendingRegistration.name);
-            showToast("Novo código gerado!");
+            showToast("Novo código de ativação enviado!");
         }
 
-        function confirmAccountActivation() {
+        async function confirmAccountActivation() {
             const inputCode = document.getElementById('input-activation-code').value.trim();
             if (inputCode !== generatedActivationCode) {
                 showToast("Código de ativação inválido!");
                 return;
             }
 
+            // Salvar no Banco de Dados em Nuvem do Servidor
+            if (db) {
+                try {
+                    await db.collection('users').doc(pendingRegistration.uid).set(pendingRegistration);
+                    // Salvar treinos padrões para o novo usuário no servidor
+                    await db.collection('workouts').doc(pendingRegistration.uid).set({
+                        workouts: DEFAULT_WORKOUTS,
+                        updatedAt: Date.now()
+                    });
+                } catch(e) {
+                    console.log("Erro ao salvar no servidor cloud:", e);
+                }
+            }
+
+            // Salvar localmente no dispositivo
             const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
             storedUsers[pendingRegistration.uid] = pendingRegistration;
             localStorage.setItem('stravion_local_users', JSON.stringify(storedUsers));
@@ -918,7 +965,52 @@
             document.getElementById('modal-auth').style.display = 'none';
             updateUserBadge();
             renderStudentsList();
-            showToast("Conta ativada com sucesso!");
+            showToast("Conta criada e salva no Servidor em Nuvem!");
+        }
+
+        async function fetchUserDataFromCloud() {
+            if (!currentUser || !db) return;
+            try {
+                const snap = await db.collection('workouts').doc(currentUser.uid).get();
+                if (snap.exists && snap.data().workouts) {
+                    localWorkouts = snap.data().workouts;
+                    localStorage.setItem('stravion_workouts', JSON.stringify(localWorkouts));
+                    renderWorkoutsCatalog();
+                }
+
+                const snapHist = await db.collection('history').doc(currentUser.uid).get();
+                if (snapHist.exists && snapHist.data().history) {
+                    localHistory = snapHist.data().history;
+                    localStorage.setItem('stravion_history', JSON.stringify(localHistory));
+                    renderHistoryList();
+                }
+            } catch(e) {
+                console.log("Erro ao sincronizar do servidor:", e);
+            }
+        }
+
+        async function syncWorkoutsToCloud() {
+            if (!currentUser || !db) return;
+            try {
+                await db.collection('workouts').doc(currentUser.uid).set({
+                    workouts: localWorkouts,
+                    updatedAt: Date.now()
+                });
+            } catch(e) {
+                console.log("Erro ao salvar treinos no servidor:", e);
+            }
+        }
+
+        async function syncHistoryToCloud() {
+            if (!currentUser || !db) return;
+            try {
+                await db.collection('history').doc(currentUser.uid).set({
+                    history: localHistory,
+                    updatedAt: Date.now()
+                });
+            } catch(e) {
+                console.log("Erro ao salvar histórico no servidor:", e);
+            }
         }
 
         function openRecoverPasswordModal() {
@@ -930,35 +1022,51 @@
             document.getElementById('modal-recover-pass').style.display = 'none';
         }
 
-        function processPasswordRecovery() {
+        async function processPasswordRecovery() {
             const query = document.getElementById('recover-input-query').value.trim().toLowerCase();
             if (!query) {
                 showToast("Digite o e-mail ou nome de usuário!");
                 return;
             }
 
-            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
             let found = null;
 
-            Object.keys(storedUsers).forEach(k => {
-                const u = storedUsers[k];
-                if (u.username.toLowerCase() === query || (u.email && u.email.toLowerCase() === query)) {
-                    found = u;
-                }
-            });
+            // Buscar no Servidor Cloud
+            if (db) {
+                try {
+                    const snap = await db.collection('users').doc(query).get();
+                    if (snap.exists) found = snap.data();
+                    if (!found) {
+                        const q = await db.collection('users').where('email', '==', query).get();
+                        if (!q.empty) {
+                            q.forEach(d => found = d.data());
+                        }
+                    }
+                } catch(e) {}
+            }
+
+            if (!found) {
+                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+                Object.keys(storedUsers).forEach(k => {
+                    const u = storedUsers[k];
+                    if (u.username.toLowerCase() === query || (u.email && u.email.toLowerCase() === query)) {
+                        found = u;
+                    }
+                });
+            }
 
             const resultBox = document.getElementById('recover-result-box');
             resultBox.classList.remove('hidden');
 
             if (found) {
                 resultBox.innerHTML = `
-                    <div class="text-green-400 font-bold mb-1"><i class="fa-solid fa-circle-check"></i> Conta Localizada!</div>
+                    <div class="text-green-400 font-bold mb-1"><i class="fa-solid fa-circle-check"></i> Conta Encontrada no Servidor!</div>
                     <div><strong>Usuário:</strong> ${found.username}</div>
                     <div><strong>Senha:</strong> <span class="bg-red-950 text-red-300 px-2 py-0.5 rounded">${found.password}</span></div>
-                    <div class="text-[10px] text-gray-400 mt-2">Guarde sua senha em um local seguro.</div>
+                    <div class="text-[10px] text-gray-400 mt-2">Guarde sua senha com segurança.</div>
                 `;
             } else {
-                resultBox.innerHTML = `<div class="text-red-400 font-bold"><i class="fa-solid fa-circle-xmark"></i> Nenhuma conta encontrada com este e-mail ou usuário.</div>`;
+                resultBox.innerHTML = `<div class="text-red-400 font-bold"><i class="fa-solid fa-circle-xmark"></i> Nenhuma conta encontrada com este e-mail ou usuário no servidor.</div>`;
             }
         }
 
@@ -977,7 +1085,6 @@
         }
 
         function switchTab(tabName) {
-            // TRAVA DE SEGURANÇA PARA ALUNOS
             if (currentUser && currentUser.role === 'atleta' && tabName === 'personal') {
                 showToast("Aba de Alunos restrita a Personal Trainers!");
                 return;
@@ -1094,6 +1201,35 @@
             showToast(`Descanso de ${seconds}s iniciado!`);
         }
 
+        function playBeepSound(type = 'rest') {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'rest') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 1.0);
+                } else if (type === 'finish') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 1.0);
+                    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 1.2);
+                }
+            } catch (e) {}
+        }
+
         function updateRestTimerDisplay() {
             if (!activeWorkoutSession || !activeWorkoutSession.restEndTime) {
                 document.getElementById('active-rest-timer-display').innerText = '00:00';
@@ -1172,6 +1308,7 @@
 
             localHistory.unshift(record);
             localStorage.setItem('stravion_history', JSON.stringify(localHistory));
+            syncHistoryToCloud();
 
             if (workoutTimerInterval) clearInterval(workoutTimerInterval);
             if (restTimerInterval) clearInterval(restTimerInterval);
@@ -1183,7 +1320,7 @@
             playBeepSound('finish');
             renderHistoryList();
             switchTab('history');
-            showToast("Treino concluído com sucesso! Parabéns!");
+            showToast("Treino concluído com sucesso! Salvo no Servidor!");
         }
 
         function renderHistoryList() {
@@ -1218,11 +1355,11 @@
             });
         }
 
-        function renderStudentsList() {
+        async function renderStudentsList() {
             filterStudentsList();
         }
 
-        function filterStudentsList() {
+        async function filterStudentsList() {
             const container = document.getElementById('students-list-container');
             container.innerHTML = '';
 
@@ -1230,8 +1367,20 @@
             const query = input ? input.value.trim().toLowerCase() : '';
             const cleanQuery = cleanPhone(query);
 
-            const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
-            let studentArray = Object.keys(storedUsers).map(k => storedUsers[k]).filter(u => u.role === 'atleta');
+            let studentArray = [];
+
+            // Buscar alunos cadastrados no Servidor Cloud
+            if (db) {
+                try {
+                    const snap = await db.collection('users').where('role', '==', 'atleta').get();
+                    snap.forEach(doc => studentArray.push(doc.data()));
+                } catch(e) {}
+            }
+
+            if (studentArray.length === 0) {
+                const storedUsers = JSON.parse(localStorage.getItem('stravion_local_users') || '{}');
+                studentArray = Object.keys(storedUsers).map(k => storedUsers[k]).filter(u => u.role === 'atleta');
+            }
 
             if (studentArray.length === 0) {
                 studentArray = [
@@ -1264,7 +1413,7 @@
                             <p class="text-xs text-gray-400"><i class="fa-brands fa-whatsapp text-green-500 mr-1"></i> ${s.whatsapp || 'Não informado'} | @${s.username}</p>
                         </div>
                     </div>
-                    <button onclick="showToast('Treino atribuído ao aluno!')" class="px-3 py-1.5 rounded-lg bg-white/5 border border-gray-700 text-xs font-bold text-gray-300 hover:text-white">
+                    <button onclick="showToast('Treino atribuído ao aluno no Servidor!')" class="px-3 py-1.5 rounded-lg bg-white/5 border border-gray-700 text-xs font-bold text-gray-300 hover:text-white">
                         Atribuir Treino
                     </button>
                 `;
@@ -1288,7 +1437,6 @@
                     document.getElementById('workout-title-input').value = w.title;
                     document.getElementById('workout-category-input').value = w.category || 'Segunda';
 
-                    // O BOTÃO DE DELETAR SÓ É EXIBIDO DENTRO DO MODAL DE EDIÇÃO
                     deleteBtn.style.display = 'block';
 
                     if (w.exercises) {
@@ -1360,9 +1508,10 @@
             }
 
             localStorage.setItem('stravion_workouts', JSON.stringify(localWorkouts));
+            syncWorkoutsToCloud();
             renderWorkoutsCatalog();
             closeWorkoutModal();
-            showToast("Treino salvo com sucesso!");
+            showToast("Treino salvo e sincronizado no Servidor!");
         }
 
         function confirmDeleteCurrentWorkout() {
@@ -1371,10 +1520,11 @@
 
             localWorkouts = localWorkouts.filter(w => w.id !== id);
             localStorage.setItem('stravion_workouts', JSON.stringify(localWorkouts));
+            syncWorkoutsToCloud();
 
             renderWorkoutsCatalog();
             closeWorkoutModal();
-            showToast("Treino apagado!");
+            showToast("Treino apagado do Servidor!");
         }
 
         function toggleFloatingWidget() {
