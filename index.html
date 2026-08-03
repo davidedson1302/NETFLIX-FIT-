@@ -1041,6 +1041,83 @@
             transform: translateY(0);
             opacity: 1;
         }
+
+        .floating-pip-widget {
+            position: fixed;
+            bottom: 80px;
+            right: 16px;
+            width: 210px;
+            background: rgba(30, 32, 46, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid var(--stravion-accent);
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            z-index: 99999;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            touch-action: none;
+        }
+
+        .floating-pip-widget.hidden {
+            display: none !important;
+        }
+
+        .pip-widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .pip-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--stravion-accent);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        .pip-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .pip-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .pip-timer-main {
+            font-family: 'Teko', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            line-height: 1;
+        }
+
+        .pip-divider {
+            height: 1px;
+            background: var(--stravion-border);
+            margin: 6px 0;
+        }
+
+        .pip-timer-rest {
+            font-family: 'Teko', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--stravion-accent);
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
@@ -1481,6 +1558,20 @@
         <button class="btn-rest-action" onclick="skipRestTimer()">Pular</button>
     </div>
 
+    <div id="universal-floating-pip" class="floating-pip-widget hidden">
+        <div class="pip-widget-header">
+            <span class="pip-title" id="pip-widget-title">Treino em Andamento</span>
+            <button class="pip-close-btn" onclick="toggleUniversalPip(false)"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div>
+            <div class="pip-label">TEMPO TOTAL DE TREINO</div>
+            <div class="pip-timer-main" id="pip-widget-clock">00:00:00</div>
+            <div class="pip-divider"></div>
+            <div class="pip-label">TEMPO DE DESCANSO</div>
+            <div class="pip-timer-rest" id="pip-widget-rest">EM EXERCÍCIO</div>
+        </div>
+    </div>
+
     <div id="toast-notification">Notificação</div>
 
     <footer>
@@ -1503,140 +1594,9 @@
         let generatedActivationCode = '';
         let pendingRegistration = null;
 
-        // TREINOS DEFAULT - SPLIT COMPLETO DE SEGUNDA A SEXTA
-        const DEFAULT_WORKOUTS = [
-            {
-                id: 'w_segunda',
-                title: 'Segunda – Costas (ênfase em largura) + Bíceps',
-                coverUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop&q=60',
-                assignedTo: 'all',
-                exercises: [
-                    { name: 'Barra fixa ou puxada alta', sets: 4, reps: '6-10', weight: 50, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Puxada neutra', sets: 3, reps: '8-12', weight: 45, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Pulldown unilateral', sets: 3, reps: '10-12', weight: 25, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Pullover na polia', sets: 3, reps: '12-15', weight: 30, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Rosca direta', sets: 3, reps: '8-10', weight: 14, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Rosca inclinada', sets: 3, reps: '10-12', weight: 12, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Rosca martelo', sets: 2, reps: '12-15', weight: 14, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
-                ]
-            },
-            {
-                id: 'w_terca',
-                title: 'Terça – Peito + Tríceps',
-                coverUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&auto=format&fit=crop&q=60',
-                assignedTo: 'all',
-                exercises: [
-                    { name: 'Supino reto', sets: 4, reps: '6-8', weight: 60, rest: 90, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Supino inclinado com halteres', sets: 3, reps: '8-10', weight: 24, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Crucifixo máquina ou crossover', sets: 3, reps: '12-15', weight: 25, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Paralelas ou mergulho assistido', sets: 3, reps: '8-12', weight: 0, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Tríceps corda', sets: 3, reps: '10-12', weight: 30, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Tríceps francês', sets: 3, reps: '10-12', weight: 16, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
-                ]
-            },
-            {
-                id: 'w_quarta',
-                title: 'Quarta – Pernas',
-                coverUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=60',
-                assignedTo: 'all',
-                exercises: [
-                    { name: 'Agachamento livre', sets: 4, reps: '6-8', weight: 80, rest: 90, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Leg press', sets: 3, reps: '10-12', weight: 160, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Afundo ou passada', sets: 3, reps: '10 cada', weight: 14, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Mesa flexora', sets: 3, reps: '10-12', weight: 40, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Stiff', sets: 3, reps: '8-10', weight: 50, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Panturrilha em pé', sets: 4, reps: '12-15', weight: 60, rest: 45, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Abdômen', sets: 3, reps: '15-20', weight: 0, rest: 45, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
-                ]
-            },
-            {
-                id: 'w_quinta',
-                title: 'Quinta – Costas (ênfase em espessura) + Ombros',
-                coverUrl: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&auto=format&fit=crop&q=60',
-                assignedTo: 'all',
-                exercises: [
-                    { name: 'Remada curvada', sets: 4, reps: '6-8', weight: 50, rest: 90, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Remada cavalinho', sets: 3, reps: '8-10', weight: 45, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Remada baixa', sets: 3, reps: '10-12', weight: 50, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Face pull', sets: 3, reps: '12-15', weight: 25, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Desenvolvimento com halteres', sets: 3, reps: '8-10', weight: 20, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Elevação lateral', sets: 4, reps: '12-15', weight: 10, rest: 45, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Crucifixo inverso', sets: 3, reps: '12-15', weight: 8, rest: 45, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
-                ]
-            },
-            {
-                id: 'w_sexta',
-                title: 'Sexta – Braços + Posterior',
-                coverUrl: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&auto=format&fit=crop&q=60',
-                assignedTo: 'all',
-                exercises: [
-                    { name: 'Levantamento terra romeno', sets: 3, reps: '8-10', weight: 60, rest: 90, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Cadeira flexora', sets: 3, reps: '10-12', weight: 45, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Rosca Scott', sets: 3, reps: '8-10', weight: 16, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Rosca martelo', sets: 3, reps: '10-12', weight: 14, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Tríceps testa', sets: 3, reps: '8-10', weight: 25, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Tríceps corda', sets: 3, reps: '12-15', weight: 30, rest: 60, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-                    { name: 'Panturrilha sentada', sets: 4, reps: '15-20', weight: 40, rest: 45, videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
-                ]
-            }
-        ];
-
-        const PRESET_COVERS = [
-            { label: 'Costas / Dorsal', url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop&q=60' },
-            { label: 'Peito / Supino', url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&auto=format&fit=crop&q=60' },
-            { label: 'Pernas / Legs', url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=60' },
-            { label: 'Ombros / Shoulders', url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&auto=format&fit=crop&q=60' },
-            { label: 'Braços / Biceps', url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&auto=format&fit=crop&q=60' }
-        ];
-
-        const PRESET_EXERCISES = [
-            { category: 'Costas', name: 'Barra fixa ou puxada alta', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Costas', name: 'Puxada neutra', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Costas', name: 'Pulldown unilateral', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Costas', name: 'Pullover na polia', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Costas', name: 'Remada curvada', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Costas', name: 'Remada cavalinho', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Peito', name: 'Supino reto', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Peito', name: 'Supino inclinado com halteres', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Pernas', name: 'Agachamento livre', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Pernas', name: 'Leg press', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Biceps', name: 'Rosca direta', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' },
-            { category: 'Triceps', name: 'Tríceps corda', videoUrl: 'https://www.youtube.com/shorts/3X_dYv4s9G8' }
-        ];
-
-        let localWorkouts = JSON.parse(localStorage.getItem('stravion_local_workouts') || 'null');
-        if (!localWorkouts || localWorkouts.length === 0) {
-            localWorkouts = DEFAULT_WORKOUTS;
-            localStorage.setItem('stravion_local_workouts', JSON.stringify(localWorkouts));
-        }
-
-        let localHistory = JSON.parse(localStorage.getItem('stravion_local_history') || '[]');
-        let activeWorkoutSession = JSON.parse(localStorage.getItem('stravion_active_session') || 'null');
-
-        let workoutTimerInterval = null;
-        let restTimerInterval = null;
-        let restSecondsLeft = 0;
-        let currentCoverBase64 = '';
-
-        // CONSTANTES WHATSAPP META API
-        const DEFAULT_META_ENDPOINT = 'https://graph.facebook.com/v19.0/100000000000000/messages';
-        const DEFAULT_META_TOKEN = 'EAAG...';
-
-        // REGISTRO AUTOMÁTICO DO SERVICE WORKER (PWA)
-        let swRegistration = null;
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => {
-                        swRegistration = reg;
-                        console.log('Stravion PWA Service Worker registrado:', reg.scope);
-                    })
-                    .catch(err => console.log('Erro ao registrar SW:', err));
-            });
-        }
-
         // PIP & HARDWARE VARIABLES
         let isPipActive = false;
+        let isUniversalPipVisible = false;
         let cameraStream = null;
         let bluetoothHeartDevice = null;
         let heartRateBpm = null;
@@ -1715,6 +1675,36 @@
         }
 
         function updatePipCanvas() {
+            const clockText = document.getElementById('workout-clock').innerText || '00:00:00';
+
+            // Atualiza o Widget Flutuante Universal (Compatível com iOS/Android/Todos Navegadores)
+            const pipClock = document.getElementById('pip-widget-clock');
+            const pipRest = document.getElementById('pip-widget-rest');
+            const pipTitle = document.getElementById('pip-widget-title');
+
+            if (pipClock) pipClock.innerText = clockText;
+            if (pipTitle && activeWorkoutSession) pipTitle.innerText = activeWorkoutSession.title;
+            if (pipRest) {
+                if (restSecondsLeft > 0) {
+                    pipRest.innerText = `${restSecondsLeft}s`;
+                    pipRest.style.color = 'var(--stravion-accent)';
+                } else {
+                    pipRest.innerText = 'EM EXERCÍCIO';
+                    pipRest.style.color = '#55E6C1';
+                }
+            }
+
+            // Atualiza LockScreen / Notification Center via MediaSession
+            if ('mediaSession' in navigator && activeWorkoutSession) {
+                try {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: `${clockText} - ${activeWorkoutSession.title}`,
+                        artist: restSecondsLeft > 0 ? `Descanso: ${restSecondsLeft}s` : 'Treino em Andamento',
+                        album: 'Stravion Fitness'
+                    });
+                } catch(e) {}
+            }
+
             const canvas = document.getElementById('pip-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -1745,7 +1735,6 @@
             ctx.font = '11px Montserrat, sans-serif';
             ctx.fillText('TEMPO TOTAL DE TREINO', 15, 85);
 
-            const clockText = document.getElementById('workout-clock').innerText || '00:00:00';
             ctx.fillStyle = '#FFFFFF';
             ctx.font = 'bold 36px Montserrat, monospace';
             ctx.fillText(clockText, 15, 125);
@@ -1769,6 +1758,54 @@
                 ctx.fillStyle = '#25D366';
                 ctx.font = 'bold 14px Montserrat, sans-serif';
                 ctx.fillText(`♥ ${heartRateBpm} BPM`, canvas.width - 120, 30);
+            }
+        }
+
+        async function togglePictureInPicture() {
+            const video = document.getElementById('pip-video');
+            const canvas = document.getElementById('pip-canvas');
+
+            if (!activeWorkoutSession) {
+                showToast("Inicie um treino primeiro para ativar o PiP!");
+                return;
+            }
+
+            // Ativa sempre o Widget Flutuante Universal na tela
+            toggleUniversalPip(true);
+
+            // Tenta também ativar a API nativa de PiP do sistema, caso o navegador/celular ofereça suporte
+            try {
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                    isPipActive = false;
+                } else if (document.pictureInPictureEnabled && video && canvas) {
+                    updatePipCanvas();
+                    const stream = canvas.captureStream(10);
+                    video.srcObject = stream;
+                    await video.play();
+                    await video.requestPictureInPicture();
+                    isPipActive = true;
+                }
+            } catch (err) {
+                console.log("PiP nativo do SO indisponível, usando Widget Flutuante Universal.");
+            }
+        }
+
+        function toggleUniversalPip(show = null) {
+            const widget = document.getElementById('universal-floating-pip');
+            if (!widget) return;
+
+            if (show === null) {
+                isUniversalPipVisible = !isUniversalPipVisible;
+            } else {
+                isUniversalPipVisible = show;
+            }
+
+            if (isUniversalPipVisible) {
+                widget.classList.remove('hidden');
+                showToast("Widget Flutuante Ativado!");
+            } else {
+                widget.classList.add('hidden');
             }
         }
 
@@ -1888,6 +1925,8 @@
             clearInterval(workoutTimerInterval);
             activeWorkoutSession = null;
             localStorage.removeItem('stravion_active_session');
+
+            toggleUniversalPip(false);
 
             document.querySelectorAll('.btn-finish-workout-trigger').forEach(b => b.style.display = 'none');
             document.getElementById('active-workout-footer-actions').style.display = 'none';
