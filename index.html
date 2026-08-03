@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Stravion Fit">
     <link rel="manifest" href="manifest.json">
-    <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'><defs><linearGradient id='sg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23FFFFFF'/><stop offset='50%' stop-color='%23CCCCCC'/><stop offset='100%' stop-color='%23888888'/></linearGradient><linearGradient id='rg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23FF1E27'/><stop offset='100%' stop-color='%23B30009'/></linearGradient></defs><path d='M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z' fill='url(%23sg)'/><path d='M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z' fill='url(%23rg)'/></svg>">
+    <link id="favicon" rel="icon" type="image/png" href="icone preto.png">
 
     <!-- FONTS & FONTAWESOME -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -100,38 +100,11 @@
             align-items: center;
         }
 
-        .splash-emblem {
-            width: 130px;
+        .splash-img {
+            width: 100%;
+            max-width: 240px;
             height: auto;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 0 25px rgba(229, 9, 20, 0.6));
-        }
-
-        .splash-brand-title {
-            font-family: 'Teko', sans-serif;
-            font-size: 2.8rem;
-            letter-spacing: 2px;
-            color: #FFFFFF;
-            text-transform: uppercase;
-            line-height: 0.9;
-        }
-
-        .splash-brand-fitness {
-            font-size: 0.9rem;
-            font-weight: 900;
-            color: var(--stravion-red);
-            letter-spacing: 5px;
-            margin-top: 4px;
-            font-style: italic;
-        }
-
-        .splash-slogan {
-            font-size: 0.65rem;
-            letter-spacing: 4px;
-            color: var(--text-muted);
-            margin-top: 6px;
-            text-transform: uppercase;
-            font-weight: 700;
+            object-fit: contain;
         }
 
         @keyframes pulseSplash {
@@ -166,7 +139,7 @@
             object-fit: contain;
         }
 
-        /* Responsive display for header logos based on theme */
+        /* Alternância dinâmica das logos PNG no Header/Footer */
         [data-theme="dark"] .logo-light-theme { display: none !important; }
         [data-theme="dark"] .logo-dark-theme { display: block !important; }
 
@@ -314,7 +287,7 @@
             max-width: 220px;
             height: auto;
             margin-bottom: 8px;
-            filter: drop-shadow(0 4px 15px rgba(229, 9, 20, 0.4));
+            object-fit: contain;
         }
 
         .auth-type-selector {
@@ -888,52 +861,18 @@
 </head>
 <body>
 
-    <!-- Splash Screen -->
+    <!-- Splash Screen (Usa o arquivo logo tela inicia tema escuro .png) -->
     <div id="splash-screen">
         <div class="splash-logo-container">
-            <svg class="splash-emblem" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="silverSplash" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#FFFFFF" />
-                        <stop offset="50%" stop-color="#D0D0D0" />
-                        <stop offset="100%" stop-color="#888888" />
-                    </linearGradient>
-                    <linearGradient id="redSplash" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#FF1E27" />
-                        <stop offset="100%" stop-color="#B30009" />
-                    </linearGradient>
-                </defs>
-                <path d="M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z" fill="url(#silverSplash)" />
-                <path d="M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z" fill="url(#redSplash)" />
-            </svg>
-            <div class="splash-brand-title">STRAVION</div>
-            <div class="splash-brand-fitness">— FITNESS —</div>
-            <div class="splash-slogan">TRAIN BEYOND LIMITS</div>
+            <img src="logo tela inicia tema escuro .png" alt="Stravion Fitness" class="splash-img">
         </div>
     </div>
 
-    <!-- Auth Overlay Modal -->
+    <!-- Auth Overlay Modal (Usa o arquivo logo tela inicia tema escuro .png) -->
     <div id="auth-overlay">
         <div class="auth-card">
             <div class="auth-logo-vertical">
-                <svg class="auth-vertical-emblem" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="silverAuth" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#FFFFFF" />
-                            <stop offset="50%" stop-color="#E0E0E0" />
-                            <stop offset="100%" stop-color="#999999" />
-                        </linearGradient>
-                        <linearGradient id="redAuth" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#E50914" />
-                            <stop offset="100%" stop-color="#990000" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z" fill="url(#silverAuth)" />
-                    <path d="M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z" fill="url(#redAuth)" />
-                </svg>
-                <div class="auth-title-stravion">STRAVION</div>
-                <div class="auth-title-fitness"><span class="line">—</span> FITNESS <span class="line">—</span></div>
-                <div style="font-size:0.6rem; color:var(--text-muted); letter-spacing:2.5px; margin-top:2px;">TRAIN BEYOND LIMITS</div>
+                <img src="logo tela inicia tema escuro .png" alt="Stravion Fitness" class="auth-logo-img">
             </div>
 
             <div class="auth-type-selector">
@@ -1024,13 +963,11 @@
         </div>
     </div>
 
-    <!-- Header com troca inteligente de logo claro/escuro -->
+    <!-- Header (Usa logo tema preto horizontal.png para tema escuro e logo tema claro horizontal.png para tema claro) -->
     <header>
         <div class="brand-logo-wrap" onclick="switchTab('catalog')">
-            <div class="brand-text-block">
-                <div class="brand-title">STRAVION <span>FITNESS</span></div>
-                <div class="brand-slogan">TRAIN BEYOND LIMITS</div>
-            </div>
+            <img src="logo tema preto horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-dark-theme">
+            <img src="logo tema claro horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-light-theme">
         </div>
 
         <div class="header-actions">
@@ -1261,7 +1198,8 @@
     <!-- Footer -->
     <footer>
         <div class="footer-logo-wrap">
-            <div style="font-family:'Teko'; font-size:1.2rem; color:var(--logo-text-color); font-weight:700;">STRAVION <span style="color:var(--stravion-red)">FITNESS</span></div>
+            <img src="logo tema preto horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-dark-theme" style="height:28px;">
+            <img src="logo tema claro horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-light-theme" style="height:28px;">
         </div>
         <div class="footer-credits">
             © 2026 DAVID E. SOUZA - TODOS OS DIREITOS RESERVADOS
@@ -1554,9 +1492,7 @@
                         subject: `Código de Ativação Stravion: ${code}`,
                         from_name: 'Stravion Fitness App',
                         to_email: email,
-                        message: `Olá ${userName},
-
-Seu código de ativação é: ${code}`
+                        message: `Olá ${userName},\n\nSeu código de ativação é: ${code}`
                     })
                 });
 
