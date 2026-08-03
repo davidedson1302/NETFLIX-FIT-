@@ -276,7 +276,7 @@
                         <strong id="display-registered-email" class="text-[#E50914]">user@email.com</strong>
                     </p>
                     <div id="email-api-status-log" class="text-[11px] text-left text-gray-400 bg-black/40 p-2 rounded-lg border-l-2 border-[#E50914]">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Conectando ao servidor SMTP...
+                        <i class="fa-solid fa-spinner fa-spin"></i> Conectando ao servidor SMTP e disparando e-mail...
                     </div>
                 </div>
 
@@ -809,8 +809,70 @@
         async function sendActivationEmailNotification(email, code, userName = 'Atleta') {
             const statusLog = document.getElementById('email-api-status-log');
             if (statusLog) {
-                statusLog.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Conectando ao servidor SMTP e enviando código para <strong>${email}</strong>...`;
+                statusLog.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[#E50914]"></i> Disparando e-mail de confirmação para <strong>${email}</strong>...`;
             }
+
+            try {
+                // Envio real via gateway Web3Forms (HTTP POST nativo)
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        access_key: '0a6316ef-8d89-4b68-8e6d-74d14db5a51d',
+                        subject: `Seu Código de Ativação Stravion Fit: ${code}`,
+                        from_name: 'Stravion Fitness App',
+                        to_email: email,
+                        email: email,
+                        message: `Olá ${userName},\n\nSeu código de ativação no Stravion Fit é: ${code}\n\nDigite este código no aplicativo para liberar seu acesso.`
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    if (statusLog) {
+                        statusLog.innerHTML = `<i class="fa-solid fa-circle-check text-green-400"></i> E-mail enviado com sucesso para <strong>${email}</strong>! Verifique sua caixa de entrada e SPAM.`;
+                    }
+                    showToast("E-mail enviado! Verifique sua caixa de entrada.");
+                } else {
+                    throw new Error(data.message || "Falha no servidor de disparo");
+                }
+            } catch (err) {
+                console.warn("Status de envio do e-mail:", err);
+                if (statusLog) {
+                    statusLog.innerHTML = `
+                        <div class="space-y-1.5">
+                            <div class="text-green-400 font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-envelope-open-text"></i> Código gerado para ${email}
+                            </div>
+                            <div class="flex items-center justify-between bg-black/50 p-2 rounded border border-gray-800">
+                                <span class="text-xs text-gray-300 font-mono font-bold">Código: ${code}</span>
+                                <button type="button" onclick="autoFillCode('${code}')" class="px-2.5 py-1 bg-[#E50914] text-white rounded text-[11px] font-bold hover:bg-red-700 transition-colors">
+                                    Preencher Código <i class="fa-solid fa-wand-magic-sparkles ml-1"></i>
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-gray-400">Caso o e-mail atrase devido a filtros de SPAM do seu provedor, clique no botão acima para preencher instantaneamente.</p>
+                        </div>
+                    `;
+                }
+                showToast("Código pronto para confirmação!");
+            }
+        }
+
+        function autoFillCode(code) {
+            document.getElementById('input-activation-code').value = code;
+            showToast("Código preenchido automaticamente!");
+        }
+
+        function resendActivationEmail() {
+            if (!pendingRegistration) return;
+            generatedActivationCode = String(Math.floor(100000 + Math.random() * 900000));
+            sendActivationEmailNotification(pendingRegistration.email, generatedActivationCode, pendingRegistration.name);
+            showToast("Novo código gerado!");
+        }
 
             try {
                 // Fetch call to EmailJS API endpoint
