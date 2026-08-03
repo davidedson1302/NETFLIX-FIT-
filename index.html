@@ -102,7 +102,7 @@
 
         .splash-img {
             width: 100%;
-            max-width: 200px;
+            max-width: 240px;
             height: auto;
             object-fit: contain;
             border-radius: 12px;
@@ -110,10 +110,9 @@
 
         @keyframes pulseSplash {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.04); }
+            50% { transform: scale(1.03); }
         }
 
-        /* Header e Logos Dinâmicas */
         header {
             background-color: var(--stravion-dark);
             border-bottom: 1px solid var(--stravion-border);
@@ -241,7 +240,6 @@
             flex: 1;
         }
 
-        /* Auth Overlay */
         #auth-overlay {
             position: fixed;
             top: 0;
@@ -286,7 +284,7 @@
         }
 
         .auth-logo-img {
-            max-width: 180px;
+            max-width: 200px;
             height: auto;
             margin-bottom: 8px;
             object-fit: contain;
@@ -774,7 +772,7 @@
         footer {
             background-color: var(--stravion-dark);
             border-top: 1px solid var(--stravion-border);
-            padding: 14px 15px;
+            padding: 12px 15px;
             text-align: center;
             margin-top: auto;
         }
@@ -783,15 +781,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-
-        .brand-icon-footer {
-            height: 32px;
-            width: auto;
-            border-radius: 6px;
-            object-fit: contain;
+            gap: 6px;
+            margin-bottom: 2px;
         }
 
         .footer-credits {
@@ -874,15 +865,15 @@
     <!-- Splash Screen -->
     <div id="splash-screen">
         <div class="splash-logo-container">
-            <img src="https://i.ibb.co/hwf2vSH/icone-preto.png" alt="Stravion Fitness" class="splash-img" onerror="this.onerror=null; this.src='https://placehold.co/200x200/161722/E50914?text=Stravion';">
+            <img src="https://i.ibb.co/hwf2vSH/icone-preto.png" alt="Stravion Fitness" class="splash-img" onerror="this.onerror=null; this.src='https://placehold.co/240x240/161722/E50914?text=Stravion+Fit';">
         </div>
     </div>
 
-    <!-- Auth Overlay Modal (Mantido com a imagem de login solicitada) -->
+    <!-- Auth Overlay Modal -->
     <div id="auth-overlay">
         <div class="auth-card">
             <div class="auth-logo-vertical">
-                <img src="https://i.ibb.co/hwf2vSH/icone-preto.png" alt="Stravion Fitness" class="auth-logo-img" onerror="this.onerror=null; this.src='https://placehold.co/180x180/161722/E50914?text=Stravion';">
+                <img src="https://i.ibb.co/hwf2vSH/icone-preto.png" alt="Stravion Fitness" class="auth-logo-img" onerror="this.onerror=null; this.src='https://placehold.co/200x200/161722/E50914?text=Stravion';">
             </div>
 
             <div class="auth-type-selector">
@@ -973,11 +964,11 @@
         </div>
     </div>
 
-    <!-- Header (Suporte a Logo Dark e Logo Light nova) -->
+    <!-- Header -->
     <header>
         <div class="brand-logo-wrap" onclick="switchTab('catalog')">
             <img src="https://i.ibb.co/rKhwFfFq/logo-tema-preto-horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-dark-theme" onerror="this.onerror=null; this.src='https://placehold.co/120x40/161722/E50914?text=Stravion+Fit';">
-            <img src="https://i.ibb.co/Vc7Vc0cr/ICONE-PARA-TELA-DE-INICIOSSSS.jpg" alt="Stravion Fitness" class="header-logo-img logo-light-theme" onerror="this.onerror=null; this.src='https://placehold.co/120x40/FFFFFF/E50914?text=Stravion+Fit';">
+            <img src="https://i.ibb.co/Q4BkfxC/logo-tema-claro-horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-light-theme" onerror="this.onerror=null; this.src='https://placehold.co/120x40/FFFFFF/E50914?text=Stravion+Fit';">
         </div>
 
         <div class="header-actions">
@@ -1208,7 +1199,8 @@
     <!-- Footer -->
     <footer>
         <div class="footer-logo-wrap">
-            <img src="https://i.ibb.co/KpKCsFhh/ICONE-PARA-TELA-DE-INICIO.jpg" alt="Stravion Fitness" class="brand-icon-footer">
+            <img src="https://i.ibb.co/rKhwFfFq/logo-tema-preto-horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-dark-theme" style="height:28px;" onerror="this.onerror=null; this.src='https://placehold.co/100x28/161722/E50914?text=Stravion';">
+            <img src="https://i.ibb.co/Q4BkfxC/logo-tema-claro-horizontal.png" alt="Stravion Fitness" class="header-logo-img logo-light-theme" style="height:28px;" onerror="this.onerror=null; this.src='https://placehold.co/100x28/FFFFFF/E50914?text=Stravion';">
         </div>
         <div class="footer-credits">
             © 2026 DAVID E. SOUZA - TODOS OS DIREITOS RESERVADOS
