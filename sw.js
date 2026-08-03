@@ -1,7 +1,7 @@
-// Nome da versão do cache do aplicativo PWA
-const CACHE_NAME = 'stravion-v2';
+// Versão do cache atualizada para forçar a limpeza de cache antigo nos celulares
+const CACHE_NAME = 'stravion-v3';
 
-// Lista de arquivos principais para funcionamento 100% offline
+// Lista de arquivos essenciais para o PWA funcionar offline
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -9,25 +9,25 @@ const ASSETS_TO_CACHE = [
   './sw.js'
 ];
 
-// Evento de Instalação: Armazena os arquivos essenciais no cache do celular
+// Evento de Instalação: Armazena os arquivos no cache e ativa imediatamente
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Stravion PWA: Armazenando arquivos em cache offline...');
+      console.log('Stravion PWA: Armazenando arquivos atualizados em cache offline...');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
   self.skipWaiting();
 });
 
-// Evento de Ativação: Remove caches de versões anteriores
+// Evento de Ativação: Apaga caches de versões anteriores (v1, v2, etc.)
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
-            console.log('Stravion PWA: Limpando cache antigo do aplicativo...');
+            console.log('Stravion PWA: Removendo versão antiga do cache:', cache);
             return caches.delete(cache);
           }
         })
@@ -37,19 +37,14 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Evento de Busca (Fetch): Intercepta requisições de rede
-// Entrega os arquivos salvos em cache caso o usuário esteja offline
+// Estratégia Network-First: Busca a versão nova no servidor Vercel primeiro.
+// Se houver internet, atualiza a tela e o cache. Se estiver offline, usa a versão do cache.
 self.addEventListener('fetch', (event) => {
-  // Ignora requisições de APIs externas ou esquemas não-HTTP(S)
   if (!event.request.url.startsWith('http')) return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((networkResponse) => {
-        // Opcionalmente atualiza o cache dinamicamente com arquivos novos
+    fetch(event.request)
+      .then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -57,11 +52,13 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return networkResponse;
-      }).catch(() => {
-        // Retorna a página principal em cache se a rede falhar completamente
-        return caches.match('./index.html');
-      });
-    })
+      })
+      .catch(() => {
+        // Quando estiver completamente offline, busca do cache ou cai no index.html
+        return caches.match(event.request).then((cachedResponse) => {
+          return cachedResponse || caches.match('./index.html');
+        });
+      })
   );
 });
 
@@ -110,12 +107,10 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 // Evento de Sincronização em Segundo Plano (Background Sync)
-// Sincroniza dados com o servidor assim que a conexão com a internet retornar
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-workouts') {
     console.log('Stravion SW: Executando Sincronização em Segundo Plano (Background Sync)...');
     event.waitUntil(
-      // Lógica de envio de treinos salvos offline para o servidor
       Promise.resolve()
     );
   }
