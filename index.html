@@ -95,13 +95,16 @@
             animation: pulseSplash 1.6s infinite ease-in-out;
             max-width: 280px;
             width: 80%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .splash-emblem {
-            width: 110px;
+            width: 130px;
             height: auto;
             margin-bottom: 12px;
-            filter: drop-shadow(0 0 20px rgba(229, 9, 20, 0.6));
+            filter: drop-shadow(0 0 25px rgba(229, 9, 20, 0.6));
         }
 
         .splash-brand-title {
@@ -157,39 +160,18 @@
             cursor: pointer;
         }
 
-        .header-emblem-svg {
-            width: 36px;
-            height: 36px;
-            flex-shrink: 0;
-            filter: drop-shadow(0 2px 6px rgba(229, 9, 20, 0.4));
+        .header-logo-img {
+            height: 38px;
+            width: auto;
+            object-fit: contain;
         }
 
-        .brand-text-block {
-            display: flex;
-            flex-direction: column;
-            line-height: 0.92;
-        }
+        /* Responsive display for header logos based on theme */
+        [data-theme="dark"] .logo-light-theme { display: none !important; }
+        [data-theme="dark"] .logo-dark-theme { display: block !important; }
 
-        .brand-title {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            color: var(--logo-text-color);
-            text-transform: uppercase;
-        }
-
-        .brand-title span {
-            color: var(--stravion-red);
-        }
-
-        .brand-slogan {
-            font-size: 0.5rem;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 700;
-        }
+        [data-theme="light"] .logo-dark-theme { display: none !important; }
+        [data-theme="light"] .logo-light-theme { display: block !important; }
 
         .header-actions {
             display: flex;
@@ -328,35 +310,11 @@
             margin-bottom: 16px;
         }
 
-        .auth-vertical-emblem {
-            width: 85px;
+        .auth-logo-img {
+            max-width: 220px;
             height: auto;
-            margin-bottom: 4px;
-            filter: drop-shadow(0 4px 15px rgba(229, 9, 20, 0.5));
-        }
-
-        .auth-title-stravion {
-            font-family: 'Teko', sans-serif;
-            font-size: 2.3rem;
-            font-weight: 700;
-            line-height: 0.85;
-            letter-spacing: 1.5px;
-            color: var(--logo-text-color);
-            text-transform: uppercase;
-        }
-
-        .auth-title-fitness {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 900;
-            font-style: italic;
-            color: var(--stravion-red);
-            letter-spacing: 4px;
-            margin-top: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 15px rgba(229, 9, 20, 0.4));
         }
 
         .auth-type-selector {
@@ -930,7 +888,7 @@
 </head>
 <body>
 
-    <!-- Splash Screen (Usando logo tela inicia tema escuro) -->
+    <!-- Splash Screen -->
     <div id="splash-screen">
         <div class="splash-logo-container">
             <svg class="splash-emblem" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
@@ -954,7 +912,7 @@
         </div>
     </div>
 
-    <!-- Auth Overlay Modal (Usando logo vertical oficial) -->
+    <!-- Auth Overlay Modal -->
     <div id="auth-overlay">
         <div class="auth-card">
             <div class="auth-logo-vertical">
@@ -1066,24 +1024,9 @@
         </div>
     </div>
 
-    <!-- Header (Usando logo tema preto/claro horizontal) -->
+    <!-- Header com troca inteligente de logo claro/escuro -->
     <header>
         <div class="brand-logo-wrap" onclick="switchTab('catalog')">
-            <svg class="header-emblem-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="silverHeader" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#FFFFFF" />
-                        <stop offset="50%" stop-color="#E0E0E0" />
-                        <stop offset="100%" stop-color="#999999" />
-                    </linearGradient>
-                    <linearGradient id="redHeader" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#E50914" />
-                        <stop offset="100%" stop-color="#990000" />
-                    </linearGradient>
-                </defs>
-                <path d="M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z" fill="url(#silverHeader)" />
-                <path d="M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z" fill="url(#redHeader)" />
-            </svg>
             <div class="brand-text-block">
                 <div class="brand-title">STRAVION <span>FITNESS</span></div>
                 <div class="brand-slogan">TRAIN BEYOND LIMITS</div>
@@ -1315,14 +1258,10 @@
 
     <div id="toast-notification">Notificação</div>
 
-    <!-- Footer (Usando logo horizontal oficial) -->
+    <!-- Footer -->
     <footer>
         <div class="footer-logo-wrap">
-            <svg class="stravion-icon-svg" viewBox="0 0 300 200" style="width:22px; height:22px;">
-                <path d="M 90 30 L 210 30 L 245 62 L 140 62 L 110 92 L 215 92 L 190 115 L 105 115 L 70 82 Z" fill="var(--logo-text-color)"/>
-                <path d="M 210 170 L 90 170 L 55 138 L 160 138 L 190 108 L 85 108 L 110 85 L 195 85 L 230 118 Z" fill="#E50914"/>
-            </svg>
-            <span style="font-family:'Teko'; font-size:1.1rem; color:var(--logo-text-color); font-weight:700;">STRAVION <span style="color:var(--stravion-red)">FITNESS</span></span>
+            <div style="font-family:'Teko'; font-size:1.2rem; color:var(--logo-text-color); font-weight:700;">STRAVION <span style="color:var(--stravion-red)">FITNESS</span></div>
         </div>
         <div class="footer-credits">
             © 2026 DAVID E. SOUZA - TODOS OS DIREITOS RESERVADOS
@@ -1488,6 +1427,7 @@
         } else {
             document.addEventListener('DOMContentLoaded', initApp);
         }
+
         setTimeout(() => {
             const splash = document.getElementById('splash-screen');
             if (splash) splash.classList.add('hidden');
@@ -1614,7 +1554,9 @@
                         subject: `Código de Ativação Stravion: ${code}`,
                         from_name: 'Stravion Fitness App',
                         to_email: email,
-                        message: `Olá ${userName},\n\nSeu código de ativação é: ${code}`
+                        message: `Olá ${userName},
+
+Seu código de ativação é: ${code}`
                     })
                 });
 
@@ -2283,11 +2225,3 @@
     </script>
 </body>
 </html>
-```eof
-
-### Resumo das Atualizações nas Logos e Ícones:
-1. **Emblemas e Logos Vetoriais Oficiais**: Todos os elementos visuais foram sincronizados para exibir a **Logo da Marca 'S' (Prata/Vermelho)** com acabamento preciso em alta definição:
-   - **Splash Screen**: `logo tela inicia tema escuro` com animação de pulso.
-   - **Auth Overlay**: `logo tela inicia tema claro/escuro` integrado à seleção de perfis.
-   - **Header & Footer**: `logo tema preto/claro horizontal` ajustável dinamicamente aos temas claro e escuro.
-   - **Favicon PWA**: `icone preto` / `icone branco`.
