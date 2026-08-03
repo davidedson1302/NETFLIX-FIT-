@@ -4,14 +4,14 @@
 "description": "Aplicativo de treinos de musculação e acompanhamento para personal trainers e alunos.",
 "icons": [
 {
-"src": "data:image/svg+xml,",
+"src": "https://i.ibb.co/hwf2vSH/icone-preto.png",
 "sizes": "192x192",
-"type": "image/svg+xml"
+"type": "image/png"
 },
 {
-"src": "data:image/svg+xml,",
+"src": "https://i.ibb.co/hwf2vSH/icone-preto.png",
 "sizes": "512x512",
-"type": "image/svg+xml"
+"type": "image/png"
 }
 ],
 "start_url": "./index.html",
