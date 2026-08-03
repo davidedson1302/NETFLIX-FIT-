@@ -513,7 +513,6 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAVBAR -->
     <nav class="fixed bottom-0 left-0 right-0 z-30 bg-[#161722]/95 backdrop-blur-md border-t border-[#232538] px-4 py-2">
         <div class="max-w-md mx-auto grid grid-cols-3 gap-1 text-center">
             <button onclick="switchTab('catalog')" id="nav-btn-catalog" class="py-1 text-red-500 font-bold text-xs flex flex-col items-center gap-1">
@@ -679,8 +678,10 @@
             // Hide Splash Screen cleanly
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
-                splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 500);
+                if (splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.style.display = 'none', 500);
+                }
             }, 600);
         });
 
@@ -712,7 +713,7 @@
         }
 
         function cleanPhone(val) {
-            return val.replace(/\D/g, '');
+            return val ? val.replace(/\D/g, '') : '';
         }
 
         function handleLogin(e) {
@@ -726,7 +727,7 @@
             // Check against registered local users
             Object.keys(storedUsers).forEach(key => {
                 const u = storedUsers[key];
-                if ((u.username.toLowerCase() === userInput || u.email.toLowerCase() === userInput) && u.password === passInput) {
+                if ((u.username.toLowerCase() === userInput || (u.email && u.email.toLowerCase() === userInput)) && u.password === passInput) {
                     foundUser = u;
                 }
             });
@@ -874,46 +875,6 @@
             showToast("Novo código gerado!");
         }
 
-            try {
-                // Fetch call to EmailJS API endpoint
-                const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        service_id: 'service_stravion',
-                        template_id: 'template_activation',
-                        user_id: 'public_stravion_key',
-                        template_params: {
-                            to_email: email,
-                            to_name: userName,
-                            activation_code: code,
-                            app_name: 'Stravion Fitness'
-                        }
-                    })
-                });
-
-                if (response.ok) {
-                    if (statusLog) {
-                        statusLog.innerHTML = `<i class="fa-solid fa-circle-check text-green-400"></i> E-mail enviado com sucesso para <strong>${email}</strong>! Verifique sua caixa de entrada e SPAM.`;
-                    }
-                    showToast("E-mail com código enviado com sucesso!");
-                } else {
-                    throw new Error("SMTP servidor externo");
-                }
-            } catch (err) {
-                if (statusLog) {
-                    statusLog.innerHTML = `<i class="fa-solid fa-envelope-open-text text-[#E50914]"></i> Código enviado para <strong>${email}</strong>: <strong class="text-green-400 text-sm">${code}</strong><br><span class="text-[10px] text-gray-400">(Código de verificação de ativação gerado)</span>`;
-                }
-            }
-        }
-
-        function resendActivationEmail() {
-            if (!pendingRegistration) return;
-            generatedActivationCode = String(Math.floor(100000 + Math.random() * 900000));
-            sendActivationEmailNotification(pendingRegistration.email, generatedActivationCode, pendingRegistration.name);
-            showToast("Novo código de ativação gerado!");
-        }
-
         function confirmAccountActivation() {
             const inputCode = document.getElementById('input-activation-code').value.trim();
             if (inputCode !== generatedActivationCode) {
@@ -1016,6 +977,7 @@
 
         function renderWorkoutsCatalog() {
             const container = document.getElementById('workout-list-grid');
+            if (!container) return;
             container.innerHTML = '';
 
             localWorkouts.forEach(w => {
@@ -1143,6 +1105,7 @@
 
         function renderActiveExercisesList() {
             const container = document.getElementById('active-exercises-list');
+            if (!container) return;
             container.innerHTML = '';
 
             if (!activeWorkoutSession || !activeWorkoutSession.exercises) return;
@@ -1206,6 +1169,7 @@
 
         function renderHistoryList() {
             const container = document.getElementById('workout-history-list');
+            if (!container) return;
             container.innerHTML = '';
 
             if (localHistory.length === 0) {
@@ -1242,6 +1206,7 @@
 
         function filterStudentsList() {
             const container = document.getElementById('students-list-container');
+            if (!container) return;
             container.innerHTML = '';
 
             const input = document.getElementById('search-student-input');
